@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 80px;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .abs-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .pill {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        font-size: 32px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 1: news ticker ---------- */
+      .strip {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        height: 92px;
+        border-radius: 18px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 28px;
+      }
+      .strip .dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #3a3a52;
+        flex: none;
+      }
+      .strip .bar {
+        height: 18px;
+        border-radius: 9px;
+        background: #2a2a3c;
+      }
+      .strip.hot {
+        border-color: var(--accent);
+        background: #15153a;
+      }
+      .strip.hot .dot {
+        background: var(--accent-hi);
+      }
+      .strip.hot .bar {
+        background: #4f4fa8;
+      }
+      .breaking {
+        margin-left: auto;
+        padding: 8px 20px;
+        border-radius: 999px;
+        background: var(--accent);
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
+      #clock {
+        position: absolute;
+        left: 180px;
+        top: 860px;
+        width: 200px;
+        height: 200px;
+      }
+      #stamp {
+        position: absolute;
+        left: 430px;
+        top: 905px;
+        width: 360px;
+        height: 110px;
+        border-radius: 18px;
+        border: 6px solid var(--dim);
+        color: var(--dim);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 56px;
+        font-weight: 800;
+        letter-spacing: 4px;
+      }
+
+      /* ---------- Scene 2: agent hub ---------- */
+      .term {
+        position: absolute;
+        left: 0;
+        top: 250px;
+        width: 960px;
+        height: 130px;
+        border-radius: 24px;
+        background: #0f0f1a;
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        padding-left: 40px;
+        font-size: 36px;
+        white-space: nowrap;
+      }
+      .term .p {
+        color: var(--success);
+        margin-right: 18px;
+      }
+      .caret {
+        display: inline-block;
+        width: 18px;
+        height: 42px;
+        margin-left: 4px;
+        background: var(--accent-hi);
+        vertical-align: middle;
+      }
+      .agent {
+        position: absolute;
+        left: 370px;
+        top: 660px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #818cf8 0%, #6366f1 45%, #3730a3 100%);
+        box-shadow: 0 0 90px rgba(99, 102, 241, 0.6);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 34px;
+        font-weight: 800;
+      }
+      .doc {
+        position: absolute;
+        left: 450px;
+        top: 420px;
+        width: 60px;
+        height: 76px;
+      }
+      .role {
+        width: 280px;
+        height: 84px;
+        background: var(--panel);
+        border: 3px solid var(--accent);
+      }
+
+      /* ---------- Scene 3: pipeline ---------- */
+      #funnel {
+        position: absolute;
+        left: 330px;
+        top: 300px;
+        width: 300px;
+        height: 240px;
+      }
+      .ndot {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #5a5a78;
+      }
+      .gdot {
+        position: absolute;
+        left: 467px;
+        top: 556px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--success);
+      }
+      .stage-label {
+        position: absolute;
+        font-size: 44px;
+        font-weight: 800;
+      }
+      .node {
+        position: absolute;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        font-weight: 800;
+      }
+      .chips {
+        position: absolute;
+        left: 0;
+        top: 830px;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+      .chip {
+        padding: 14px 28px;
+        border-radius: 999px;
+        border: 3px solid var(--accent-hi);
+        background: rgba(99, 102, 241, 0.14);
+        font-size: 32px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 4: 31 skills ---------- */
+      .big-wrap {
+        position: absolute;
+        left: 0;
+        top: 220px;
+        width: 960px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+      }
+      #s4-count {
+        display: inline-block;
+        width: 250px;
+        text-align: right;
+        font-size: 200px;
+        font-weight: 800;
+        letter-spacing: -6px;
+        font-variant-numeric: tabular-nums;
+      }
+      .big-unit {
+        display: inline-block;
+        font-size: 60px;
+        font-weight: 600;
+        color: var(--dim);
+        margin-left: 24px;
+      }
+      .lanes {
+        position: absolute;
+        left: 0;
+        top: 520px;
+        width: 960px;
+        height: 90px;
+        display: flex;
+        gap: 8px;
+      }
+      .lane {
+        height: 90px;
+        border-radius: 14px;
+        transform-origin: left center;
+      }
+      .legend {
+        position: absolute;
+        left: 40px;
+        top: 650px;
+        width: 880px;
+        display: grid;
+        grid-template-columns: 440px 440px;
+        row-gap: 22px;
+      }
+      .lrow {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 36px;
+        font-weight: 600;
+      }
+      .lrow .sw {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        flex: none;
+      }
+      .lrow .n {
+        color: var(--dim);
+        font-variant-numeric: tabular-nums;
+      }
+      .badge {
+        position: absolute;
+        top: 880px;
+        height: 150px;
+        border-radius: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+        font-size: 40px;
+        font-weight: 800;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 360px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 64px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 36px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .tag {
+        margin-top: 60px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: newsjacking hook ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-ushx" class="l">Newsjacking:</span>
+              <span data-hf-id="hf-sujm" class="l a">ride the news cycle.</span>
+            </div>
+            <div data-hf-id="hf-zq7t" class="strip s1-strip" style="top: 250px"><span data-hf-id="hf-9gry" class="dot"></span><span data-hf-id="hf-ladp" class="bar" style="width: 520px"></span></div>
+            <div data-hf-id="hf-lpvb" class="strip s1-strip" style="top: 362px"><span data-hf-id="hf-zcc2" class="dot"></span><span data-hf-id="hf-rosg" class="bar" style="width: 640px"></span></div>
+            <div data-hf-id="hf-foc5" class="strip s1-strip" id="s1-hot" style="top: 474px"><span data-hf-id="hf-zqn3" class="dot"></span><span data-hf-id="hf-tn6q" class="bar" style="width: 440px"></span><span data-hf-id="hf-6hiv" class="breaking" id="s1-breaking">BREAKING</span></div>
+            <div data-hf-id="hf-g7ej" class="strip s1-strip" style="top: 586px"><span data-hf-id="hf-04y4" class="dot"></span><span data-hf-id="hf-wwsf" class="bar" style="width: 580px"></span></div>
+            <div data-hf-id="hf-3s3d" class="strip s1-strip" style="top: 698px"><span data-hf-id="hf-0j95" class="dot"></span><span data-hf-id="hf-sbri" class="bar" style="width: 480px"></span></div>
+            <svg data-hf-id="hf-x46l" id="clock" viewBox="0 0 200 200">
+              <circle data-hf-id="hf-001y" class="draw" id="clock-face" pathLength="1" cx="100" cy="100" r="86" stroke="#a5b4fc" stroke-width="10" />
+              <line data-hf-id="hf-otql" id="clock-hand" x1="100" y1="100" x2="100" y2="38" stroke="#ffffff" stroke-width="10" stroke-linecap="round" />
+              <line data-hf-id="hf-j8kh" x1="100" y1="100" x2="140" y2="100" stroke="#6366f1" stroke-width="10" stroke-linecap="round" />
+              <circle data-hf-id="hf-lll4" cx="100" cy="100" r="10" fill="#ffffff" />
+            </svg>
+            <div data-hf-id="hf-0zmc" id="stamp">TOO LATE</div>
+            <div data-hf-id="hf-g55u" class="body" id="s1-body" style="top: 1160px">
+              <b data-hf-id="hf-0b5d">Fast, sharp reactions</b> win the coverage. By hand, that means watching the news all day.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: what it is ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-nfij" class="l">newsjack.sh = a PR team</span>
+              <span data-hf-id="hf-t1pv" class="l a">for your AI agent.</span>
+            </div>
+            <div data-hf-id="hf-zhdh" class="term mono" id="s2-term"><span data-hf-id="hf-41jt" class="p">$</span><span data-hf-id="hf-56dq" id="s2-typed"></span><span data-hf-id="hf-yp8p" class="caret" id="s2-caret"></span></div>
+            <svg data-hf-id="hf-mssp" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-2vqv" class="draw s2-link" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 400 710 L 290 620" />
+              <path data-hf-id="hf-p1sc" class="draw s2-link" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 560 710 L 670 620" />
+              <path data-hf-id="hf-9m69" class="draw s2-link" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 400 830 L 290 920" />
+              <path data-hf-id="hf-kk52" class="draw s2-link" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 560 830 L 670 920" />
+            </svg>
+            <svg data-hf-id="hf-nxb9" class="doc s2-doc" viewBox="0 0 60 76"><path data-hf-id="hf-z1so" d="M 4 4 L 40 4 L 56 20 L 56 72 L 4 72 Z" fill="#15151f" stroke="#a5b4fc" stroke-width="4" stroke-linejoin="round" /><path data-hf-id="hf-juom" d="M 14 34 L 46 34 M 14 46 L 46 46 M 14 58 L 34 58" stroke="#a5b4fc" stroke-width="4" stroke-linecap="round" /></svg>
+            <svg data-hf-id="hf-4fcp" class="doc s2-doc" viewBox="0 0 60 76"><path data-hf-id="hf-mur4" d="M 4 4 L 40 4 L 56 20 L 56 72 L 4 72 Z" fill="#15151f" stroke="#a5b4fc" stroke-width="4" stroke-linejoin="round" /><path data-hf-id="hf-8cu2" d="M 14 34 L 46 34 M 14 46 L 46 46 M 14 58 L 34 58" stroke="#a5b4fc" stroke-width="4" stroke-linecap="round" /></svg>
+            <svg data-hf-id="hf-5m9s" class="doc s2-doc" viewBox="0 0 60 76"><path data-hf-id="hf-lnu1" d="M 4 4 L 40 4 L 56 20 L 56 72 L 4 72 Z" fill="#15151f" stroke="#a5b4fc" stroke-width="4" stroke-linejoin="round" /><path data-hf-id="hf-8r53" d="M 14 34 L 46 34 M 14 46 L 46 46 M 14 58 L 34 58" stroke="#a5b4fc" stroke-width="4" stroke-linecap="round" /></svg>
+            <div data-hf-id="hf-dhci" class="agent" id="s2-agent">
+              <svg data-hf-id="hf-cw9i" width="90" height="70" viewBox="0 0 90 70">
+                <rect data-hf-id="hf-5cj9" x="6" y="14" width="78" height="50" rx="16" fill="none" stroke="#ffffff" stroke-width="6" />
+                <circle data-hf-id="hf-mdz3" cx="32" cy="39" r="7" fill="#ffffff" /><circle data-hf-id="hf-v0tv" cx="58" cy="39" r="7" fill="#ffffff" />
+                <path data-hf-id="hf-vn8i" d="M 45 14 L 45 4" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+              </svg>
+              <span data-hf-id="hf-lxfe">agent</span>
+            </div>
+            <div data-hf-id="hf-kho3" class="pill role s2-role" style="left: 40px; top: 560px">Monitor</div>
+            <div data-hf-id="hf-71di" class="pill role s2-role" style="left: 640px; top: 560px">Writer</div>
+            <div data-hf-id="hf-g8nx" class="pill role s2-role" style="left: 40px; top: 900px">Fact-checker</div>
+            <div data-hf-id="hf-3jfl" class="pill role s2-role" style="left: 640px; top: 900px">Strategist</div>
+            <div data-hf-id="hf-k814" class="body" id="s2-body" style="top: 1140px">
+              Open-source PR skills in <b data-hf-id="hf-nlxo">plain Markdown</b> for Claude Code, Codex, ChatGPT and more.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: detect → act → strategize ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-0fao" class="l">Detect. Act.</span>
+              <span data-hf-id="hf-vzdg" class="l a">Strategize.</span>
+            </div>
+            <div data-hf-id="hf-kias" id="s3-dots"></div>
+            <svg data-hf-id="hf-1t8a" id="funnel" viewBox="0 0 300 240">
+              <path data-hf-id="hf-4t54" class="draw" id="funnel-path" pathLength="1" stroke="#a5b4fc" stroke-width="7" d="M 6 6 L 294 6 L 182 140 L 182 234 L 118 234 L 118 140 Z" />
+            </svg>
+            <div data-hf-id="hf-u8xi" class="gdot s3-g"></div><div data-hf-id="hf-s7q2" class="gdot s3-g"></div><div data-hf-id="hf-sm13" class="gdot s3-g"></div>
+            <div data-hf-id="hf-il8y" class="stage-label" id="s3-l1" style="left: 680px; top: 380px; color: var(--accent-hi)">Detect</div>
+            <svg data-hf-id="hf-o18d" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-g57l" class="draw s3-arrow" pathLength="1" stroke="#6366f1" stroke-width="6" d="M 480 600 L 480 680 M 462 662 L 480 680 L 498 662" />
+              <path data-hf-id="hf-tuix" class="draw s3-arrow" pathLength="1" stroke="#6366f1" stroke-width="6" d="M 480 930 L 480 1010 M 462 992 L 480 1010 L 498 992" />
+            </svg>
+            <div data-hf-id="hf-5gku" class="node" id="s3-act" style="left: 330px; top: 700px; width: 300px; height: 104px; border: 4px solid var(--accent); background: #15153a">Act</div>
+            <div data-hf-id="hf-pwof" class="chips" id="s3-chips">
+              <span data-hf-id="hf-ia8y" class="chip s3-chip">Angles</span><span data-hf-id="hf-xdr1" class="chip s3-chip">Fact-check</span><span data-hf-id="hf-h8fg" class="chip s3-chip">Journalists</span>
+            </div>
+            <div data-hf-id="hf-pa5v" class="node" id="s3-strat" style="left: 260px; top: 1030px; width: 440px; height: 104px; border: 4px solid var(--success); background: #0f1f16">Strategize</div>
+            <div data-hf-id="hf-3ppq" class="body" id="s3-body" style="top: 1220px">Filter the junk. Score what's <b data-hf-id="hf-3adr">pitch-worthy</b>. Draft, check, find the right reporter.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: 31 skills, open source ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-2li0" class="l">Free &amp; open source.</span>
+              <span data-hf-id="hf-ocvm" class="l a">You stay in control.</span>
+            </div>
+            <div data-hf-id="hf-jv1n" class="big-wrap"><span data-hf-id="hf-wcyv" id="s4-count">0</span><span data-hf-id="hf-ezns" class="big-unit" id="s4-unit">skills</span></div>
+            <div data-hf-id="hf-gdyh" class="lanes">
+              <div data-hf-id="hf-gexr" class="lane s4-lane" style="width: 242px; background: #a5b4fc"></div>
+              <div data-hf-id="hf-llsb" class="lane s4-lane" style="width: 364px; background: #6366f1"></div>
+              <div data-hf-id="hf-zqi7" class="lane s4-lane" style="width: 92px; background: #4338ca"></div>
+              <div data-hf-id="hf-gug9" class="lane s4-lane" style="width: 238px; background: #22c55e"></div>
+            </div>
+            <div data-hf-id="hf-ovnn" class="legend">
+              <div data-hf-id="hf-ku8j" class="lrow s4-lr"><span data-hf-id="hf-et0j" class="sw" style="background: #a5b4fc"></span>Detect <span data-hf-id="hf-gw37" class="n">8</span></div>
+              <div data-hf-id="hf-gkfc" class="lrow s4-lr"><span data-hf-id="hf-3eoc" class="sw" style="background: #6366f1"></span>Act <span data-hf-id="hf-xlry" class="n">12</span></div>
+              <div data-hf-id="hf-0qe4" class="lrow s4-lr"><span data-hf-id="hf-z6j8" class="sw" style="background: #4338ca"></span>Strategize <span data-hf-id="hf-dbby" class="n">3</span></div>
+              <div data-hf-id="hf-vw5q" class="lrow s4-lr"><span data-hf-id="hf-92ps" class="sw" style="background: #22c55e"></span>AI visibility <span data-hf-id="hf-64lv" class="n">8</span></div>
+            </div>
+            <div data-hf-id="hf-ru88" class="badge s4-badge" style="left: 0; width: 360px; border: 4px solid var(--success); background: #0f1f16; color: var(--success)">
+              <svg data-hf-id="hf-5afm" width="56" height="56" viewBox="0 0 56 56"><circle data-hf-id="hf-k48b" cx="28" cy="28" r="24" fill="none" stroke="#22c55e" stroke-width="5" /><path data-hf-id="hf-v0o5" d="M 16 29 L 25 38 L 41 20" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              MIT license
+            </div>
+            <div data-hf-id="hf-e0vt" class="badge s4-badge" style="left: 400px; width: 560px; border: 4px solid var(--accent); background: #15153a">
+              <svg data-hf-id="hf-qec6" width="56" height="64" viewBox="0 0 56 64"><rect data-hf-id="hf-0ehl" x="6" y="28" width="44" height="32" rx="7" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-gvmp" d="M 16 28 L 16 18 C 16 4, 40 4, 40 18 L 40 28" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-7xzn" cx="28" cy="44" r="5" fill="#a5b4fc" /></svg>
+              You hit send
+            </div>
+            <div data-hf-id="hf-01ct" class="body" id="s4-body" style="top: 1120px">Tracks how <b data-hf-id="hf-v4x4">AI answer engines</b> mention you, and never pitches on your behalf.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-l6bl" class="l">Stop spray-and-pray</span><span data-hf-id="hf-pqae" class="l a">PR.</span></div>
+            <div data-hf-id="hf-zk10" class="cta-sub" id="s5-sub">Follow for more AI &amp; tech explained in 30 seconds.</div>
+            <div data-hf-id="hf-cv6m" class="tag mono" id="s5-tag">NEWSJACK.SH · OPEN-SOURCE PR SKILLS</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-zg8r" id="bgm" src="10-strengthcampbeats.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      const rise = (sel, at, y = 40, d = 0.6) =>
+        tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+
+      // Crossfades + ambient glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: ticker, breaking story, too late ----------
+      {
+        const t = S[0];
+        rise("#s1-head", t + 0.1);
+        tl.fromTo(".s1-strip", { opacity: 0, x: 160 }, { opacity: 1, x: 0, duration: 0.55, ease: E, stagger: 0.27 }, t + 0.5);
+        tl.fromTo("#s1-breaking", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, t + 1.9);
+        tl.fromTo("#s1-hot", { scale: 1 }, { scale: 1.03, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 2.0);
+        tl.to("#clock-face", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 2.2);
+        tl.fromTo("#clock", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, t + 2.2);
+        tl.fromTo("#clock-hand", { rotation: 0, svgOrigin: "100 100" }, { rotation: 720, svgOrigin: "100 100", duration: 1.4, ease: "power2.inOut" }, t + 2.5);
+        tl.fromTo("#stamp", { opacity: 0, scale: 1.6, rotation: -10 }, { opacity: 1, scale: 1, rotation: -10, duration: 0.45, ease: "expo.out" }, t + 3.6);
+        tl.to("#s1-hot", { opacity: 0.4, duration: 0.5, ease: "power2.out" }, t + 3.7);
+        rise("#s1-body", t + 4.0, 24);
+      }
+
+      // ---------- Scene 2: install, skills fly in, roles ring ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo("#s2-term", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 0.45);
+        const typed = document.getElementById("s2-typed");
+        const cmd = "curl -fsSL newsjack.sh | bash";
+        const ty = { n: 0 };
+        tl.fromTo(ty, { n: 0 }, { n: cmd.length, duration: 1.1, ease: "none", onUpdate: () => (typed.textContent = cmd.slice(0, Math.round(ty.n))) }, t + 0.6);
+        tl.fromTo("#s2-caret", { opacity: 1 }, { opacity: 0.15, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 7 }, t + 0.5);
+        tl.fromTo("#s2-agent", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, t + 1.6);
+        document.querySelectorAll(".s2-doc").forEach((el, i) => {
+          const dx = [-160, 0, 160][i];
+          tl.fromTo(el, { opacity: 0, x: dx, y: -20, scale: 1 }, { opacity: 1, x: dx, y: 20, scale: 1, duration: 0.3, ease: E }, t + 1.8 + i * 0.27);
+          tl.to(el, { x: 0, y: 300, scale: 0.4, opacity: 0, duration: 0.5, ease: "power3.in" }, t + 2.1 + i * 0.27);
+        });
+        tl.fromTo("#s2-agent", { scale: 1 }, { scale: 1.08, duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 2.7);
+        tl.to(".s2-link", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", stagger: 0.27 }, t + 3.0);
+        tl.fromTo(".s2-role", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: E, stagger: 0.27 }, t + 3.15);
+        rise("#s2-body", t + 4.3, 24);
+      }
+
+      // ---------- Scene 3: funnel → act → strategize ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.to("#funnel-path", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, t + 0.5);
+        rise("#s3-l1", t + 0.7, 16, 0.5);
+        // news dots: fixed positions above the funnel, fall in and vanish
+        const field = document.getElementById("s3-dots");
+        const xs = [350, 400, 450, 500, 550, 600, 375, 425, 525, 575];
+        const ys = [240, 250, 236, 248, 240, 252, 214, 210, 212, 216];
+        xs.forEach((x, i) => {
+          const d = document.createElement("div");
+          d.className = "ndot";
+          d.style.left = `${x - 13}px`;
+          d.style.top = `${ys[i] - 13}px`;
+          field.appendChild(d);
+          tl.fromTo(d, { opacity: 0, x: 0, y: -40 }, { opacity: 1, x: 0, y: 0, duration: 0.3, ease: E }, t + 0.8 + i * 0.05);
+          tl.to(d, { x: 480 - x, y: 400 - ys[i], opacity: 0, scale: 0.4, duration: 0.6, ease: "power3.in" }, t + 1.3 + i * 0.06);
+        });
+        document.querySelectorAll(".s3-g").forEach((el, i) => {
+          tl.fromTo(el, { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.4, ease: E }, t + 2.0 + i * 0.27);
+          tl.to(el, { x: [-40, 0, 40][i], duration: 0.3, ease: E }, t + 2.4 + i * 0.27);
+        });
+        tl.to(".s3-arrow", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", stagger: 1.1 }, t + 2.6);
+        tl.fromTo("#s3-act", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 2.9);
+        tl.fromTo(".s3-chip", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: E, stagger: 0.27 }, t + 3.2);
+        tl.fromTo("#s3-strat", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 4.0);
+        rise("#s3-body", t + 4.4, 24);
+      }
+
+      // ---------- Scene 4: 31 count-up, lanes, badges ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        const st = { v: 0 };
+        const el = document.getElementById("s4-count");
+        tl.fromTo(st, { v: 0 }, { v: 31, duration: 1.3, ease: "power2.out", onUpdate: () => (el.textContent = Math.round(st.v)) }, t + 0.5);
+        tl.fromTo("#s4-count", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, t + 0.5);
+        rise("#s4-unit", t + 0.8, 16, 0.4);
+        tl.fromTo(".s4-lane", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: E, stagger: 0.3 }, t + 0.7);
+        tl.fromTo(".s4-lr", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: E, stagger: 0.3 }, t + 0.9);
+        tl.fromTo(".s4-badge", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out", stagger: 0.35 }, t + 2.4);
+        rise("#s4-body", t + 3.3, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32) — deterministic particle field
+        let seed = 23;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.5);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

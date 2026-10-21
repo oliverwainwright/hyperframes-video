@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 80px;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .abs-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .pill {
+        position: absolute;
+        padding: 12px 30px;
+        border-radius: 999px;
+        font-size: 34px;
+        font-weight: 600;
+      }
+      .card {
+        position: absolute;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+      }
+
+      /* ---------- Scene 1 ---------- */
+      .brand {
+        top: 320px;
+        width: 360px;
+        height: 200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .brand .bn {
+        font-size: 46px;
+        font-weight: 800;
+      }
+      .brand .bs {
+        font-size: 30px;
+        color: var(--dim);
+      }
+      #s1-q,
+      #s1-ok {
+        position: absolute;
+        left: 410px;
+        top: 350px;
+        width: 140px;
+        height: 140px;
+      }
+      #s1-yes {
+        left: 220px;
+        top: 590px;
+        width: 520px;
+        text-align: center;
+        border: 4px solid var(--success);
+        background: #0f1f16;
+        color: var(--success);
+        font-weight: 800;
+        font-size: 38px;
+      }
+
+      /* ---------- Scene 2 ---------- */
+      .block {
+        position: absolute;
+        left: 180px;
+        width: 600px;
+        height: 130px;
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        padding-left: 30px;
+      }
+      .block svg {
+        width: 70px;
+        height: 70px;
+        flex: none;
+      }
+      .block .bt {
+        font-size: 42px;
+        font-weight: 800;
+      }
+      .block .bs {
+        font-size: 28px;
+        color: var(--accent-hi);
+        margin-top: 2px;
+      }
+      #s2-review {
+        left: 230px;
+        top: 760px;
+        width: 500px;
+        height: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        border: 4px solid var(--success);
+        background: #0f1f16;
+        font-size: 38px;
+        font-weight: 800;
+      }
+      #s2-review .dot {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--success);
+      }
+
+      /* ---------- Scene 3 ---------- */
+      .side {
+        top: 270px;
+        width: 450px;
+        height: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 40px;
+        gap: 14px;
+        text-align: center;
+      }
+      .side svg {
+        width: 200px;
+        height: 150px;
+      }
+      .side .st {
+        font-size: 44px;
+        font-weight: 800;
+      }
+      .side .ss {
+        font-size: 32px;
+        color: var(--dim);
+        line-height: 1.25;
+        padding: 0 24px;
+      }
+      .side .note {
+        margin-top: 10px;
+        padding: 10px 22px;
+        border-radius: 999px;
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 4 ---------- */
+      .ev {
+        top: 270px;
+        width: 280px;
+        height: 170px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 34px;
+        font-weight: 800;
+      }
+      .ev svg {
+        width: 70px;
+        height: 70px;
+      }
+      .tnode {
+        position: absolute;
+        left: 370px;
+        top: 560px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #818cf8 0%, #6366f1 45%, #3730a3 100%);
+        box-shadow: 0 0 90px rgba(99, 102, 241, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        font-weight: 800;
+      }
+      #s4-clock {
+        position: absolute;
+        left: 780px;
+        top: 600px;
+        width: 140px;
+        height: 140px;
+      }
+      #s4-x {
+        position: absolute;
+        left: 640px;
+        top: 630px;
+        width: 80px;
+        height: 80px;
+      }
+      #s4-mix {
+        left: 650px;
+        top: 760px;
+        border: 3px solid var(--dim);
+        color: var(--dim);
+        font-size: 30px;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 360px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 64px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 36px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .tag {
+        margin-top: 60px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: does Codex have them? ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-0amw" class="l">Claude has Routines.</span>
+              <span data-hf-id="hf-o2mx" class="l a">Does Codex?</span>
+            </div>
+            <div data-hf-id="hf-33z1" class="card brand" id="s1-claude" style="left: 0">
+              <div data-hf-id="hf-nipf" class="bn">Claude Code</div>
+              <div data-hf-id="hf-7mog" class="bs">Routines</div>
+            </div>
+            <div data-hf-id="hf-eqr4" class="card brand" id="s1-codex" style="left: 600px">
+              <div data-hf-id="hf-y79j" class="bn">Codex</div>
+              <div data-hf-id="hf-a1wp" class="bs" id="s1-codex-sub">Scheduled tasks</div>
+            </div>
+            <svg data-hf-id="hf-c8qp" id="s1-q" viewBox="0 0 140 140">
+              <circle data-hf-id="hf-e0cb" cx="70" cy="70" r="62" fill="#15153a" stroke="#6366f1" stroke-width="6" />
+              <path data-hf-id="hf-vlqu" d="M 50 54 C 50 30, 92 30, 92 54 C 92 72, 70 70, 70 88 M 70 104 L 70 106" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" />
+            </svg>
+            <svg data-hf-id="hf-poy8" id="s1-ok" viewBox="0 0 140 140">
+              <circle data-hf-id="hf-g3rh" cx="70" cy="70" r="62" fill="#22c55e" />
+              <path data-hf-id="hf-e8f2" class="draw" id="s1-ck" pathLength="1" d="M 40 72 L 62 94 L 102 50" stroke="#0a0a0a" stroke-width="12" />
+            </svg>
+            <div data-hf-id="hf-lgbx" class="pill" id="s1-yes">Yes: "Scheduled tasks"</div>
+            <div data-hf-id="hf-bd01" class="body" id="s1-body" style="top: 760px">Codex has them too, but they <b data-hf-id="hf-mcov">work a little differently</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: prompt + project + cadence ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-7hcl" class="l">Prompt + project</span>
+              <span data-hf-id="hf-lyru" class="l a">+ cadence.</span>
+            </div>
+            <div data-hf-id="hf-glyx" class="card block s2-block" style="top: 260px">
+              <svg data-hf-id="hf-i6ef" viewBox="0 0 70 70"><path data-hf-id="hf-qsl7" d="M 10 6 L 46 6 L 60 20 L 60 64 L 10 64 Z" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" /><path data-hf-id="hf-brf9" d="M 20 30 L 50 30 M 20 42 L 50 42 M 20 54 L 38 54" stroke="#6366f1" stroke-width="5" stroke-linecap="round" /></svg>
+              <div data-hf-id="hf-yeow"><div data-hf-id="hf-sfog" class="bt">Prompt</div><div data-hf-id="hf-8lso" class="bs mono">"Summarize new bugs"</div></div>
+            </div>
+            <div data-hf-id="hf-am4m" class="card block s2-block" style="top: 410px">
+              <svg data-hf-id="hf-q0zr" viewBox="0 0 70 70"><path data-hf-id="hf-wtpw" d="M 6 16 L 26 16 L 32 24 L 64 24 L 64 60 L 6 60 Z" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" /></svg>
+              <div data-hf-id="hf-y7yw"><div data-hf-id="hf-mb6b" class="bt">Project</div><div data-hf-id="hf-cbdw" class="bs mono">~/code/webapp</div></div>
+            </div>
+            <div data-hf-id="hf-qdxe" class="card block s2-block" style="top: 560px">
+              <svg data-hf-id="hf-pmoq" viewBox="0 0 70 70"><rect data-hf-id="hf-xar2" x="6" y="12" width="58" height="52" rx="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-4g3f" d="M 6 28 L 64 28 M 22 4 L 22 18 M 48 4 L 48 18" stroke="#a5b4fc" stroke-width="5" stroke-linecap="round" /><circle data-hf-id="hf-1pni" id="s2-day" cx="44" cy="46" r="7" fill="#22c55e" /></svg>
+              <div data-hf-id="hf-x11t"><div data-hf-id="hf-qtw7" class="bt">Schedule</div><div data-hf-id="hf-t890" class="bs mono">Weekdays 9:00</div></div>
+            </div>
+            <div data-hf-id="hf-7hxg" class="card" id="s2-review"><span data-hf-id="hf-9gry" class="dot"></span>Ready for review</div>
+            <div data-hf-id="hf-vyte" class="body" id="s2-body" style="top: 920px">Codex comes back on time, <b data-hf-id="hf-5rxo">does the work</b>, and leaves the result for you.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: local vs cloud ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-h4ao" class="l">Local or cloud:</span>
+              <span data-hf-id="hf-iedx" class="l a">it matters.</span>
+            </div>
+            <div data-hf-id="hf-dxxm" class="card side s3-side" style="left: 0">
+              <svg data-hf-id="hf-ep0h" viewBox="0 0 200 150">
+                <rect data-hf-id="hf-dwgw" class="draw s3-ic" pathLength="1" x="30" y="16" width="140" height="94" rx="10" stroke="#a5b4fc" stroke-width="6" />
+                <path data-hf-id="hf-gwac" class="draw s3-ic" pathLength="1" d="M 10 120 L 190 120 L 178 138 L 22 138 Z" stroke="#a5b4fc" stroke-width="6" />
+                <path data-hf-id="hf-9ufr" class="draw s3-ic" pathLength="1" d="M 100 44 L 100 64 M 86 50 C 74 60, 80 84, 100 84 C 120 84, 126 60, 114 50" stroke="#22c55e" stroke-width="6" />
+              </svg>
+              <div data-hf-id="hf-iqvs" class="st">Desktop app</div>
+              <div data-hf-id="hf-lenj" class="ss">runs on your machine, in your project or a worktree</div>
+              <div data-hf-id="hf-gwwq" class="note" style="border: 3px solid var(--dim); color: var(--dim)">computer must stay on</div>
+            </div>
+            <div data-hf-id="hf-fqhg" class="card side s3-side" style="left: 510px">
+              <svg data-hf-id="hf-sdo5" viewBox="0 0 200 150">
+                <path data-hf-id="hf-ld82" class="draw s3-ic" pathLength="1" d="M 50 120 C 10 120, 10 70, 50 66 C 50 26, 106 14, 122 48 C 150 30, 186 52, 176 82 C 196 88, 194 120, 166 120 Z" stroke="#a5b4fc" stroke-width="6" />
+                <path data-hf-id="hf-ry9b" class="draw s3-ic" pathLength="1" d="M 80 120 L 80 142 M 120 120 L 120 142" stroke="#22c55e" stroke-width="6" />
+              </svg>
+              <div data-hf-id="hf-z0e7" class="st">Web &amp; mobile</div>
+              <div data-hf-id="hf-z3ly" class="ss">runs in the cloud with your connected tools</div>
+              <div data-hf-id="hf-t8st" class="note" style="border: 3px solid var(--success); color: var(--success)">no local folders</div>
+            </div>
+            <div data-hf-id="hf-v526" class="body" id="s3-body" style="top: 840px">Desktop tasks need <b data-hf-id="hf-qobt">the app open</b>. Web tasks can't reach files on your computer.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: schedules or events ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-gcr1" class="l">Schedules or events.</span>
+              <span data-hf-id="hf-ylcs" class="l a">Not both.</span>
+            </div>
+            <svg data-hf-id="hf-mssp" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-6kmx" class="draw s4-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 140 440 C 140 540, 330 560, 390 610" />
+              <path data-hf-id="hf-pmh4" class="draw s4-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 480 440 L 480 560" />
+              <path data-hf-id="hf-1cgd" class="draw s4-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 820 440 C 820 500, 700 540, 590 600" />
+              <path data-hf-id="hf-lp80" class="draw" id="s4-try" pathLength="1" stroke="#6b6b80" stroke-width="5" d="M 780 680 L 600 680" />
+            </svg>
+            <div data-hf-id="hf-nnqz" class="card ev s4-ev" style="left: 0">
+              <svg data-hf-id="hf-p8dp" viewBox="0 0 70 70"><rect data-hf-id="hf-e3ql" x="6" y="14" width="58" height="42" rx="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-v0ar" d="M 8 18 L 35 38 L 62 18" fill="none" stroke="#6366f1" stroke-width="5" stroke-linejoin="round" /></svg>
+              Gmail
+            </div>
+            <div data-hf-id="hf-gnlw" class="card ev s4-ev" style="left: 340px">
+              <svg data-hf-id="hf-s0iw" viewBox="0 0 70 70"><path data-hf-id="hf-kz76" d="M 8 10 L 62 10 L 62 48 L 30 48 L 16 62 L 16 48 L 8 48 Z" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" /><path data-hf-id="hf-h2x6" d="M 20 24 L 50 24 M 20 34 L 40 34" stroke="#6366f1" stroke-width="5" stroke-linecap="round" /></svg>
+              Slack
+            </div>
+            <div data-hf-id="hf-sclt" class="card ev s4-ev" style="left: 680px">
+              <svg data-hf-id="hf-rm7v" viewBox="0 0 70 70"><circle data-hf-id="hf-1thc" cx="18" cy="14" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-60sw" cx="18" cy="58" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-wngg" cx="54" cy="58" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-3asb" d="M 18 22 L 18 50 M 54 50 L 54 26 C 54 18, 48 14, 40 14 L 32 14 M 38 8 L 32 14 L 38 20" fill="none" stroke="#6366f1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              GitHub PRs
+            </div>
+            <div data-hf-id="hf-wi6p" class="tnode" id="s4-node">Task</div>
+            <svg data-hf-id="hf-rksz" id="s4-clock" viewBox="0 0 140 140"><circle data-hf-id="hf-hc74" cx="70" cy="70" r="60" fill="#15151f" stroke="#6b6b80" stroke-width="6" /><path data-hf-id="hf-0vu3" d="M 70 32 L 70 70 L 96 84" fill="none" stroke="#a3a3b8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg data-hf-id="hf-415d" id="s4-x" viewBox="0 0 80 80"><circle data-hf-id="hf-4cxw" cx="40" cy="40" r="36" fill="#0a0a0a" stroke="#a3a3b8" stroke-width="5" /><path data-hf-id="hf-tjhd" d="M 26 26 L 54 54 M 54 26 L 26 54" stroke="#ffffff" stroke-width="7" stroke-linecap="round" /></svg>
+            <div data-hf-id="hf-ovc6" class="pill" id="s4-mix">can't mix</div>
+            <div data-hf-id="hf-8y9s" class="body" id="s4-body" style="top: 920px">Event triggers work on <b data-hf-id="hf-pogv">web &amp; mobile</b>. One task can't pair an event with a schedule.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-seba" class="l">Same idea.</span><span data-hf-id="hf-ixn4" class="l a">Different trade-offs.</span></div>
+            <div data-hf-id="hf-zk10" class="cta-sub" id="s5-sub">Follow for more AI &amp; tech explained in 30 seconds.</div>
+            <div data-hf-id="hf-tswj" class="tag mono" id="s5-tag">CODEX · SCHEDULED TASKS</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-vj0r" id="bgm" src="03-strengthcampbeats.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      const rise = (sel, at, y = 40, d = 0.6) =>
+        tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+
+      // Crossfades + ambient glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: two badges, ? becomes ✓ ----------
+      {
+        const t = S[0];
+        rise("#s1-head", t + 0.1);
+        tl.fromTo("#s1-claude", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 0.5);
+        tl.fromTo("#s1-codex", { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 0.8);
+        tl.fromTo("#s1-codex-sub", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 2.6);
+        tl.fromTo("#s1-q", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 1.2);
+        tl.fromTo("#s1-q", { rotation: 0 }, { rotation: 10, duration: 0.15, ease: "sine.inOut", yoyo: true, repeat: 3, transformOrigin: "50% 50%" }, t + 1.7);
+        tl.to("#s1-q", { opacity: 0, scale: 0.6, duration: 0.25, ease: "power2.in" }, t + 2.3);
+        tl.fromTo("#s1-ok", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 2.45);
+        tl.to("#s1-ck", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, t + 2.6);
+        tl.fromTo("#s1-yes", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 2.9);
+        rise("#s1-body", t + 3.5, 24);
+      }
+
+      // ---------- Scene 2: three blocks, review card ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo(".s2-block", { opacity: 0, x: (i) => (i % 2 ? 120 : -120) }, { opacity: 1, x: 0, duration: 0.55, ease: E, stagger: 0.3 }, t + 0.6);
+        tl.fromTo("#s2-day", { scale: 1 }, { scale: 1.5, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 3, svgOrigin: "44 46" }, t + 1.8);
+        tl.fromTo("#s2-review", { opacity: 0, y: 60, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "expo.out" }, t + 2.8);
+        rise("#s2-body", t + 3.5, 24);
+      }
+
+      // ---------- Scene 3: local vs cloud panels ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.fromTo(".s3-side", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: E, stagger: 0.4 }, t + 0.5);
+        tl.to(".s3-ic", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: 0.27 }, t + 0.8);
+        tl.fromTo(".s3-side .note", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out", stagger: 0.4 }, t + 2.4);
+        rise("#s3-body", t + 3.3, 24);
+      }
+
+      // ---------- Scene 4: events connect, clock rejected ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo(".s4-ev", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.3 }, t + 0.5);
+        tl.fromTo("#s4-node", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, t + 0.9);
+        tl.to(".s4-ln", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", stagger: 0.3 }, t + 1.4);
+        tl.fromTo("#s4-node", { scale: 1 }, { scale: 1.07, duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 2.3);
+        tl.fromTo("#s4-clock", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 2.6);
+        tl.to("#s4-try", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, t + 3.0);
+        tl.fromTo("#s4-x", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, t + 3.4);
+        tl.to(["#s4-clock", "#s4-try"], { opacity: 0.35, duration: 0.4, ease: "power2.out" }, t + 3.6);
+        tl.fromTo("#s4-mix", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: E }, t + 3.6);
+        rise("#s4-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32) — deterministic particle field
+        let seed = 101;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.5);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

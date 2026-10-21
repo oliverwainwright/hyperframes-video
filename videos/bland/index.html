@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 80px;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .abs-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .pill {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        font-size: 34px;
+        font-weight: 600;
+        background: var(--panel);
+        border: 3px solid var(--line);
+      }
+
+      /* ---------- Scene 1: phone tree ---------- */
+      #s1-phone {
+        position: absolute;
+        left: 30px;
+        top: 260px;
+        width: 170px;
+        height: 170px;
+      }
+      .hold {
+        position: absolute;
+        left: 300px;
+        top: 255px;
+        width: 660px;
+        height: 180px;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .hold-label {
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 3px;
+        color: var(--dim);
+      }
+      #s1-timer {
+        font-size: 96px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .xmark {
+        position: absolute;
+        width: 56px;
+        height: 56px;
+      }
+
+      /* ---------- Scene 2: conversation ---------- */
+      .phone-disc {
+        position: absolute;
+        left: 20px;
+        top: 300px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: var(--panel);
+        border: 4px solid var(--fg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .agent {
+        position: absolute;
+        left: 720px;
+        top: 300px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #818cf8 0%, #6366f1 45%, #3730a3 100%);
+        box-shadow: 0 0 90px rgba(99, 102, 241, 0.6);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-size: 32px;
+        font-weight: 800;
+      }
+      .wave {
+        position: absolute;
+        left: 270px;
+        top: 350px;
+        width: 420px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .wbar {
+        width: 14px;
+        border-radius: 7px;
+        background: var(--accent-hi);
+      }
+      .bubble {
+        position: absolute;
+        max-width: 720px;
+        padding: 22px 34px;
+        border-radius: 32px;
+        font-size: 38px;
+        line-height: 1.2;
+      }
+      .bubble .who {
+        display: block;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .bubble.caller {
+        left: 0;
+        background: #1a1a26;
+        border: 3px solid var(--line);
+        border-bottom-left-radius: 8px;
+      }
+      .bubble.caller .who {
+        color: var(--dim);
+      }
+      .bubble.agent-b {
+        right: 0;
+        background: #26267a;
+        border: 3px solid var(--accent);
+        border-bottom-right-radius: 8px;
+      }
+      .bubble.agent-b .who {
+        color: var(--accent-hi);
+      }
+      #s2-booked {
+        position: absolute;
+        left: 330px;
+        top: 1010px;
+        width: 300px;
+        height: 90px;
+        border-radius: 999px;
+        border: 4px solid var(--success);
+        background: #0f1f16;
+        color: var(--success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        font-size: 40px;
+        font-weight: 800;
+      }
+
+      /* ---------- Scene 3: one stack ---------- */
+      .stage {
+        position: absolute;
+        top: 430px;
+        width: 260px;
+        height: 250px;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 3px solid var(--accent);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .stage svg {
+        width: 96px;
+        height: 96px;
+      }
+      .stage .t {
+        font-size: 42px;
+        font-weight: 800;
+      }
+      .stage .s {
+        font-size: 28px;
+        color: var(--dim);
+      }
+      .flowdot {
+        position: absolute;
+        left: 136px;
+        top: 541px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--success);
+      }
+      #s3-infra {
+        position: absolute;
+        left: 230px;
+        top: 360px;
+        width: 500px;
+        height: 60px;
+        border-radius: 999px;
+        background: #15153a;
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 4: use cases ---------- */
+      #s4-count {
+        display: inline-block;
+        width: 1.25em;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .tiles {
+        position: absolute;
+        left: 0;
+        top: 250px;
+        width: 960px;
+        display: grid;
+        grid-template-columns: 450px 450px;
+        gap: 36px 60px;
+      }
+      .tile {
+        height: 180px;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding-left: 32px;
+        font-size: 40px;
+        font-weight: 800;
+      }
+      .tile svg {
+        width: 80px;
+        height: 80px;
+        flex: none;
+      }
+      .price {
+        position: absolute;
+        left: 0;
+        top: 690px;
+        width: 960px;
+        height: 150px;
+        border-radius: 28px;
+        background: #15153a;
+        border: 3px solid var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding-left: 40px;
+        font-size: 38px;
+        font-weight: 600;
+      }
+      .price .dollar {
+        width: 96px;
+        height: 96px;
+        flex: none;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 52px;
+        font-weight: 800;
+      }
+      .badge {
+        position: absolute;
+        top: 890px;
+        width: 450px;
+        height: 130px;
+        border-radius: 28px;
+        border: 4px solid var(--success);
+        background: #0f1f16;
+        color: var(--success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        font-size: 44px;
+        font-weight: 800;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 360px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 64px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 36px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .tag {
+        margin-top: 60px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: Press 1 hell ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-1wkh" class="l">Phone lines still run</span>
+              <span data-hf-id="hf-omjb" class="l a">on "Press 1."</span>
+            </div>
+            <svg data-hf-id="hf-i8v4" id="s1-phone" viewBox="0 0 170 170">
+              <path data-hf-id="hf-bm0u" d="M 52 30 C 40 30, 26 44, 30 62 C 40 108, 62 130, 108 140 C 126 144, 140 130, 140 118 L 140 104 L 112 92 L 98 106 C 82 100, 70 88, 64 72 L 78 58 L 66 30 Z" fill="#6366f1" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" />
+              <path data-hf-id="hf-us7s" class="s1-ring" d="M 110 22 C 132 26, 146 40, 150 62" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" />
+              <path data-hf-id="hf-fhvc" class="s1-ring" d="M 108 46 C 120 48, 126 54, 128 66" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" />
+            </svg>
+            <div data-hf-id="hf-n0wp" class="hold" id="s1-hold">
+              <div data-hf-id="hf-h5sk" class="hold-label">ON HOLD</div>
+              <div data-hf-id="hf-gwbj" id="s1-timer" class="mono">00:00</div>
+            </div>
+            <svg data-hf-id="hf-mssp" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-hz8y" class="draw s1-br" pathLength="1" stroke="#3a3a52" stroke-width="5" d="M 480 650 L 160 770" />
+              <path data-hf-id="hf-ansz" class="draw s1-br" pathLength="1" stroke="#3a3a52" stroke-width="5" d="M 480 650 L 480 770" />
+              <path data-hf-id="hf-9anz" class="draw s1-br" pathLength="1" stroke="#3a3a52" stroke-width="5" d="M 480 650 L 800 770" />
+              <path data-hf-id="hf-3tjj" class="draw s1-br2" pathLength="1" stroke="#3a3a52" stroke-width="5" d="M 160 854 L 160 930" />
+              <path data-hf-id="hf-12dr" class="draw s1-br2" pathLength="1" stroke="#3a3a52" stroke-width="5" d="M 480 854 L 480 930" />
+              <path data-hf-id="hf-tl1r" class="draw s1-br2" pathLength="1" stroke="#3a3a52" stroke-width="5" d="M 800 854 L 800 930" />
+            </svg>
+            <div data-hf-id="hf-o9h3" class="pill" id="s1-root" style="left: 320px; top: 560px; width: 320px; height: 90px; border-color: var(--accent)">Main menu</div>
+            <div data-hf-id="hf-8nwr" class="pill s1-opt" style="left: 40px; top: 770px; width: 240px; height: 84px">Press 1</div>
+            <div data-hf-id="hf-ydgl" class="pill s1-opt" style="left: 360px; top: 770px; width: 240px; height: 84px">Press 2</div>
+            <div data-hf-id="hf-fqk7" class="pill s1-opt" style="left: 680px; top: 770px; width: 240px; height: 84px">Press 3</div>
+            <div data-hf-id="hf-iuqj" class="pill s1-sub" style="left: 40px; top: 930px; width: 240px; height: 84px">Press 4</div>
+            <div data-hf-id="hf-9y4f" class="pill s1-sub" style="left: 360px; top: 930px; width: 240px; height: 84px">Press 7</div>
+            <div data-hf-id="hf-vk70" class="pill s1-sub" style="left: 680px; top: 930px; width: 240px; height: 84px">Press 9</div>
+            <svg data-hf-id="hf-u4yx" class="xmark s1-x" style="left: 252px; top: 900px" viewBox="0 0 56 56"><circle data-hf-id="hf-xb2d" cx="28" cy="28" r="25" fill="#0a0a0a" stroke="#a3a3b8" stroke-width="4" /><path data-hf-id="hf-ovm5" d="M 19 19 L 37 37 M 37 19 L 19 37" stroke="#a3a3b8" stroke-width="5" stroke-linecap="round" /></svg>
+            <svg data-hf-id="hf-j3u0" class="xmark s1-x" style="left: 572px; top: 900px" viewBox="0 0 56 56"><circle data-hf-id="hf-dm6x" cx="28" cy="28" r="25" fill="#0a0a0a" stroke="#a3a3b8" stroke-width="4" /><path data-hf-id="hf-mnup" d="M 19 19 L 37 37 M 37 19 L 19 37" stroke="#a3a3b8" stroke-width="5" stroke-linecap="round" /></svg>
+            <svg data-hf-id="hf-memb" class="xmark s1-x" style="left: 892px; top: 900px" viewBox="0 0 56 56"><circle data-hf-id="hf-et40" cx="28" cy="28" r="25" fill="#0a0a0a" stroke="#a3a3b8" stroke-width="4" /><path data-hf-id="hf-nurs" d="M 19 19 L 37 37 M 37 19 L 19 37" stroke="#a3a3b8" stroke-width="5" stroke-linecap="round" /></svg>
+            <div data-hf-id="hf-byil" class="body" id="s1-body" style="top: 1150px">Hold music, phone menus and <b data-hf-id="hf-6blp">missed after-hours calls</b> cost customers and revenue.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: AI agent answers ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-phve" class="l">Bland = AI agents that</span>
+              <span data-hf-id="hf-o1az" class="l a">answer the phone.</span>
+            </div>
+            <div data-hf-id="hf-zelg" class="phone-disc" id="s2-phone">
+              <svg data-hf-id="hf-3rna" width="120" height="120" viewBox="0 0 170 170">
+                <path data-hf-id="hf-1xqa" d="M 52 30 C 40 30, 26 44, 30 62 C 40 108, 62 130, 108 140 C 126 144, 140 130, 140 118 L 140 104 L 112 92 L 98 106 C 82 100, 70 88, 64 72 L 78 58 L 66 30 Z" fill="#ffffff" />
+              </svg>
+            </div>
+            <div data-hf-id="hf-oxjw" class="wave" id="s2-wave"></div>
+            <div data-hf-id="hf-dhci" class="agent" id="s2-agent">
+              <svg data-hf-id="hf-cw9i" width="90" height="70" viewBox="0 0 90 70">
+                <rect data-hf-id="hf-5cj9" x="6" y="14" width="78" height="50" rx="16" fill="none" stroke="#ffffff" stroke-width="6" />
+                <circle data-hf-id="hf-mdz3" cx="32" cy="39" r="7" fill="#ffffff" /><circle data-hf-id="hf-v0tv" cx="58" cy="39" r="7" fill="#ffffff" />
+                <path data-hf-id="hf-vn8i" d="M 45 14 L 45 4" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+              </svg>
+              <span data-hf-id="hf-idje">AI agent</span>
+            </div>
+            <div data-hf-id="hf-cuwc" class="bubble caller s2-b" style="top: 600px"><span data-hf-id="hf-kmss" class="who">Caller</span>Can I move my appointment?</div>
+            <div data-hf-id="hf-g9ch" class="bubble agent-b s2-b" style="top: 740px"><span data-hf-id="hf-0ffw" class="who">Agent</span>Sure. Does Thursday at 3pm work?</div>
+            <div data-hf-id="hf-r72d" class="bubble caller s2-b" style="top: 880px"><span data-hf-id="hf-aqdg" class="who">Caller</span>Perfect.</div>
+            <div data-hf-id="hf-n4jb" id="s2-booked">
+              <svg data-hf-id="hf-i2py" width="44" height="44" viewBox="0 0 44 44"><circle data-hf-id="hf-mbbb" cx="22" cy="22" r="19" fill="#22c55e" /><path data-hf-id="hf-2cnb" d="M 12 23 L 19 30 L 32 15" fill="none" stroke="#0a0a0a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              Booked
+            </div>
+            <div data-hf-id="hf-nfoi" class="body" id="s2-body" style="top: 1160px">Full conversations on <b data-hf-id="hf-i92h">inbound and outbound</b> calls, plus SMS and web.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: one stack ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-7zk8" class="l">Listen. Think. Speak.</span>
+              <span data-hf-id="hf-sb5s" class="l a">All on one stack.</span>
+            </div>
+            <svg data-hf-id="hf-o18d" class="abs-svg" viewBox="0 0 960 1600">
+              <rect data-hf-id="hf-4tcd" class="draw" id="s3-box" pathLength="1" x="4" y="390" width="952" height="500" rx="36" stroke="#6366f1" stroke-width="4" />
+              <path data-hf-id="hf-l4pl" class="draw s3-ar" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 285 555 L 345 555 M 330 541 L 345 555 L 330 569" />
+              <path data-hf-id="hf-n6ng" class="draw s3-ar" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 615 555 L 675 555 M 660 541 L 675 555 L 660 569" />
+              <path data-hf-id="hf-q5du" class="draw" id="s3-loop" pathLength="1" stroke="#22c55e" stroke-width="6" d="M 810 690 C 810 840, 150 840, 150 690 M 136 704 L 150 690 L 164 704" />
+            </svg>
+            <div data-hf-id="hf-hqo3" class="flowdot s3-dot"></div><div data-hf-id="hf-kybn" class="flowdot s3-dot"></div><div data-hf-id="hf-kk0m" class="flowdot s3-dot"></div>
+            <div data-hf-id="hf-y4cn" class="stage s3-st" style="left: 20px">
+              <svg data-hf-id="hf-y7z7" viewBox="0 0 96 96"><path data-hf-id="hf-c7pi" d="M 30 40 C 30 18, 70 14, 72 40 C 74 58, 56 60, 54 76 C 52 90, 34 90, 30 80" fill="none" stroke="#a5b4fc" stroke-width="7" stroke-linecap="round" /><path data-hf-id="hf-4gkx" d="M 44 42 C 44 32, 58 32, 58 42 C 58 50, 48 50, 48 58" fill="none" stroke="#6366f1" stroke-width="6" stroke-linecap="round" /></svg>
+              <div data-hf-id="hf-5353" class="t">Listen</div>
+              <div data-hf-id="hf-n4h7" class="s">speech-to-text</div>
+            </div>
+            <div data-hf-id="hf-79jf" class="stage s3-st" style="left: 350px">
+              <svg data-hf-id="hf-eacj" viewBox="0 0 96 96"><rect data-hf-id="hf-av4u" x="22" y="22" width="52" height="52" rx="10" fill="none" stroke="#a5b4fc" stroke-width="7" /><rect data-hf-id="hf-yz6a" x="38" y="38" width="20" height="20" rx="4" fill="#6366f1" /><path data-hf-id="hf-xkzz" d="M 36 8 L 36 20 M 60 8 L 60 20 M 36 76 L 36 88 M 60 76 L 60 88 M 8 36 L 20 36 M 8 60 L 20 60 M 76 36 L 88 36 M 76 60 L 88 60" stroke="#a5b4fc" stroke-width="6" stroke-linecap="round" /></svg>
+              <div data-hf-id="hf-n0ek" class="t">Think</div>
+              <div data-hf-id="hf-8g6k" class="s">language model</div>
+            </div>
+            <div data-hf-id="hf-6j0h" class="stage s3-st" style="left: 680px">
+              <svg data-hf-id="hf-dw1i" viewBox="0 0 96 96"><path data-hf-id="hf-vch5" d="M 12 38 L 30 38 L 50 20 L 50 76 L 30 58 L 12 58 Z" fill="#6366f1" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" /><path data-hf-id="hf-gkw2" d="M 64 34 C 72 42, 72 54, 64 62 M 74 24 C 88 38, 88 58, 74 72" fill="none" stroke="#a5b4fc" stroke-width="6" stroke-linecap="round" /></svg>
+              <div data-hf-id="hf-j1qy" class="t">Speak</div>
+              <div data-hf-id="hf-h8eb" class="s">text-to-speech</div>
+            </div>
+            <div data-hf-id="hf-xtbq" id="s3-infra">Bland's own infrastructure</div>
+            <div data-hf-id="hf-glts" class="body" id="s3-body" style="top: 960px">No stitching vendors together. Bland controls the <b data-hf-id="hf-ytd6">speed, voice quality and data</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: use cases + price ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-1snz" class="l"><span data-hf-id="hf-wcyv" id="s4-count">0</span>+ languages.</span>
+              <span data-hf-id="hf-p5v5" class="l a">One per-minute price.</span>
+            </div>
+            <div data-hf-id="hf-hovr" class="tiles">
+              <div data-hf-id="hf-fv9k" class="tile s4-tile">
+                <svg data-hf-id="hf-e2ht" viewBox="0 0 80 80"><rect data-hf-id="hf-4jyb" class="draw s4-ic" pathLength="1" x="8" y="14" width="64" height="58" rx="10" stroke="#a5b4fc" stroke-width="6" /><path data-hf-id="hf-zq7n" class="draw s4-ic" pathLength="1" d="M 8 32 L 72 32 M 26 6 L 26 20 M 54 6 L 54 20" stroke="#a5b4fc" stroke-width="6" /><path data-hf-id="hf-abjg" class="draw s4-ic" pathLength="1" d="M 28 52 L 36 60 L 52 44" stroke="#22c55e" stroke-width="6" /></svg>
+                Scheduling
+              </div>
+              <div data-hf-id="hf-kmg5" class="tile s4-tile">
+                <svg data-hf-id="hf-yqt1" viewBox="0 0 80 80"><rect data-hf-id="hf-zwpi" class="draw s4-ic" pathLength="1" x="6" y="18" width="68" height="46" rx="10" stroke="#a5b4fc" stroke-width="6" /><path data-hf-id="hf-vjsj" class="draw s4-ic" pathLength="1" d="M 6 32 L 74 32 M 18 50 L 34 50" stroke="#6366f1" stroke-width="6" /></svg>
+                Billing
+              </div>
+              <div data-hf-id="hf-is1h" class="tile s4-tile">
+                <svg data-hf-id="hf-zxq4" viewBox="0 0 80 80"><path data-hf-id="hf-v3t9" class="draw s4-ic" pathLength="1" d="M 40 10 L 40 30 M 40 30 L 16 50 M 40 30 L 64 50 M 16 50 L 16 66 M 64 50 L 64 66" stroke="#a5b4fc" stroke-width="6" /><path data-hf-id="hf-c4fm" class="draw s4-ic" pathLength="1" d="M 6 6 L 74 74" stroke="#6366f1" stroke-width="7" /></svg>
+                Replace IVR
+              </div>
+              <div data-hf-id="hf-iiom" class="tile s4-tile">
+                <svg data-hf-id="hf-zjf3" viewBox="0 0 80 80"><path data-hf-id="hf-978z" class="draw s4-ic" pathLength="1" d="M 54 10 C 30 12, 14 30, 14 46 C 14 64, 30 74, 46 74 C 60 74, 70 66, 74 56 C 50 62, 34 40, 54 10 Z" stroke="#a5b4fc" stroke-width="6" /></svg>
+                After-hours
+              </div>
+            </div>
+            <div data-hf-id="hf-ovlb" class="price" id="s4-price">
+              <div data-hf-id="hf-fhpu" class="dollar">$</div>
+              One rate covers LLM, voice &amp; telephony.
+            </div>
+            <div data-hf-id="hf-lnou" class="badge s4-badge" style="left: 0">
+              <svg data-hf-id="hf-qec6" width="56" height="64" viewBox="0 0 56 64"><path data-hf-id="hf-6z9a" d="M 28 4 L 52 14 L 52 32 C 52 48, 40 58, 28 62 C 16 58, 4 48, 4 32 L 4 14 Z" fill="none" stroke="#22c55e" stroke-width="5" stroke-linejoin="round" /><path data-hf-id="hf-qro1" d="M 17 33 L 25 41 L 40 25" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              HIPAA
+            </div>
+            <div data-hf-id="hf-pony" class="badge s4-badge" style="left: 510px">
+              <svg data-hf-id="hf-vuuy" width="56" height="64" viewBox="0 0 56 64"><path data-hf-id="hf-rgf6" d="M 28 4 L 52 14 L 52 32 C 52 48, 40 58, 28 62 C 16 58, 4 48, 4 32 L 4 14 Z" fill="none" stroke="#22c55e" stroke-width="5" stroke-linejoin="round" /><path data-hf-id="hf-znr9" d="M 17 33 L 25 41 L 40 25" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              SOC 2
+            </div>
+            <div data-hf-id="hf-aphe" class="body" id="s4-body" style="top: 1110px">Built for <b data-hf-id="hf-j28s">regulated, high-stakes</b> calls in healthcare, finance and more.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-rq3v" class="l">Your next call</span><span data-hf-id="hf-0kr1" class="l a">might be an AI.</span></div>
+            <div data-hf-id="hf-zk10" class="cta-sub" id="s5-sub">Follow for more AI &amp; tech explained in 30 seconds.</div>
+            <div data-hf-id="hf-tp0i" class="tag mono" id="s5-tag">BLAND.AI · VOICE AI FOR PHONE CALLS</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-zg8r" id="bgm" src="10-strengthcampbeats.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      const rise = (sel, at, y = 40, d = 0.6) =>
+        tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+
+      // Crossfades + ambient glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: ringing phone, hold timer, dead-end menu tree ----------
+      {
+        const t = S[0];
+        rise("#s1-head", t + 0.1);
+        tl.fromTo("#s1-phone", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.6, ease: E }, t + 0.4);
+        tl.fromTo("#s1-phone", { rotation: 0 }, { rotation: 8, duration: 0.08, ease: "sine.inOut", yoyo: true, repeat: 9, transformOrigin: "50% 50%" }, t + 1.0);
+        tl.fromTo(".s1-ring", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 5, stagger: 0.1 }, t + 1.0);
+        tl.fromTo("#s1-hold", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 0.6);
+        const tm = { v: 0 };
+        const timer = document.getElementById("s1-timer");
+        const fmt = (s) => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+        tl.fromTo(tm, { v: 0 }, { v: 872, duration: 4.0, ease: "power2.in", onUpdate: () => (timer.textContent = fmt(Math.round(tm.v))) }, t + 1.0);
+        tl.fromTo("#s1-root", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 1.2);
+        tl.to(".s1-br", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", stagger: 0.27 }, t + 1.5);
+        tl.fromTo(".s1-opt", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: E, stagger: 0.27 }, t + 1.7);
+        tl.to(".s1-br2", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.27 }, t + 2.5);
+        tl.fromTo(".s1-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: E, stagger: 0.27 }, t + 2.7);
+        tl.fromTo(".s1-x", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out", stagger: 0.27 }, t + 3.5);
+        tl.to([".s1-opt", ".s1-sub", "#s1-root"], { opacity: 0.35, duration: 0.6, ease: "power2.out" }, t + 4.2);
+        rise("#s1-body", t + 4.0, 24);
+      }
+
+      // ---------- Scene 2: phone ↔ agent waveform + chat bubbles ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo("#s2-phone", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 0.5);
+        tl.fromTo("#s2-agent", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, t + 0.7);
+        const wave = document.getElementById("s2-wave");
+        const H = [30, 60, 90, 50, 110, 70, 40, 100, 80, 36, 96, 64, 44, 84, 56, 28];
+        H.forEach((h, i) => {
+          const b = document.createElement("div");
+          b.className = "wbar";
+          b.style.height = `${h}px`;
+          wave.appendChild(b);
+          tl.fromTo(b, { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: E }, t + 1.0 + i * 0.03);
+          tl.fromTo(b, { scaleY: 1 }, { scaleY: 0.35, duration: 0.22 + (i % 4) * 0.05, ease: "sine.inOut", yoyo: true, repeat: 11 }, t + 1.5);
+        });
+        tl.fromTo("#s2-agent", { scale: 1 }, { scale: 1.06, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 5 }, t + 1.5);
+        tl.fromTo(".s2-b", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.4 }, t + 1.6);
+        tl.fromTo("#s2-booked", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 3.2);
+        rise("#s2-body", t + 3.7, 24);
+      }
+
+      // ---------- Scene 3: listen → think → speak pipeline ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.to("#s3-box", { strokeDashoffset: 0, duration: 0.9, ease: "power2.out" }, t + 0.5);
+        tl.fromTo("#s3-infra", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 0.9);
+        tl.fromTo(".s3-st", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.55, ease: E, stagger: 0.35 }, t + 0.8);
+        tl.to(".s3-ar", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.35 }, t + 1.4);
+        tl.to("#s3-loop", { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, t + 2.1);
+        document.querySelectorAll(".s3-dot").forEach((d, i) => {
+          tl.fromTo(d, { x: 0, opacity: 0 }, { x: 660, opacity: 1, duration: 1.2, ease: "sine.inOut", repeat: 1 }, t + 2.4 + i * 0.35);
+        });
+        tl.fromTo(".s3-st", { borderColor: "#6366f1" }, { borderColor: "#22c55e", duration: 0.3, ease: "power2.out", stagger: 0.35 }, t + 2.6);
+        rise("#s3-body", t + 3.4, 24);
+      }
+
+      // ---------- Scene 4: 40+ languages, use cases, price, compliance ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        const st = { v: 0 };
+        const el = document.getElementById("s4-count");
+        tl.fromTo(st, { v: 0 }, { v: 40, duration: 1.2, ease: "power2.out", onUpdate: () => (el.textContent = Math.round(st.v)) }, t + 0.35);
+        tl.fromTo(".s4-tile", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.3 }, t + 0.8);
+        tl.to(".s4-ic", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.1 }, t + 1.0);
+        tl.fromTo("#s4-price", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.55, ease: "expo.out" }, t + 2.2);
+        tl.fromTo(".s4-badge", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out", stagger: 0.3 }, t + 2.8);
+        rise("#s4-body", t + 3.5, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32) — deterministic particle field
+        let seed = 41;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.5);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

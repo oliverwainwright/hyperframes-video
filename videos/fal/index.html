@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 80px;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .abs-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+
+      /* ---------- App box (scenes 1 + 2) ---------- */
+      .app {
+        position: absolute;
+        left: 20px;
+        top: 620px;
+        width: 260px;
+        height: 220px;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 4px solid var(--fg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+      }
+      .app-label {
+        font-size: 36px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 1 ---------- */
+      #s1-pile {
+        position: absolute;
+        left: 500px;
+        top: 470px;
+        width: 420px;
+        height: 520px;
+      }
+      .gbox {
+        position: absolute;
+        left: 0;
+        width: 420px;
+        height: 112px;
+        border-radius: 20px;
+        background: #15151f;
+        border: 3px solid #3a3a52;
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        padding-left: 30px;
+        font-size: 42px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 2 ---------- */
+      .falnode {
+        position: absolute;
+        left: 630px;
+        top: 580px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #818cf8 0%, #6366f1 45%, #3730a3 100%);
+        box-shadow: 0 0 90px rgba(99, 102, 241, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 110px;
+        font-weight: 800;
+        letter-spacing: -4px;
+      }
+      #fal-halo {
+        position: absolute;
+        left: 610px;
+        top: 560px;
+        width: 340px;
+        height: 340px;
+        border-radius: 50%;
+        border: 4px solid var(--accent-hi);
+      }
+      .falcap {
+        position: absolute;
+        left: 630px;
+        top: 910px;
+        width: 300px;
+        text-align: center;
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--accent-hi);
+      }
+      .sq {
+        position: absolute;
+        left: 750px;
+        top: 700px;
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        border: 3px solid #3a3a52;
+        background: #15151f;
+      }
+      .req {
+        position: absolute;
+        left: 160px;
+        top: 440px;
+        width: 600px;
+        display: flex;
+        justify-content: center;
+      }
+      .req > span {
+        padding: 14px 28px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.18);
+        font-size: 30px;
+        color: var(--fg);
+      }
+      .req .k {
+        color: var(--accent-hi);
+      }
+      #s2-img {
+        position: absolute;
+        left: 400px;
+        top: 900px;
+        width: 130px;
+        height: 104px;
+      }
+      #s2-check {
+        position: absolute;
+        left: 236px;
+        top: 576px;
+        width: 88px;
+        height: 88px;
+      }
+
+      /* ---------- Scene 3 ---------- */
+      .big-wrap {
+        position: absolute;
+        left: 0;
+        top: 220px;
+        width: 960px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+      }
+      #s3-count {
+        display: inline-block;
+        width: 330px;
+        text-align: right;
+        font-size: 180px;
+        font-weight: 800;
+        letter-spacing: -6px;
+        font-variant-numeric: tabular-nums;
+      }
+      .big-plus {
+        display: inline-block;
+        font-size: 140px;
+        font-weight: 800;
+        color: var(--accent);
+        margin-left: 8px;
+      }
+      .big-unit {
+        display: inline-block;
+        font-size: 56px;
+        font-weight: 600;
+        color: var(--dim);
+        margin-left: 24px;
+      }
+      .tiles {
+        position: absolute;
+        left: 0;
+        top: 500px;
+        width: 960px;
+        display: grid;
+        grid-template-columns: 450px 450px;
+        gap: 40px 60px;
+      }
+      .tile {
+        height: 230px;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        padding-left: 34px;
+      }
+      .tile svg {
+        width: 96px;
+        height: 96px;
+        flex: none;
+      }
+      .tile .tt {
+        font-size: 46px;
+        font-weight: 800;
+      }
+      .tile .ts {
+        font-size: 30px;
+        color: var(--dim);
+        margin-top: 6px;
+      }
+      .code {
+        position: absolute;
+        left: 0;
+        top: 1060px;
+        width: 960px;
+        height: 150px;
+        border-radius: 24px;
+        background: #0f0f1a;
+        border: 3px solid var(--accent);
+        display: flex;
+        align-items: center;
+        padding-left: 44px;
+        font-size: 36px;
+        white-space: nowrap;
+      }
+      .code .m {
+        color: var(--success);
+      }
+      .caret {
+        display: inline-block;
+        width: 18px;
+        height: 42px;
+        margin-left: 4px;
+        background: var(--accent-hi);
+        vertical-align: middle;
+      }
+
+      /* ---------- Scene 4 ---------- */
+      .bar {
+        position: absolute;
+        transform-origin: bottom center;
+        border-radius: 12px;
+      }
+      .idle {
+        background: repeating-linear-gradient(135deg, #2a2a3c 0 18px, #1e1e2c 18px 36px);
+        border: 3px solid #3a3a52;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--dim);
+      }
+      .bar-cap {
+        position: absolute;
+        font-size: 40px;
+        font-weight: 600;
+        text-align: center;
+      }
+      .feat {
+        position: absolute;
+        top: 1100px;
+        width: 450px;
+        height: 200px;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding-left: 30px;
+        font-size: 36px;
+        font-weight: 600;
+        line-height: 1.15;
+      }
+      #bolt {
+        width: 110px;
+        height: 130px;
+        flex: none;
+      }
+      #gauge {
+        width: 160px;
+        height: 110px;
+        flex: none;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 360px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 64px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 36px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .tag {
+        margin-top: 60px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: the problem ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-19cv" class="l">AI images are easy.</span>
+              <span data-hf-id="hf-7jqe" class="l a">Running them is hard.</span>
+            </div>
+            <svg data-hf-id="hf-mssp" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-m2u7" id="s1-tangle" class="draw" pathLength="1" stroke="#a3a3b8" stroke-width="6" d="M 290 730 C 350 600, 380 860, 420 720 S 460 600, 495 735" />
+            </svg>
+            <div data-hf-id="hf-hfqh" class="app" id="s1-app">
+              <svg data-hf-id="hf-vyy0" width="120" height="92" viewBox="0 0 120 92">
+                <rect data-hf-id="hf-rfh4" x="4" y="4" width="112" height="84" rx="12" fill="#1c1c2b" stroke="#ffffff" stroke-width="5" />
+                <path data-hf-id="hf-w40i" d="M 4 26 L 116 26" stroke="#ffffff" stroke-width="5" />
+                <circle data-hf-id="hf-35po" cx="18" cy="15" r="4" fill="#6366f1" /><circle data-hf-id="hf-a0jw" cx="32" cy="15" r="4" fill="#6366f1" /><circle data-hf-id="hf-s12v" cx="46" cy="15" r="4" fill="#6366f1" />
+                <rect data-hf-id="hf-7mj6" x="18" y="40" width="50" height="10" rx="5" fill="#6366f1" /><rect data-hf-id="hf-bez4" x="18" y="60" width="80" height="10" rx="5" fill="#3a3a52" />
+              </svg>
+              <div data-hf-id="hf-gqvk" class="app-label">Your App</div>
+            </div>
+            <div data-hf-id="hf-78lu" id="s1-pile">
+              <div data-hf-id="hf-txh7" class="gbox s1-box" style="top: 0px">
+                <svg data-hf-id="hf-162i" width="60" height="60" viewBox="0 0 60 60"><rect data-hf-id="hf-okvp" x="12" y="12" width="36" height="36" rx="6" fill="none" stroke="#a5b4fc" stroke-width="5" /><rect data-hf-id="hf-fq1p" x="22" y="22" width="16" height="16" rx="3" fill="#6366f1" /><path data-hf-id="hf-k5g5" d="M20 4v8M30 4v8M40 4v8M20 48v8M30 48v8M40 48v8M4 20h8M4 30h8M4 40h8M48 20h8M48 30h8M48 40h8" stroke="#a5b4fc" stroke-width="4" stroke-linecap="round" /></svg>
+                <span data-hf-id="hf-tyku">GPUs</span>
+              </div>
+              <div data-hf-id="hf-p9al" class="gbox s1-box" style="top: 132px">
+                <svg data-hf-id="hf-rq1q" width="60" height="60" viewBox="0 0 60 60"><path data-hf-id="hf-l0m9" d="M 20 14 L 6 30 L 20 46 M 40 14 L 54 30 L 40 46 M 34 10 L 26 50" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                <span data-hf-id="hf-xwhd">CUDA drivers</span>
+              </div>
+              <div data-hf-id="hf-wm43" class="gbox s1-box" style="top: 264px">
+                <svg data-hf-id="hf-s4cr" width="60" height="60" viewBox="0 0 60 60"><path data-hf-id="hf-gils" d="M 8 50 L 24 34 L 34 42 L 52 14 M 38 14 L 52 14 L 52 28" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                <span data-hf-id="hf-ksby">Scaling</span>
+              </div>
+              <div data-hf-id="hf-8g91" class="gbox s1-box" style="top: 396px">
+                <svg data-hf-id="hf-sins" width="60" height="60" viewBox="0 0 60 60"><rect data-hf-id="hf-6rr7" x="8" y="8" width="44" height="10" rx="5" fill="#a5b4fc" /><rect data-hf-id="hf-m1fz" x="8" y="25" width="44" height="10" rx="5" fill="#6366f1" /><rect data-hf-id="hf-0wpb" x="8" y="42" width="44" height="10" rx="5" fill="#3a3a52" /></svg>
+                <span data-hf-id="hf-a2z1">Queues</span>
+              </div>
+            </div>
+            <div data-hf-id="hf-azx4" class="body" id="s1-body" style="top: 1180px">
+              Big models need <b data-hf-id="hf-4t94">big GPUs</b>, drivers, scaling and queues. Most teams don't want to run any of it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: what fal is ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-4ldz" class="l">fal.ai = generative media,</span>
+              <span data-hf-id="hf-5nsp" class="l a">as an API.</span>
+            </div>
+            <svg data-hf-id="hf-o18d" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-oma1" id="s2-out" class="draw" pathLength="1" stroke="#6366f1" stroke-width="7" d="M 290 680 C 400 540, 540 540, 640 660" />
+              <path data-hf-id="hf-f6is" id="s2-back" class="draw" pathLength="1" stroke="#22c55e" stroke-width="7" d="M 640 800 C 540 920, 400 920, 290 790" />
+            </svg>
+            <div data-hf-id="hf-al3g" class="sq s2-sq"></div><div data-hf-id="hf-hf8k" class="sq s2-sq"></div><div data-hf-id="hf-g8bh" class="sq s2-sq"></div><div data-hf-id="hf-gmmi" class="sq s2-sq"></div>
+            <div data-hf-id="hf-jlgh" id="fal-halo"></div>
+            <div data-hf-id="hf-j149" class="falnode" id="s2-fal">fal</div>
+            <div data-hf-id="hf-ljht" class="falcap" id="s2-cap">cloud GPUs</div>
+            <div data-hf-id="hf-pwuy" class="app" id="s2-app">
+              <svg data-hf-id="hf-ocyo" width="120" height="92" viewBox="0 0 120 92">
+                <rect data-hf-id="hf-2ank" x="4" y="4" width="112" height="84" rx="12" fill="#1c1c2b" stroke="#ffffff" stroke-width="5" />
+                <path data-hf-id="hf-31xy" d="M 4 26 L 116 26" stroke="#ffffff" stroke-width="5" />
+                <circle data-hf-id="hf-ljd0" cx="18" cy="15" r="4" fill="#6366f1" /><circle data-hf-id="hf-uk4k" cx="32" cy="15" r="4" fill="#6366f1" /><circle data-hf-id="hf-w9dj" cx="46" cy="15" r="4" fill="#6366f1" />
+                <rect data-hf-id="hf-ntau" x="18" y="40" width="50" height="10" rx="5" fill="#6366f1" /><rect data-hf-id="hf-es88" x="18" y="60" width="80" height="10" rx="5" fill="#3a3a52" />
+              </svg>
+              <div data-hf-id="hf-0r1k" class="app-label">Your App</div>
+            </div>
+            <div data-hf-id="hf-n46m" class="req" id="s2-req"><span data-hf-id="hf-eu3d" class="mono"><span data-hf-id="hf-3ia0" class="k">prompt:</span> "cat astronaut"</span></div>
+            <svg data-hf-id="hf-c5dv" id="s2-img" viewBox="0 0 130 104">
+              <rect data-hf-id="hf-96dq" x="4" y="4" width="122" height="96" rx="14" fill="#0f1f16" stroke="#22c55e" stroke-width="5" />
+              <circle data-hf-id="hf-n2nr" cx="92" cy="30" r="11" fill="#22c55e" />
+              <path data-hf-id="hf-h8r0" d="M 12 88 L 48 46 L 72 72 L 88 56 L 118 88 Z" fill="#22c55e" opacity="0.8" />
+            </svg>
+            <svg data-hf-id="hf-hdbz" id="s2-check" viewBox="0 0 88 88">
+              <circle data-hf-id="hf-bil5" cx="44" cy="44" r="40" fill="#22c55e" />
+              <path data-hf-id="hf-dqrb" d="M 24 46 L 38 60 L 64 30" fill="none" stroke="#0a0a0a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div data-hf-id="hf-kh34" class="body" id="s2-body" style="top: 1180px">
+              Send a request. Get back an <b data-hf-id="hf-fp3g">image, video or audio</b> file. No servers to manage.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: model catalog ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-ktdx" class="l">Hundreds of models,</span>
+              <span data-hf-id="hf-em18" class="l a">one API.</span>
+            </div>
+            <div data-hf-id="hf-jv1n" class="big-wrap">
+              <span data-hf-id="hf-arwu" id="s3-count">0</span><span data-hf-id="hf-dfas" class="big-plus" id="s3-plus">+</span><span data-hf-id="hf-8rwt" class="big-unit" id="s3-unit">models</span>
+            </div>
+            <div data-hf-id="hf-hovr" class="tiles">
+              <div data-hf-id="hf-x4f7" class="tile s3-tile">
+                <svg data-hf-id="hf-y7z7" viewBox="0 0 96 96"><rect data-hf-id="hf-o257" class="draw s3-ic" pathLength="1" x="8" y="14" width="80" height="68" rx="12" stroke="#a5b4fc" stroke-width="6" /><path data-hf-id="hf-t645" class="draw s3-ic" pathLength="1" d="M 16 74 L 40 46 L 56 62 L 66 52 L 82 74" stroke="#6366f1" stroke-width="6" /></svg>
+                <div data-hf-id="hf-yeow"><div data-hf-id="hf-oxvp" class="tt">Image</div><div data-hf-id="hf-255b" class="ts">Flux, SDXL</div></div>
+              </div>
+              <div data-hf-id="hf-pi1v" class="tile s3-tile">
+                <svg data-hf-id="hf-eacj" viewBox="0 0 96 96"><rect data-hf-id="hf-3iv3" class="draw s3-ic" pathLength="1" x="8" y="18" width="80" height="60" rx="12" stroke="#a5b4fc" stroke-width="6" /><path data-hf-id="hf-s3ib" class="draw s3-ic" pathLength="1" d="M 40 34 L 62 48 L 40 62 Z" stroke="#6366f1" stroke-width="6" /></svg>
+                <div data-hf-id="hf-y7yw"><div data-hf-id="hf-gd0r" class="tt">Video</div><div data-hf-id="hf-0coa" class="ts">Kling, Veo</div></div>
+              </div>
+              <div data-hf-id="hf-p3qu" class="tile s3-tile">
+                <svg data-hf-id="hf-dw1i" viewBox="0 0 96 96"><path data-hf-id="hf-6d5a" class="draw s3-ic" pathLength="1" d="M 12 48 L 12 48 M 26 36 L 26 60 M 40 20 L 40 76 M 54 30 L 54 66 M 68 14 L 68 82 M 82 40 L 82 56" stroke="#a5b4fc" stroke-width="7" /></svg>
+                <div data-hf-id="hf-x11t"><div data-hf-id="hf-oehu" class="tt">Audio</div><div data-hf-id="hf-f610" class="ts">Speech, music</div></div>
+              </div>
+              <div data-hf-id="hf-opft" class="tile s3-tile">
+                <svg data-hf-id="hf-dhqh" viewBox="0 0 96 96"><path data-hf-id="hf-9h2g" class="draw s3-ic" pathLength="1" d="M 48 10 L 84 30 L 84 68 L 48 88 L 12 68 L 12 30 Z" stroke="#a5b4fc" stroke-width="6" /><path data-hf-id="hf-hpg4" class="draw s3-ic" pathLength="1" d="M 12 30 L 48 50 L 84 30 M 48 50 L 48 88" stroke="#6366f1" stroke-width="6" /></svg>
+                <div data-hf-id="hf-xfcu"><div data-hf-id="hf-w30v" class="tt">3D</div><div data-hf-id="hf-prru" class="ts">Meshes</div></div>
+              </div>
+            </div>
+            <div data-hf-id="hf-vkb6" class="code mono" id="s3-code"><span data-hf-id="hf-pwnn" id="s3-typed"></span><span data-hf-id="hf-d0qk" class="caret" id="s3-caret"></span></div>
+            <div data-hf-id="hf-f3vt" class="body" id="s3-body" style="top: 1280px">Switch models by changing <b data-hf-id="hf-70fj">one line</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: serverless + pay per use ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-asne" class="l">Serverless GPUs.</span>
+              <span data-hf-id="hf-sven" class="l a">Pay for what you use.</span>
+            </div>
+            <div data-hf-id="hf-cyra" class="bar-cap" id="s4-v1" style="left: 130px; top: 300px; width: 280px; color: var(--dim)">$$$$</div>
+            <div data-hf-id="hf-8540" class="bar idle" id="s4-idle" style="left: 150px; top: 380px; width: 240px; height: 440px">idle</div>
+            <div data-hf-id="hf-md4g" class="bar" id="s4-used1" style="left: 150px; top: 820px; width: 240px; height: 140px; background: #4338ca"></div>
+            <div data-hf-id="hf-y2e4" class="bar-cap" id="s4-v2" style="left: 550px; top: 740px; width: 280px; color: var(--success)">$</div>
+            <div data-hf-id="hf-1f4t" class="bar" id="s4-used2" style="left: 570px; top: 820px; width: 240px; height: 140px; background: #22c55e"></div>
+            <svg data-hf-id="hf-p85g" class="abs-svg" viewBox="0 0 960 1600"><path data-hf-id="hf-lo43" id="s4-base" class="draw" pathLength="1" stroke="#3a3a52" stroke-width="4" d="M 90 962 L 870 962" /></svg>
+            <div data-hf-id="hf-qxya" class="bar-cap s4-name" style="left: 110px; top: 985px; width: 320px">Self-hosted</div>
+            <div data-hf-id="hf-k6wh" class="bar-cap s4-name" style="left: 530px; top: 985px; width: 320px">fal</div>
+            <div data-hf-id="hf-ozdd" class="feat s4-feat" style="left: 0">
+              <svg data-hf-id="hf-csrw" id="bolt" viewBox="0 0 110 130"><path data-hf-id="hf-jx2p" d="M 64 6 L 14 74 L 50 74 L 40 124 L 96 50 L 58 50 Z" fill="#6366f1" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" /></svg>
+              <span data-hf-id="hf-3nka">Fast inference engine</span>
+            </div>
+            <div data-hf-id="hf-k0rr" class="feat s4-feat" style="left: 510px">
+              <svg data-hf-id="hf-jvvj" id="gauge" viewBox="0 0 160 110">
+                <path data-hf-id="hf-o8dw" d="M 18 96 A 62 62 0 0 1 142 96" fill="none" stroke="#26263a" stroke-width="12" stroke-linecap="round" />
+                <path data-hf-id="hf-pbg2" id="gauge-arc" class="draw" pathLength="1" d="M 18 96 A 62 62 0 0 1 142 96" stroke="#22c55e" stroke-width="12" />
+                <line data-hf-id="hf-vl5o" id="needle" x1="80" y1="96" x2="80" y2="44" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+                <circle data-hf-id="hf-9mcf" cx="80" cy="96" r="9" fill="#ffffff" />
+              </svg>
+              <span data-hf-id="hf-5yok">Scales from zero</span>
+            </div>
+            <div data-hf-id="hf-uorz" class="body" id="s4-body" style="top: 1370px">No idle servers. You pay only while your model runs.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-soik" class="l">Ship AI features,</span><span data-hf-id="hf-bjx4" class="l a">not infrastructure.</span></div>
+            <div data-hf-id="hf-zk10" class="cta-sub" id="s5-sub">Follow for more AI &amp; tech explained in 30 seconds.</div>
+            <div data-hf-id="hf-fqui" class="tag mono" id="s5-tag">FAL.AI · GENERATIVE MEDIA API</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      const rise = (sel, at, y = 40, d = 0.6) =>
+        tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+
+      // Crossfades + ambient glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: the infrastructure pile ----------
+      {
+        const t = S[0];
+        rise("#s1-head", t + 0.1);
+        tl.fromTo("#s1-app", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.6, ease: E }, t + 0.5);
+        tl.to("#s1-tangle", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out" }, t + 0.9);
+        tl.fromTo(".s1-box", { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.55, ease: E, stagger: 0.3 }, t + 1.0);
+        rise("#s1-body", t + 2.5, 24);
+        tl.fromTo("#s1-pile", { x: 0 }, { x: 8, duration: 0.06, ease: "sine.inOut", yoyo: true, repeat: 7 }, t + 3.2);
+        tl.to(["#s1-pile", "#s1-app", "#s1-tangle"], { opacity: 0.3, duration: 0.6, ease: "power2.out" }, t + 3.8);
+      }
+
+      // ---------- Scene 2: collapse into fal, request/response loop ----------
+      {
+        const t = S[1];
+        const offs = [
+          [-60, -200],
+          [60, -70],
+          [-60, 70],
+          [60, 200],
+        ];
+        document.querySelectorAll(".s2-sq").forEach((el, i) => {
+          tl.fromTo(el, { opacity: 1, x: offs[i][0], y: offs[i][1], scale: 1 }, { opacity: 0, x: 0, y: 0, scale: 0.3, duration: 0.6, ease: "power3.in" }, t + 0.05 + i * 0.05);
+        });
+        rise("#s2-head", t + 0.25);
+        tl.fromTo("#s2-fal", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, t + 0.6);
+        tl.fromTo("#fal-halo", { opacity: 0, scale: 0.9 }, { opacity: 0.6, scale: 1, duration: 0.6, ease: E }, t + 0.8);
+        tl.fromTo("#s2-app", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 0.5);
+        rise("#s2-cap", t + 0.9, 16, 0.5);
+        tl.to("#s2-out", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 1.2);
+        tl.fromTo("#s2-req", { opacity: 0, x: -110 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 1.4);
+        tl.to("#s2-req", { x: 110, opacity: 0.35, duration: 0.7, ease: "power2.in" }, t + 2.1);
+        tl.fromTo("#fal-halo", { scale: 1 }, { scale: 1.12, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 2.6);
+        tl.to("#s2-back", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 2.7);
+        tl.fromTo("#s2-img", { opacity: 0, x: 220, scale: 0.6 }, { opacity: 1, x: -60, scale: 1, duration: 0.9, ease: E }, t + 2.9);
+        tl.fromTo("#s2-check", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 3.6);
+        rise("#s2-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 3: count-up + model tiles + code swap ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        const st = { v: 0 };
+        const cnt = document.getElementById("s3-count");
+        tl.fromTo(st, { v: 0 }, { v: 600, duration: 1.4, ease: "power2.out", onUpdate: () => (cnt.textContent = Math.round(st.v)) }, t + 0.5);
+        tl.fromTo("#s3-count", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, t + 0.5);
+        tl.fromTo("#s3-plus", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, t + 1.8);
+        rise("#s3-unit", t + 1.9, 16, 0.4);
+        tl.fromTo(".s3-tile", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.55, ease: E, stagger: 0.3 }, t + 0.9);
+        tl.to(".s3-ic", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: 0.15 }, t + 1.2);
+
+        // Typed code line, then swap the model id
+        tl.fromTo("#s3-code", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 2.0);
+        const typed = document.getElementById("s3-typed");
+        const pre = 'fal.subscribe("fal-ai/';
+        const post = '")';
+        const paint = (model, n) => {
+          const full = pre + model + post;
+          const s = full.slice(0, n);
+          const a = s.slice(0, pre.length);
+          const m = s.slice(pre.length, pre.length + model.length);
+          const b = s.slice(pre.length + model.length);
+          typed.innerHTML = a + (m ? `<span class="m">${m}</span>` : "") + b;
+        };
+        const A = "flux/dev";
+        const B = "kling-video";
+        const ta = { n: 0 };
+        tl.fromTo(ta, { n: 0 }, { n: (pre + A + post).length, duration: 1.0, ease: "none", onUpdate: () => paint(A, Math.round(ta.n)) }, t + 2.2);
+        const tb = { n: A.length };
+        const paintSub = (model, k) => (typed.innerHTML = pre + `<span class="m">${model.slice(0, k)}</span>` + post);
+        tl.fromTo(tb, { n: A.length }, { n: 0, duration: 0.4, ease: "none", onUpdate: () => paintSub(A, Math.round(tb.n)) }, t + 3.6);
+        const tc = { n: 0 };
+        tl.fromTo(tc, { n: 0 }, { n: B.length, duration: 0.6, ease: "none", onUpdate: () => paintSub(B, Math.round(tc.n)) }, t + 4.05);
+        tl.fromTo("#s3-caret", { opacity: 1 }, { opacity: 0.15, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 7 }, t + 2.0);
+        rise("#s3-body", t + 4.4, 24);
+      }
+
+      // ---------- Scene 4: cost bars + speed/scale ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.to("#s4-base", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.5);
+        tl.fromTo(".s4-name", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: E, stagger: 0.3 }, t + 0.7);
+        tl.fromTo("#s4-used1", { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: E }, t + 0.9);
+        tl.fromTo("#s4-idle", { opacity: 0, y: 440, scaleY: 0 }, { opacity: 1, y: 0, scaleY: 1, duration: 0.9, ease: E }, t + 1.3);
+        rise("#s4-v1", t + 2.0, 16, 0.4);
+        tl.fromTo("#s4-used2", { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: E }, t + 1.3);
+        rise("#s4-v2", t + 1.7, 16, 0.4);
+        tl.fromTo(".s4-feat", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.55, ease: E, stagger: 0.3 }, t + 2.4);
+        tl.fromTo("#bolt", { scale: 1 }, { scale: 1.15, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 5, transformOrigin: "50% 50%" }, t + 3.0);
+        tl.to("#gauge-arc", { strokeDashoffset: 0, duration: 1.0, ease: "power2.out" }, t + 2.9);
+        tl.fromTo("#needle", { rotation: -88, svgOrigin: "80 96" }, { rotation: 80, svgOrigin: "80 96", duration: 1.0, ease: "power2.out" }, t + 2.9);
+        rise("#s4-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32) — deterministic particle field
+        let seed = 11;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.5);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

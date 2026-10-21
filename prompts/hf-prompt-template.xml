@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prompt>
+  <title>Educational Explainer Video — "$explainer_video_title"</title>
+
+  <instructions>
+    <instruction>Use the HyperFrames skills. Start at /hyperframes (the router), then follow /general-video for the build — this is a custom 30-second, 5-scene composition, not a /faceless-explainer (that workflow targets 60–90s). Load /hyperframes-core before writing any HTML and /hyperframes-animation before writing the timeline. If a skill is missing, run `npx hyperframes skills update &lt;name&gt;`.</instruction>
+    <instruction>Work in /home/ow/projects/hyperframes-video. Each explainer is its own HyperFrames project at /home/ow/projects/hyperframes-video/videos/&lt;slug&gt;/ (slug = short lowercase topic, e.g. `pytorch`). Scaffold it from the videos/ folder with `npx --yes hyperframes@0.8.81 init &lt;slug&gt; --non-interactive --resolution=portrait --example=blank`. Do not modify the root index.html — that is a separate video.</instruction>
+    <instruction>Run all hyperframes commands from inside the video's project folder, using its npm scripts (they pin the CLI version).</instruction>
+    <instruction>Create an educational explainer video that teaches "$explainer_video_title".</instruction>
+  </instructions>
+
+  <videoSpec>
+    <width>1080</width>
+    <height>1920</height>
+    <fps>30</fps>
+    <durationSeconds>30</durationSeconds>
+    <topic>$explainer_video_title</topic>
+  </videoSpec>
+
+  <safeZone>
+    <description>All text and key content must stay within the safe zone. Nothing important should touch the edges.</description>
+    <margin position="top" pixels="150" reason="platform search bars, status bar" />
+    <margin position="bottom" pixels="170" reason="navigation buttons, swipe-up UI" />
+    <margin position="sides" pixels="60" reason="minimum side padding" />
+  </safeZone>
+
+  <minimumFontSizes unit="px">
+    <note>Nothing under 28px — it's unreadable on mobile.</note>
+    <size element="headlines" minimum="56" />
+    <size element="body" minimum="36" />
+    <size element="subtitles" minimum="36" />
+    <size element="labels" minimum="28" absolute="true" />
+  </minimumFontSizes>
+
+  <assets>
+    <note>Copy each asset into the video's project folder and reference it by relative path — compositions must not load files from outside the project.</note>
+    <asset role="headshot" source="/home/ow/projects/media/ow-headshot-bw.png">
+      <usage>Incorporate the headshot into the final scene CTA (circular crop, soft drop shadow, animated entrance).</usage>
+    </asset>
+    <asset role="backgroundMusic" source="/home/ow/projects/media/technological-progress.mp3">
+      <usage>Add as a background music track across the full composition. Trim to fit the 30-second duration.</usage>
+      <mixing>
+        <rule>Fade in over the first 0.4s (12 frames): `data-fade-in="0.4"`.</rule>
+        <rule>Fade out over the last 0.6s (18 frames): `data-fade-out="0.6"`.</rule>
+        <rule>Keep volume low enough not to overpower any future voiceover: `data-volume` ~0.3–0.4.</rule>
+      </mixing>
+    </asset>
+  </assets>
+
+  <steps>
+    <step number="1" name="Research &amp; Script">
+      <description>Before writing any code, research the topic and write a 5-scene script.</description>
+      <sceneRequirements>
+        <requirement>Headline: "You can't afford to start? Check again." Explanation: You don't need money to start. You need to stop ignoring three assets you already own. Visual: A wallet icon in the center flips open and comes up empty, with "$0" stamped over it. Three locked boxes then slide in beside it in a row, numbered 1, 2 and 3.</requirement>
+        <requirement>Headline: "Your reputation" Explanation: People already trust you to deliver. That's what clients pay for, whether or not you have a website. Visual: Box 1 unlocks and opens into a résumé card. Endorsement chips ("Reliable", "Knows the field", "Gets it done") stack up beside it, and the card turns into a tag that reads "Paid advice."</requirement>
+        <requirement>Headline: "Your network" Explanation: Your first clients are already in your contacts, and one email to them costs nothing. Visual: Box 2 unlocks. A single node at the center sends lines out to a growing web of contact avatars, and three of them light up with the tag "First clients."</requirement>
+        <requirement>Headline: "Pattern recognition" Explanation: You've watched the same problem go wrong for decades, and people will pay to skip those mistakes. Visual: Box 3 unlocks. A path animates through a maze and takes a wrong turn several times, with a "×" marking each one. A second path then draws straight to the exit with the tag "Premium pricing."</requirement>
+        <requirement>Headline: "Startup cost: $0" Explanation: "The money was never the hard part. Using what you already have is." Visual: The three open boxes slide together into one stack, and a "$0" count-down lands under it. The circular headshot springs in over subtle rising particles.</requirement>
+      </sceneRequirements>
+      <gate>Show me the script and wait for approval before coding.</gate>
+    </step>
+
+    <step number="2" name="Design &amp; Animate">
+      <description>After I approve the script, build all 5 scenes in the project's index.html (one `.clip` scene element per scene, or sub-compositions under compositions/ if a scene gets large) with the specs below.</description>
+
+      <visualStyle>
+        <background>#0a0a0a</background>
+        <primaryText>white</primaryText>
+        <accent>#6366f1</accent>
+        <success>#22c55e</success>
+        <font family="Inter">
+          <weight>400</weight>
+          <weight>600</weight>
+          <weight>800</weight>
+        </font>
+        <assets>All icons/diagrams built as inline SVG (no external images except the headshot). No emoji — draw icons as SVG.</assets>
+      </visualStyle>
+
+      <animationRules>
+        <rule>Everything is driven by the one paused GSAP root timeline registered on `window.__timelines` — no CSS animations or transitions that run on their own clock.</rule>
+        <rule>Every element enters with a smooth, no-overshoot ease (`power3.out` or `expo.out`) — no linear motion.</rule>
+        <rule>Stagger related items by 0.27–0.4s (8–12 frames).</rule>
+        <rule>Scenes hand off with 0.4s (12-frame) crossfades.</rule>
+        <rule>Diagrams and flowcharts should draw themselves (SVG `stroke-dashoffset` tweened on the timeline; use `pathLength="1"`).</rule>
+        <rule>Key numbers use a count-up: tween a plain object on the timeline and write the rounded value in `onUpdate`; style the number with `font-variant-numeric: tabular-nums`.</rule>
+        <rule>Final scene: particle effect background (10–15 circles drifting upward). Positions, sizes and speeds must be hard-coded or come from a seeded function — never `Math.random()`.</rule>
+        <rule>Loops (pulses, glows) use a finite `repeat`, never `repeat: -1`, so the timeline has a defined end and can be seeked.</rule>
+      </animationRules>
+
+      <sceneGuidance>
+        <principle>Each scene should have a clear visual metaphor — diagrams, flowcharts, icons, or step-by-step animations.</principle>
+        <principle>No walls of text.</principle>
+        <reference>Kurzgesagt meets Fireship: dense information, beautiful motion, fast pacing.</reference>
+      </sceneGuidance>
+
+      <gate>Run `npm run check` and fix every error (review warnings) before moving on.</gate>
+    </step>
+
+    <step number="3" name="Final Scene CTA">
+      <description>The last scene must feature the headshot alongside the call to action.</description>
+      <requirements>
+        <requirement>Place the headshot in a circular frame, sized so the face stays well within the safe zone.</requirement>
+        <requirement>Animate the headshot in with a scale + fade.</requirement>
+        <requirement>Pair with a clear CTA headline (≥56px) and a short supporting line (≥36px).</requirement>
+        <requirement>Keep particle background subtle so the headshot and CTA remain the focal point.</requirement>
+      </requirements>
+    </step>
+
+    <step number="4" name="Audio">
+      <description>Add the background music to the composition.</description>
+      <requirements>
+        <requirement>Use a single `&lt;audio&gt;` element at the root with `data-start="0"` and `data-duration="30"` so it plays across all scenes.</requirement>
+        <requirement>Apply the fades and volume from the backgroundMusic asset with `data-fade-in`, `data-fade-out` and `data-volume`.</requirement>
+        <requirement>The source file is longer than 30 seconds: let `data-duration` trim it (use `data-media-start` only to start later in the track) — never let it cut hard without the fade-out.</requirement>
+      </requirements>
+    </step>
+
+    <step number="5" name="Preview">
+      <description>After building, launch HyperFrames Studio so I can preview the video in my browser. Use the agent-safe background preview, confirm it is listening, and give me the URL.</description>
+      <command>cd /home/ow/projects/hyperframes-video/videos/&lt;slug&gt; &amp;&amp; npx --yes hyperframes@0.8.81 preview --background &amp;&amp; npx --yes hyperframes@0.8.81 preview --status</command>
+    </step>
+
+    <step number="6" name="Render">
+      <description>Render the final MP4 so it can be uploaded.</description>
+      <command>cd /home/ow/projects/hyperframes-video/videos/&lt;slug&gt; &amp;&amp; npm run render -- --output /home/ow/projects/hyperframes-video/out/&lt;slug&gt;.mp4 --fps 30</command>
+      <requirements>
+        <requirement>Use Node 20+ (run `nvm use 25` first if the system Node is older).</requirement>
+        <requirement>Output to `/home/ow/projects/hyperframes-video/out/`. Filename should match the slug (e.g. `pytorch.mp4`).</requirement>
+        <requirement>Background the render if it's long-running so other work can continue in parallel.</requirement>
+        <requirement>Verify the result with ffprobe: 1080×1920, h264 video, AAC audio, ~30s.</requirement>
+      </requirements>
+    </step>
+
+    <step number="7" name="Schedule">
+      <description>Schedule the rendered video to X, YouTube, Threads, Instagram, and TikTok in the next empty slot using the Blotato MCP.</description>
+      <platforms>
+        <platform>x (twitter)</platform>
+        <platform>youtube</platform>
+        <platform>threads</platform>
+        <platform>instagram</platform>
+        <platform>tiktok</platform>
+      </platforms>
+      <accounts>
+        <note>Use the AI/tech explainer series account IDs in /home/ow/.claude/projects/-home-ow-projects-claude-remotion/memory/content-brand-accounts.md. Do not ask which account to use — that table is the source of truth.</note>
+      </accounts>
+      <workflow>
+        <step>1. Call `blotato_create_presigned_upload_url` with the local filename to get back `presignedUrl` + `publicUrl`.</step>
+        <step>2. PUT the raw MP4 bytes to `presignedUrl` with `Content-Type: video/mp4` (no JSON, no multipart). Confirm HTTP 200.</step>
+        <step>3. Find the next empty slot: call `blotato_list_schedules` (paginate with `cursor` until no cursor is returned — other sessions fill this queue too). Slots are 14:00, 18:00 and 22:00 UTC daily. Pick the earliest future slot with no posts on any of the 5 accounts.</step>
+        <step>4. For each of the 5 platforms, call `blotato_create_post` with an explicit `scheduledTime` set to that slot (ISO 8601 UTC), passing `publicUrl` in `mediaUrls`. Fire the 5 calls in parallel.</step>
+      </workflow>
+      <schedulingRules>
+        <rule>Do NOT use `useNextFreeSlot: true` — it does not skip slots that already have posts, so videos collide at the same minute.</rule>
+        <rule>Report times to the user in US Eastern (America/New_York); Blotato stores UTC.</rule>
+      </schedulingRules>
+      <captionRules>
+        <rule>Write one short hook caption ("What is X? &lt;one-line value&gt;. 30s ↓"). Re-use across platforms with minor per-platform tweaks.</rule>
+        <rule>Instagram: cap hashtags at 5 maximum. Required fields: `mediaType: "reel"`, `shareToFeed: true`.</rule>
+        <rule>YouTube: required fields: `title`, `privacyStatus: "public"`, `shouldNotifySubscribers: true`. Body text becomes the description — include hashtags there.</rule>
+        <rule>TikTok: required fields — `privacyLevel: "PUBLIC_TO_EVERYONE"`, `disabledComments: false`, `disabledDuet: false`, `disabledStitch: false`, `isBrandedContent: false`, `isYourBrand: false`, `isAiGenerated: true`. Also pass `title`.</rule>
+        <rule>X (twitter) and Threads: text-only caption — no extra required fields.</rule>
+      </captionRules>
+      <gate>After all 5 posts are queued, report the 5 `postSubmissionId`s so I can verify in the Blotato dashboard.</gate>
+    </step>
+  </steps>
+</prompt>

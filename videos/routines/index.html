@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 80px;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .abs-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .pill {
+        position: absolute;
+        padding: 12px 30px;
+        border-radius: 999px;
+        font-size: 34px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 1: laptop sleeps, cloud works ---------- */
+      #s1-laptop {
+        position: absolute;
+        left: 20px;
+        top: 420px;
+        width: 360px;
+        height: 280px;
+      }
+      #s1-moon {
+        position: absolute;
+        left: 150px;
+        top: 260px;
+        width: 110px;
+        height: 110px;
+      }
+      #s1-cloud {
+        position: absolute;
+        left: 420px;
+        top: 300px;
+        width: 540px;
+        height: 380px;
+      }
+      .term {
+        position: absolute;
+        left: 495px;
+        top: 445px;
+        width: 390px;
+        height: 170px;
+        border-radius: 18px;
+        background: #0f0f1a;
+        border: 3px solid var(--accent);
+        padding: 22px 24px;
+        font-size: 28px;
+        line-height: 1.6;
+        white-space: nowrap;
+      }
+      .term .ok {
+        color: var(--success);
+      }
+
+      /* ---------- Scene 2: package ---------- */
+      .block {
+        position: absolute;
+        left: 180px;
+        width: 600px;
+        height: 130px;
+        border-radius: 24px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        padding-left: 30px;
+      }
+      .block svg {
+        width: 70px;
+        height: 70px;
+        flex: none;
+      }
+      .block .bt {
+        font-size: 42px;
+        font-weight: 800;
+      }
+      .block .bs {
+        font-size: 28px;
+        color: var(--accent-hi);
+        margin-top: 2px;
+      }
+      #s2-label {
+        left: 340px;
+        top: 735px;
+        width: 280px;
+        text-align: center;
+        background: var(--accent);
+        font-weight: 800;
+      }
+      .rename {
+        position: absolute;
+        left: 0;
+        top: 860px;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 24px;
+        font-size: 40px;
+        font-weight: 600;
+      }
+      .rename .old {
+        position: relative;
+        color: var(--dim);
+      }
+      #s2-strike {
+        position: absolute;
+        left: -6px;
+        top: 50%;
+        width: calc(100% + 12px);
+        height: 5px;
+        border-radius: 3px;
+        background: var(--fg);
+        transform-origin: left center;
+      }
+      .rename .new {
+        color: var(--success);
+        font-weight: 800;
+      }
+
+      /* ---------- Scene 3: triggers ---------- */
+      .trig {
+        position: absolute;
+        left: 0;
+        width: 400px;
+        height: 150px;
+        border-radius: 26px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding-left: 26px;
+      }
+      .trig svg {
+        width: 72px;
+        height: 72px;
+        flex: none;
+      }
+      .trig .tt {
+        font-size: 40px;
+        font-weight: 800;
+      }
+      .trig .ts {
+        font-size: 28px;
+        color: var(--dim);
+        margin-top: 2px;
+      }
+      .rnode {
+        position: absolute;
+        left: 660px;
+        top: 470px;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #818cf8 0%, #6366f1 45%, #3730a3 100%);
+        box-shadow: 0 0 90px rgba(99, 102, 241, 0.55);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 38px;
+        font-weight: 800;
+      }
+
+      /* ---------- Scene 4: use cases + limit ---------- */
+      .tiles {
+        position: absolute;
+        left: 0;
+        top: 250px;
+        width: 960px;
+        display: grid;
+        grid-template-columns: 450px 450px;
+        gap: 30px 60px;
+      }
+      .tile {
+        height: 150px;
+        border-radius: 26px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding-left: 30px;
+        font-size: 40px;
+        font-weight: 800;
+      }
+      .tile svg {
+        width: 70px;
+        height: 70px;
+        flex: none;
+      }
+      #s4-chip {
+        left: 270px;
+        top: 615px;
+        width: 420px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        border: 4px solid var(--success);
+        background: #0f1f16;
+        color: var(--success);
+        font-weight: 800;
+      }
+      #s4-count {
+        position: absolute;
+        left: 0;
+        top: 730px;
+        width: 960px;
+        text-align: center;
+        font-size: 170px;
+        font-weight: 800;
+        letter-spacing: -5px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 360px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 64px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 36px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .tag {
+        margin-top: 60px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: works while you sleep ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-6jxt" class="l">Claude Code that works</span>
+              <span data-hf-id="hf-2yvf" class="l a">while you sleep.</span>
+            </div>
+            <svg data-hf-id="hf-rdgh" id="s1-moon" viewBox="0 0 110 110">
+              <path data-hf-id="hf-3jna" d="M 72 10 C 40 14, 20 40, 22 64 C 24 88, 48 104, 74 100 C 88 98, 98 90, 104 80 C 70 88, 42 60, 72 10 Z" fill="#a5b4fc" />
+            </svg>
+            <svg data-hf-id="hf-n2v1" id="s1-laptop" viewBox="0 0 360 280">
+              <g data-hf-id="hf-elan" id="s1-lid">
+                <rect data-hf-id="hf-smow" x="40" y="20" width="280" height="190" rx="16" fill="#15151f" stroke="#ffffff" stroke-width="6" />
+                <rect data-hf-id="hf-jnsb" x="62" y="42" width="236" height="146" rx="6" fill="#1e1b4b" />
+                <path data-hf-id="hf-28yj" d="M 82 80 L 102 96 L 82 112 M 116 112 L 150 112" fill="none" stroke="#a5b4fc" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+              <path data-hf-id="hf-i3o2" d="M 10 214 L 350 214 L 330 246 L 30 246 Z" fill="#26263a" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" />
+            </svg>
+            <svg data-hf-id="hf-79kd" id="s1-cloud" viewBox="0 0 540 380">
+              <path data-hf-id="hf-e2z5" class="draw" id="s1-cloud-path" pathLength="1" d="M 110 330 C 30 330, 20 220, 100 205 C 100 110, 210 70, 270 130 C 310 40, 470 60, 460 180 C 540 190, 540 330, 440 330 Z" stroke="#6366f1" stroke-width="7" />
+            </svg>
+            <div data-hf-id="hf-6p3o" class="term mono" id="s1-term"><div data-hf-id="hf-lgi7" id="s1-l1"></div><div data-hf-id="hf-sgdz" id="s1-l2" class="ok"></div></div>
+            <div data-hf-id="hf-hqc3" class="body" id="s1-body" style="top: 880px">A Routine runs Claude Code <b data-hf-id="hf-1jgb">on its own, in the cloud</b>, even with your laptop closed.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: prompt + repo + connectors ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-b4ci" class="l">Routine =</span>
+              <span data-hf-id="hf-ph1x" class="l a" style="font-size: 62px; letter-spacing: -1.5px">prompt + repo + connectors</span>
+            </div>
+            <svg data-hf-id="hf-mssp" class="abs-svg" viewBox="0 0 960 1600">
+              <rect data-hf-id="hf-xwx9" class="draw" id="s2-box" pathLength="1" x="150" y="240" width="660" height="470" rx="34" stroke="#6366f1" stroke-width="5" />
+            </svg>
+            <div data-hf-id="hf-052m" class="block s2-block" style="top: 265px">
+              <svg data-hf-id="hf-i6ef" viewBox="0 0 70 70"><path data-hf-id="hf-qsl7" d="M 10 6 L 46 6 L 60 20 L 60 64 L 10 64 Z" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" /><path data-hf-id="hf-brf9" d="M 20 30 L 50 30 M 20 42 L 50 42 M 20 54 L 38 54" stroke="#6366f1" stroke-width="5" stroke-linecap="round" /></svg>
+              <div data-hf-id="hf-yeow"><div data-hf-id="hf-sfog" class="bt">Prompt</div><div data-hf-id="hf-hnxs" class="bs mono">"Triage new issues"</div></div>
+            </div>
+            <div data-hf-id="hf-r36o" class="block s2-block" style="top: 410px">
+              <svg data-hf-id="hf-q0zr" viewBox="0 0 70 70"><circle data-hf-id="hf-1thc" cx="18" cy="14" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-hqw2" cx="18" cy="56" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-l0mj" cx="52" cy="24" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-72yp" d="M 18 22 L 18 48 M 52 32 C 52 46, 18 40, 18 48" fill="none" stroke="#6366f1" stroke-width="5" stroke-linecap="round" /></svg>
+              <div data-hf-id="hf-y7yw"><div data-hf-id="hf-ijkm" class="bt">Repo</div><div data-hf-id="hf-mans" class="bs mono">acme/webapp</div></div>
+            </div>
+            <div data-hf-id="hf-1xfw" class="block s2-block" style="top: 555px">
+              <svg data-hf-id="hf-pmoq" viewBox="0 0 70 70"><path data-hf-id="hf-k5is" d="M 24 8 L 24 22 M 46 8 L 46 22 M 14 22 L 56 22 L 56 34 C 56 46, 46 52, 35 52 C 24 52, 14 46, 14 34 Z M 35 52 L 35 66" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <div data-hf-id="hf-x11t"><div data-hf-id="hf-72hm" class="bt">Connectors</div><div data-hf-id="hf-tziw" class="bs mono">Slack · Linear</div></div>
+            </div>
+            <div data-hf-id="hf-mk9r" class="pill" id="s2-label">Routine</div>
+            <div data-hf-id="hf-9n3a" class="rename" id="s2-rename">
+              <span data-hf-id="hf-6w9c" class="old">Routine<span data-hf-id="hf-vr5c" id="s2-strike"></span></span>
+              <svg data-hf-id="hf-omre" width="60" height="30" viewBox="0 0 60 30"><path data-hf-id="hf-bvfl" d="M 4 15 L 52 15 M 40 4 L 54 15 L 40 26" fill="none" stroke="#a3a3b8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span data-hf-id="hf-naf1" class="new" id="s2-new">Scheduled task</span>
+            </div>
+            <div data-hf-id="hf-xvgq" class="body" id="s2-body" style="top: 990px">Packaged once. Runs automatically on <b data-hf-id="hf-vwj8">Anthropic's cloud</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: three triggers ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-x75f" class="l">Three ways</span>
+              <span data-hf-id="hf-hqcy" class="l a">to start it.</span>
+            </div>
+            <svg data-hf-id="hf-o18d" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-kagr" class="draw s3-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 400 375 C 540 375, 560 540, 668 560" />
+              <path data-hf-id="hf-4h42" class="draw s3-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 400 600 L 660 600" />
+              <path data-hf-id="hf-qrzh" class="draw s3-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 400 825 C 540 825, 560 660, 668 640" />
+            </svg>
+            <div data-hf-id="hf-bkqn" class="trig s3-trig" style="top: 300px">
+              <svg data-hf-id="hf-taj3" viewBox="0 0 72 72"><circle data-hf-id="hf-hqt1" cx="36" cy="36" r="30" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-e3wu" d="M 36 18 L 36 36 L 50 44" fill="none" stroke="#6366f1" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <div data-hf-id="hf-xfcu"><div data-hf-id="hf-aah1" class="tt">Schedule</div><div data-hf-id="hf-kny6" class="ts">hourly · nightly</div></div>
+            </div>
+            <div data-hf-id="hf-9o26" class="trig s3-trig" style="top: 525px">
+              <svg data-hf-id="hf-al67" viewBox="0 0 72 72"><rect data-hf-id="hf-y2qf" x="4" y="14" width="64" height="44" rx="10" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-fkwy" d="M 18 30 L 26 36 L 18 42 M 32 42 L 48 42" fill="none" stroke="#6366f1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <div data-hf-id="hf-w8fr"><div data-hf-id="hf-i694" class="tt">API</div><div data-hf-id="hf-pn2v" class="ts mono">POST /fire</div></div>
+            </div>
+            <div data-hf-id="hf-iijo" class="trig s3-trig" style="top: 750px">
+              <svg data-hf-id="hf-a6v6" viewBox="0 0 72 72"><circle data-hf-id="hf-10u0" cx="18" cy="14" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-60sw" cx="18" cy="58" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-wngg" cx="54" cy="58" r="8" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-3asb" d="M 18 22 L 18 50 M 54 50 L 54 26 C 54 18, 48 14, 40 14 L 32 14 M 38 8 L 32 14 L 38 20" fill="none" stroke="#6366f1" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <div data-hf-id="hf-wmqs"><div data-hf-id="hf-rr13" class="tt">GitHub</div><div data-hf-id="hf-7v9f" class="ts">new PR · release</div></div>
+            </div>
+            <div data-hf-id="hf-ous7" class="rnode" id="s3-node">
+              <svg data-hf-id="hf-zs6s" width="80" height="80" viewBox="0 0 70 70"><path data-hf-id="hf-t62q" d="M 35 6 L 64 22 L 64 50 L 35 66 L 6 50 L 6 22 Z M 6 22 L 35 38 L 64 22 M 35 38 L 35 66" fill="none" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" /></svg>
+              <span data-hf-id="hf-ibe7">Routine</span>
+            </div>
+            <div data-hf-id="hf-h2fq" class="body" id="s3-body" style="top: 990px">One routine can <b data-hf-id="hf-1pjp">combine all three</b>: run nightly, from a deploy script, and on every new PR.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: real work, unattended ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-yumc" class="l">Real work,</span>
+              <span data-hf-id="hf-slxu" class="l a">done unattended.</span>
+            </div>
+            <div data-hf-id="hf-hovr" class="tiles">
+              <div data-hf-id="hf-vjqz" class="tile s4-tile">
+                <svg data-hf-id="hf-p8dp" viewBox="0 0 70 70"><path data-hf-id="hf-nd62" class="draw s4-ic" pathLength="1" d="M 8 14 L 62 14 M 8 30 L 62 30 M 8 46 L 40 46 M 8 62 L 30 62" stroke="#a5b4fc" stroke-width="6" /></svg>
+                Backlog triage
+              </div>
+              <div data-hf-id="hf-8hlc" class="tile s4-tile">
+                <svg data-hf-id="hf-s0iw" viewBox="0 0 70 70"><path data-hf-id="hf-4gmc" class="draw s4-ic" pathLength="1" d="M 8 8 L 50 8 L 62 20 L 62 62 L 8 62 Z M 20 38 L 30 48 L 50 26" stroke="#a5b4fc" stroke-width="5" /></svg>
+                PR review
+              </div>
+              <div data-hf-id="hf-ows0" class="tile s4-tile">
+                <svg data-hf-id="hf-rm7v" viewBox="0 0 70 70"><path data-hf-id="hf-rvxg" class="draw s4-ic" pathLength="1" d="M 35 6 L 66 62 L 4 62 Z M 35 26 L 35 44 M 35 52 L 35 53" stroke="#a5b4fc" stroke-width="5" /></svg>
+                Alert triage
+              </div>
+              <div data-hf-id="hf-dxnx" class="tile s4-tile">
+                <svg data-hf-id="hf-r7wu" viewBox="0 0 70 70"><path data-hf-id="hf-xw52" class="draw s4-ic" pathLength="1" d="M 35 64 L 35 30 M 20 42 L 35 26 L 50 42 M 12 10 L 58 10" stroke="#a5b4fc" stroke-width="6" /></svg>
+                Deploy check
+              </div>
+            </div>
+            <div data-hf-id="hf-k2y3" class="pill" id="s4-chip">
+              <svg data-hf-id="hf-snce" width="40" height="40" viewBox="0 0 40 40"><circle data-hf-id="hf-cq6p" cx="20" cy="20" r="17" fill="#22c55e" /><path data-hf-id="hf-z42c" d="M 11 21 L 17 27 L 29 13" fill="none" stroke="#0a0a0a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              Draft PR opened
+            </div>
+            <div data-hf-id="hf-17vy" id="s4-count">0</div>
+            <div data-hf-id="hf-iyvi" class="body" id="s4-cap" style="top: 935px">scheduled runs per hour, per account</div>
+            <div data-hf-id="hf-5b2q" class="body" id="s4-body" style="top: 1060px">Every run opens a <b data-hf-id="hf-9w8a">session you can review</b>, continue, or turn into a PR.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-7ad7" class="l">Set it once.</span><span data-hf-id="hf-lx8j" class="l a">Let Claude run it.</span></div>
+            <div data-hf-id="hf-zk10" class="cta-sub" id="s5-sub">Follow for more AI &amp; tech explained in 30 seconds.</div>
+            <div data-hf-id="hf-lt1r" class="tag mono" id="s5-tag">/SCHEDULE · CLAUDE.AI/CODE/ROUTINES</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-vj0r" id="bgm" src="03-strengthcampbeats.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      const rise = (sel, at, y = 40, d = 0.6) =>
+        tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      const typeInto = (el, text, at, dur) => {
+        const o = { n: 0 };
+        tl.fromTo(o, { n: 0 }, { n: text.length, duration: dur, ease: "none", onUpdate: () => (el.textContent = text.slice(0, Math.round(o.n))) }, at);
+      };
+
+      // Crossfades + ambient glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: laptop closes, moon rises, cloud terminal works ----------
+      {
+        const t = S[0];
+        rise("#s1-head", t + 0.1);
+        tl.fromTo("#s1-laptop", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, t + 0.4);
+        tl.fromTo("#s1-lid", { scaleY: 1, svgOrigin: "180 214" }, { scaleY: 0.04, svgOrigin: "180 214", duration: 0.6, ease: "power3.inOut" }, t + 1.2);
+        tl.fromTo("#s1-moon", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.9, ease: E }, t + 1.6);
+        tl.to("#s1-cloud-path", { strokeDashoffset: 0, duration: 0.9, ease: "power2.out" }, t + 1.8);
+        tl.fromTo("#s1-term", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 2.4);
+        typeInto(document.getElementById("s1-l1"), "> triaging 12 issues", t + 2.7, 0.9);
+        typeInto(document.getElementById("s1-l2"), "> draft PR opened", t + 3.7, 0.7);
+        rise("#s1-body", t + 4.0, 24);
+      }
+
+      // ---------- Scene 2: blocks stack into a package, rename tag ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo(".s2-block", { opacity: 0, x: (i) => (i % 2 ? 120 : -120) }, { opacity: 1, x: 0, duration: 0.55, ease: E, stagger: 0.3 }, t + 0.6);
+        tl.to("#s2-box", { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, t + 1.7);
+        tl.fromTo("#s2-label", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 2.4);
+        tl.fromTo("#s2-rename", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.0);
+        tl.fromTo("#s2-strike", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: E }, t + 3.5);
+        tl.fromTo("#s2-new", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: E }, t + 3.7);
+        rise("#s2-body", t + 4.1, 24);
+      }
+
+      // ---------- Scene 3: triggers connect into the routine ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.fromTo("#s3-node", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, t + 0.5);
+        tl.fromTo(".s3-trig", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.5, ease: E, stagger: 0.4 }, t + 0.8);
+        tl.to(".s3-ln", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.4 }, t + 1.3);
+        [0, 1, 2].forEach((i) => {
+          tl.fromTo("#s3-node", { scale: 1 }, { scale: 1.08, duration: 0.18, ease: "sine.inOut", yoyo: true, repeat: 1 }, t + 1.8 + i * 0.4);
+        });
+        rise("#s3-body", t + 3.3, 24);
+      }
+
+      // ---------- Scene 4: use-case tiles, PR chip, 100/hr count ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo(".s4-tile", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.3 }, t + 0.5);
+        tl.to(".s4-ic", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.3 }, t + 0.7);
+        tl.fromTo("#s4-chip", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 1.9);
+        const st = { v: 0 };
+        const el = document.getElementById("s4-count");
+        tl.fromTo(st, { v: 0 }, { v: 100, duration: 1.3, ease: "power2.out", onUpdate: () => (el.textContent = Math.round(st.v)) }, t + 2.4);
+        tl.fromTo("#s4-count", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, t + 2.4);
+        rise("#s4-cap", t + 2.8, 16, 0.5);
+        rise("#s4-body", t + 3.5, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32) — deterministic particle field
+        let seed = 89;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.5);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

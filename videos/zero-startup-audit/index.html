@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 380px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .eyebrow {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .eyebrow span {
+        padding: 8px 24px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+      .h-one {
+        position: absolute;
+        left: 0;
+        top: 80px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 96px;
+        letter-spacing: -3px;
+      }
+      .body {
+        position: absolute;
+        left: 40px;
+        width: 880px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .box {
+        position: absolute;
+        width: 180px;
+        height: 190px;
+        overflow: visible;
+      }
+      .tag {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .tag span {
+        padding: 18px 44px;
+        border-radius: 999px;
+        background: rgba(34, 197, 94, 0.18);
+        border: 4px solid var(--success);
+        color: var(--success);
+        font-size: 52px;
+        font-weight: 900;
+      }
+
+      /* ---------- Scene 1 ---------- */
+      #wallet {
+        position: absolute;
+        left: 330px;
+        top: 400px;
+        width: 300px;
+        height: 230px;
+        overflow: visible;
+      }
+      .stamp {
+        position: absolute;
+        left: 330px;
+        top: 440px;
+        width: 300px;
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 10px solid var(--danger);
+        border-radius: 20px;
+        color: var(--danger);
+        font-size: 110px;
+        font-weight: 900;
+        background: rgba(10, 10, 10, 0.72);
+      }
+
+      /* ---------- Scene 2 ---------- */
+      .resume {
+        position: absolute;
+        left: 30px;
+        top: 330px;
+        width: 470px;
+        height: 520px;
+        border-radius: 32px;
+        background: var(--panel);
+        border: 4px solid var(--line);
+        padding: 40px;
+      }
+      .resume .face {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        background: #26264a;
+        border: 4px solid var(--accent-hi);
+      }
+      .resume .rl {
+        height: 22px;
+        border-radius: 11px;
+        background: #2e2e48;
+        margin-top: 30px;
+        transform-origin: left center;
+      }
+      .resume .rl.hi {
+        background: var(--accent);
+      }
+      .chips {
+        position: absolute;
+        left: 540px;
+        top: 380px;
+        width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .chip {
+        padding: 18px 28px;
+        border-radius: 22px;
+        border: 3px solid var(--fg);
+        background: #14142a;
+        font-size: 38px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .chip .tick {
+        width: 40px;
+        height: 40px;
+        flex: none;
+      }
+
+      /* ---------- Scene 3 ---------- */
+      #net-lines {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .avatar {
+        position: absolute;
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        border: 4px solid #8a8aa3;
+        background: #14142a;
+        overflow: hidden;
+      }
+      .you {
+        position: absolute;
+        left: 410px;
+        top: 690px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 5px solid var(--accent-hi);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 44px;
+        font-weight: 900;
+        box-shadow: 0 0 60px rgba(99, 102, 241, 0.6);
+      }
+
+      /* ---------- Scene 4 ---------- */
+      #maze {
+        position: absolute;
+        left: 150px;
+        top: 270px;
+        width: 660px;
+        height: 660px;
+        overflow: visible;
+      }
+      .xmark {
+        position: absolute;
+        width: 64px;
+        height: 64px;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cost {
+        position: absolute;
+        left: 0;
+        top: 420px;
+        width: 960px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 26px;
+      }
+      .cost-label {
+        font-size: 64px;
+        font-weight: 900;
+        letter-spacing: -2px;
+      }
+      #s5-count {
+        display: inline-block;
+        width: 520px;
+        font-size: 140px;
+        font-weight: 700;
+        letter-spacing: -6px;
+        font-variant-numeric: tabular-nums;
+        color: var(--success);
+      }
+      .shot-wrap {
+        position: absolute;
+        left: 260px;
+        top: 640px;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: the empty wallet ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-c09f" class="headline" id="s1-head" style="font-size: 72px">
+              <span data-hf-id="hf-835d" class="l">You can't afford to start?</span>
+              <span data-hf-id="hf-okww" class="l a">Check again.</span>
+            </div>
+            <svg data-hf-id="hf-74l4" id="wallet" viewBox="0 0 300 230">
+              <rect data-hf-id="hf-lvid" x="10" y="60" width="280" height="160" rx="24" fill="#1b1b2e" stroke="#ffffff" stroke-width="6" />
+              <rect data-hf-id="hf-nxsn" x="44" y="104" width="212" height="86" rx="12" fill="none" stroke="#6b6b80" stroke-width="4" stroke-dasharray="12 10" />
+              <g data-hf-id="hf-ium2" id="flap">
+                <rect data-hf-id="hf-64em" x="10" y="60" width="280" height="150" rx="24" fill="#2a2a4a" stroke="#ffffff" stroke-width="6" />
+                <circle data-hf-id="hf-xobn" cx="250" cy="135" r="14" fill="#a5b4fc" />
+              </g>
+            </svg>
+            <div data-hf-id="hf-7t71" class="stamp" id="s1-stamp">$0</div>
+            <div data-hf-id="hf-fk0o" class="body" id="s1-b1" style="top: 720px">You don't need <b data-hf-id="hf-wb8v">money</b> to start.</div>
+            <div data-hf-id="hf-uu2x" id="s1-boxes"></div>
+            <div data-hf-id="hf-otub" class="body" id="s1-b2" style="top: 1210px">You need the <b data-hf-id="hf-27kj">3 assets</b> you already own.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: reputation ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-sx8s" class="eyebrow" id="s2-eye"><span data-hf-id="hf-vaf7" class="mono">ASSET 1</span></div>
+            <div data-hf-id="hf-0kzm" class="h-one" id="s2-head">Your <span data-hf-id="hf-xs92" style="color: var(--accent)">reputation.</span></div>
+            <div data-hf-id="hf-mekc" id="s2-boxhost"></div>
+            <div data-hf-id="hf-55s0" class="resume" id="s2-resume">
+              <div data-hf-id="hf-ce6r" class="face"></div>
+              <div data-hf-id="hf-c9yc" class="rl hi" style="width: 300px"></div>
+              <div data-hf-id="hf-trap" class="rl" style="width: 360px"></div>
+              <div data-hf-id="hf-tu3p" class="rl" style="width: 250px"></div>
+              <div data-hf-id="hf-ys7e" class="rl" style="width: 330px"></div>
+              <div data-hf-id="hf-7h4m" class="rl" style="width: 200px"></div>
+            </div>
+            <div data-hf-id="hf-2476" class="chips" id="s2-chips">
+              <div data-hf-id="hf-8wis" class="chip"><svg data-hf-id="hf-745f" class="tick" viewBox="0 0 40 40"><path data-hf-id="hf-gdoh" d="M 8 21 L 17 30 L 33 11" fill="none" stroke="#22c55e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" /></svg>Reliable</div>
+              <div data-hf-id="hf-zwol" class="chip"><svg data-hf-id="hf-eon7" class="tick" viewBox="0 0 40 40"><path data-hf-id="hf-qs7p" d="M 8 21 L 17 30 L 33 11" fill="none" stroke="#22c55e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" /></svg>Knows the field</div>
+              <div data-hf-id="hf-yskc" class="chip"><svg data-hf-id="hf-eac6" class="tick" viewBox="0 0 40 40"><path data-hf-id="hf-rz4s" d="M 8 21 L 17 30 L 33 11" fill="none" stroke="#22c55e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" /></svg>Gets it done</div>
+            </div>
+            <div data-hf-id="hf-vyxj" class="tag" id="s2-tag" style="top: 545px"><span data-hf-id="hf-zhx1">Paid advice</span></div>
+            <div data-hf-id="hf-9jiz" class="body" id="s2-body" style="top: 960px">People already trust you to deliver. <b data-hf-id="hf-gh9x">That's what clients pay for</b>, website or not.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: network ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-b9v9" class="eyebrow" id="s3-eye"><span data-hf-id="hf-uw46" class="mono">ASSET 2</span></div>
+            <div data-hf-id="hf-chmt" class="h-one" id="s3-head">Your <span data-hf-id="hf-zgjj" style="color: var(--accent)">network.</span></div>
+            <svg data-hf-id="hf-wghw" id="net-lines" viewBox="0 0 960 1600" />
+            <div data-hf-id="hf-4xbu" id="s3-avatars"></div>
+            <div data-hf-id="hf-c9p5" id="s3-boxhost"></div>
+            <div data-hf-id="hf-d5ay" class="you" id="s3-you">You</div>
+            <div data-hf-id="hf-r6n5" class="tag" id="s3-tag" style="top: 1200px"><span data-hf-id="hf-x3mx">First clients</span></div>
+            <div data-hf-id="hf-dnl1" class="body" id="s3-body" style="top: 1330px">One email to people who already know you: <b data-hf-id="hf-hpi1">$0</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: pattern recognition ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-ji7e" class="eyebrow" id="s4-eye"><span data-hf-id="hf-uht5" class="mono">ASSET 3</span></div>
+            <div data-hf-id="hf-8h1g" class="h-one" id="s4-head" style="font-size: 88px">Pattern <span data-hf-id="hf-priw" style="color: var(--accent)">recognition.</span></div>
+            <svg data-hf-id="hf-emlq" id="maze" viewBox="0 0 600 600">
+              <g data-hf-id="hf-a9c4" stroke="#4a4a66" stroke-width="10">
+                <path data-hf-id="hf-4337" class="draw wall" pathLength="1" d="M 100 0 L 600 0 L 600 600 L 500 600" />
+                <path data-hf-id="hf-cbc7" class="draw wall" pathLength="1" d="M 400 600 L 0 600 L 0 0" />
+                <path data-hf-id="hf-25k1" class="draw wall" pathLength="1" d="M 0 500 L 200 500 M 200 400 L 200 500" />
+                <path data-hf-id="hf-rz4o" class="draw wall" pathLength="1" d="M 100 200 L 200 200 M 100 300 L 100 400" />
+                <path data-hf-id="hf-utyi" class="draw wall" pathLength="1" d="M 300 200 L 400 200 M 400 200 L 400 300" />
+                <path data-hf-id="hf-b8qz" class="draw wall" pathLength="1" d="M 300 100 L 500 100 M 500 300 L 600 300" />
+                <path data-hf-id="hf-f7ff" class="draw wall" pathLength="1" d="M 300 450 L 400 450 M 150 550 L 350 550" />
+              </g>
+              <path data-hf-id="hf-kcj9" class="draw wrong" id="w1" pathLength="1" stroke="#8a8aa3" stroke-width="12" stroke-dasharray="1" d="M 50 0 L 50 450 L 150 450" />
+              <path data-hf-id="hf-c94x" class="draw wrong" id="w2" pathLength="1" stroke="#8a8aa3" stroke-width="12" d="M 50 0 L 50 150 L 350 150 L 350 180" />
+              <path data-hf-id="hf-kfdw" class="draw wrong" id="w3" pathLength="1" stroke="#8a8aa3" stroke-width="12" d="M 50 0 L 50 50 L 550 50 L 550 250 L 450 250" />
+              <path data-hf-id="hf-4cta" class="draw" id="right" pathLength="1" stroke="#22c55e" stroke-width="16" d="M 50 0 L 50 150 L 250 150 L 250 350 L 450 350 L 450 550 L 550 550 L 550 600" />
+            </svg>
+            <div data-hf-id="hf-zgl3" id="s4-x"></div>
+            <div data-hf-id="hf-lqum" id="s4-boxhost"></div>
+            <div data-hf-id="hf-p9gx" class="tag" id="s4-tag" style="top: 970px"><span data-hf-id="hf-g89s">Premium pricing</span></div>
+            <div data-hf-id="hf-y53j" class="body" id="s4-body" style="top: 1100px">You've watched this go wrong for decades. <b data-hf-id="hf-leze">People pay to skip the mistakes.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: $0 + CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ousm" class="glow" id="s5-glow" style="top: 260px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-pyrk" class="safe">
+            <div data-hf-id="hf-vrgd" id="s5-boxes"></div>
+            <div data-hf-id="hf-bbfx" class="cost" id="s5-cost"><span data-hf-id="hf-riux" class="cost-label">Startup cost:</span><span data-hf-id="hf-7vj1" id="s5-count" class="mono">$25,000</span></div>
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eo13" class="body" id="s5-sub" style="top: 1140px; font-size: 42px">The money was never the hard part. <b data-hf-id="hf-pk4g">Using what you already have is.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4;
+      const E = "power3.out";
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+
+      // Locked box (SVG): shackle group + body + number
+      const boxSVG = (n, id) =>
+        `<svg class="box" id="${id}" viewBox="0 0 180 190" width="180" height="190">` +
+        `<g class="shackle"><path d="M 54 82 L 54 50 A 36 36 0 0 1 126 50 L 126 82" fill="none" stroke="#a3a3b8" stroke-width="12" stroke-linecap="round"/></g>` +
+        `<rect class="bx" x="10" y="76" width="160" height="108" rx="22" fill="#14142a" stroke="#ffffff" stroke-width="6"/>` +
+        `<text x="90" y="152" text-anchor="middle" font-family="Inter" font-size="64" font-weight="900" fill="#ffffff">${n}</text></svg>`;
+      const placeBox = (host, n, id, x, y) => {
+        const wrap = document.createElement("div");
+        wrap.innerHTML = boxSVG(n, id);
+        const el = wrap.firstChild;
+        el.style.left = `${x - 90}px`;
+        el.style.top = `${y - 95}px`;
+        document.getElementById(host).appendChild(el);
+        return el;
+      };
+      // unlock: shackle lifts, border turns green
+      const unlock = (id, at) => {
+        tl.fromTo(`#${id} .shackle`, { y: 0 }, { y: -26, duration: 0.4, ease: E }, at);
+        tl.to(`#${id} .bx`, { attr: { stroke: "#22c55e" }, duration: 0.3, ease: "power2.out" }, at + 0.1);
+      };
+
+      // Crossfades + glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1 ----------
+      {
+        const t = S[0];
+        rise("#s1-head", t + 0.1);
+        tl.fromTo("#wallet", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.6, ease: E }, t + 0.4);
+        tl.fromTo("#flap", { scaleY: 1, transformOrigin: "50% 0%" }, { scaleY: -0.55, duration: 0.6, ease: "power2.inOut" }, t + 1.1);
+        tl.fromTo("#s1-stamp", { opacity: 0, scale: 2.2, rotation: -12 }, { opacity: 1, scale: 1, rotation: -12, duration: 0.35, ease: "power4.in" }, t + 1.8);
+        rise("#s1-b1", t + 2.0, 20, 0.5);
+        [220, 480, 740].forEach((x, i) => placeBox("s1-boxes", i + 1, `b1-${i + 1}`, x, 1060));
+        tl.fromTo("#s1-boxes .box", { opacity: 0, x: 260 }, { opacity: 1, x: 0, duration: 0.6, ease: E, stagger: 0.3 }, t + 2.8);
+        rise("#s1-b2", t + 3.9, 20, 0.5);
+      }
+
+      // ---------- Scene 2: reputation ----------
+      {
+        const t = S[1];
+        rise("#s2-eye", t + 0.2, 16, 0.4);
+        rise("#s2-head", t + 0.3);
+        placeBox("s2-boxhost", 1, "b2", 265, 590);
+        tl.fromTo("#b2", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, t + 0.4);
+        unlock("b2", t + 0.8);
+        tl.to("#b2", { opacity: 0, scale: 1.4, duration: 0.35, ease: "power2.in" }, t + 1.3);
+        tl.fromTo("#s2-resume", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.4);
+        tl.fromTo("#s2-resume .rl", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: E, stagger: 0.08 }, t + 1.6);
+        tl.fromTo("#s2-chips .chip", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.5, ease: E, stagger: 0.33 }, t + 2.0);
+        tl.to(["#s2-resume", "#s2-chips"], { opacity: 0, scale: 0.9, duration: 0.5, ease: "power2.inOut" }, t + 3.6);
+        tl.fromTo("#s2-tag", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 3.8);
+        rise("#s2-body", t + 4.3, 20);
+      }
+
+      // ---------- Scene 3: network (avatar-cloud-network) ----------
+      {
+        const t = S[2];
+        rise("#s3-eye", t + 0.2, 16, 0.4);
+        rise("#s3-head", t + 0.3);
+        placeBox("s3-boxhost", 2, "b3", 480, 760);
+        tl.fromTo("#b3", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, t + 0.4);
+        unlock("b3", t + 0.8);
+        tl.to("#b3", { opacity: 0, scale: 1.4, duration: 0.35, ease: "power2.in" }, t + 1.3);
+        tl.fromTo("#s3-you", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.6);
+
+        const C = { x: 480, y: 760 };
+        const svg = document.getElementById("net-lines");
+        const host = document.getElementById("s3-avatars");
+        const head = '<svg viewBox="0 0 84 84" width="76" height="76"><circle cx="38" cy="30" r="14" fill="#8a8aa3"/><path d="M 12 76 C 12 52, 64 52, 64 76 Z" fill="#8a8aa3"/></svg>';
+        const rings = [
+          { n: 6, r: 220, off: -Math.PI / 2, cls: "in" },
+          { n: 10, r: 390, off: -Math.PI / 2 + Math.PI / 10, cls: "out" },
+        ];
+        rings.forEach((ring) => {
+          for (let i = 0; i < ring.n; i++) {
+            const a = ring.off + (i / ring.n) * Math.PI * 2;
+            const x = C.x + Math.cos(a) * ring.r;
+            const y = C.y + Math.sin(a) * ring.r;
+            const ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            Object.entries({ x1: C.x, y1: C.y, x2: x, y2: y, stroke: "#6366f1", "stroke-width": 4, pathLength: 1, class: `draw ln-${ring.cls}` }).forEach(([k, v]) => ln.setAttribute(k, v));
+            svg.appendChild(ln);
+            const av = document.createElement("div");
+            av.className = `avatar av-${ring.cls}`;
+            av.id = `av-${ring.cls}-${i}`;
+            av.style.left = `${x - 42}px`;
+            av.style.top = `${y - 42}px`;
+            av.innerHTML = head;
+            host.appendChild(av);
+          }
+        });
+        tl.to(".ln-in", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.05 }, t + 1.7);
+        tl.fromTo(".av-in", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: E, stagger: 0.05 }, t + 1.9);
+        tl.to(".ln-out", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.04 }, t + 2.4);
+        tl.fromTo(".av-out", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: E, stagger: 0.04 }, t + 2.6);
+        ["#av-out-1", "#av-out-4", "#av-out-7"].forEach((id, k) => {
+          tl.to(id, { borderColor: "#22c55e", backgroundColor: "rgba(34,197,94,0.25)", scale: 1.18, duration: 0.4, ease: E }, t + 3.5 + k * 0.3);
+        });
+        tl.fromTo("#s3-tag", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 4.0);
+        rise("#s3-body", t + 4.5, 20);
+      }
+
+      // ---------- Scene 4: pattern recognition (svg-path-draw maze) ----------
+      {
+        const t = S[3];
+        rise("#s4-eye", t + 0.2, 16, 0.4);
+        rise("#s4-head", t + 0.3);
+        placeBox("s4-boxhost", 3, "b4", 480, 600);
+        tl.fromTo("#b4", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, t + 0.4);
+        unlock("b4", t + 0.8);
+        tl.to("#b4", { opacity: 0, scale: 1.4, duration: 0.35, ease: "power2.in" }, t + 1.3);
+        tl.to("#maze .wall", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: 0.06 }, t + 1.3);
+        // dead ends (maze units → safe px: 150 + u*1.1, 270 + v*1.1)
+        const ends = [
+          [150, 450],
+          [350, 180],
+          [450, 250],
+        ];
+        const xh = document.getElementById("s4-x");
+        ends.forEach(([u, v], i) => {
+          tl.to(`#w${i + 1}`, { strokeDashoffset: 0, duration: 0.55, ease: "power2.inOut" }, t + 1.9 + i * 0.6);
+          const x = document.createElement("div");
+          x.className = "xmark";
+          x.id = `x${i + 1}`;
+          x.style.left = `${150 + u * 1.1 - 32}px`;
+          x.style.top = `${270 + v * 1.1 - 32}px`;
+          x.innerHTML = '<svg viewBox="0 0 64 64" width="64" height="64"><circle cx="32" cy="32" r="28" fill="#0a0a0a" stroke="#ef4444" stroke-width="5"/><path d="M 20 20 L 44 44 M 44 20 L 20 44" stroke="#ef4444" stroke-width="7" stroke-linecap="round"/></svg>';
+          xh.appendChild(x);
+          tl.fromTo(`#x${i + 1}`, { opacity: 0, scale: 1.8 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power4.in" }, t + 2.4 + i * 0.6);
+        });
+        tl.to("#maze .wrong", { opacity: 0.35, duration: 0.3, ease: "power2.out" }, t + 3.7);
+        tl.to("#right", { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, t + 3.7);
+        tl.fromTo("#s4-tag", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 4.5);
+        rise("#s4-body", t + 4.8, 20);
+      }
+
+      // ---------- Scene 5: boxes stack, $0 count-down, CTA ----------
+      {
+        const t = S[4];
+        let seed = 11;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        // three open boxes in a row, then slide together into a stack
+        [220, 480, 740].forEach((x, i) => placeBox("s5-boxes", i + 1, `b5-${i + 1}`, x, 290));
+        ["#b5-1", "#b5-2", "#b5-3"].forEach((id) => {
+          tl.set(`${id} .shackle`, { y: -26 }, t);
+          tl.set(`${id} .bx`, { attr: { stroke: "#22c55e" } }, t);
+        });
+        tl.fromTo("#s5-boxes .box", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.1 }, t + 0.2);
+        tl.to("#b5-1", { x: 260, y: 0, scale: 0.8, duration: 0.6, ease: "power3.inOut" }, t + 0.9);
+        tl.to("#b5-3", { x: -260, y: -184, scale: 0.8, duration: 0.6, ease: "power3.inOut" }, t + 0.9);
+        tl.to("#b5-2", { y: -92, scale: 0.8, duration: 0.6, ease: "power3.inOut" }, t + 0.9);
+        tl.to("#s5-boxes .shackle", { opacity: 0, duration: 0.3, ease: "power2.out" }, t + 0.9);
+        // z-order: middle box on top of the stack
+        // $25,000 → $0 count-down
+        rise("#s5-cost", t + 1.2, 24, 0.5);
+        const st = { v: 25000 };
+        const el = document.getElementById("s5-count");
+        tl.fromTo(st, { v: 25000 }, { v: 0, duration: 1.4, ease: "power3.out", onUpdate: () => (el.textContent = "$" + Math.round(st.v).toLocaleString("en-US")) }, t + 1.4);
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 2.4);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 45, duration: 3.8, ease: "none" }, t + 2.4);
+        rise("#s5-sub", t + 3.0, 24);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

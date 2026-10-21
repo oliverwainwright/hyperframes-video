@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 80px;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .abs-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .panel {
+        position: absolute;
+        top: 270px;
+        width: 450px;
+        height: 640px;
+        border-radius: 32px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+      }
+      .panel-label {
+        position: absolute;
+        left: 0;
+        width: 450px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 800;
+      }
+      .panel-label.mono {
+        font-weight: 600;
+        font-size: 34px;
+        color: var(--accent-hi);
+      }
+
+      /* ---------- Scene 1 ---------- */
+      .av {
+        position: absolute;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #1c1c2b;
+        border: 4px solid var(--accent-hi);
+      }
+      .av.hit {
+        width: 40px;
+        height: 40px;
+        border-color: var(--muted);
+      }
+
+      /* ---------- Scene 2: group card ---------- */
+      .gcard {
+        position: absolute;
+        left: 100px;
+        top: 260px;
+        width: 760px;
+        height: 480px;
+        border-radius: 32px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        overflow: hidden;
+      }
+      .cover {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 200px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #312e81 0%, #6366f1 60%, #818cf8 100%);
+      }
+      .gname {
+        position: absolute;
+        left: 40px;
+        top: 236px;
+        font-size: 46px;
+        font-weight: 800;
+      }
+      .gmeta {
+        position: absolute;
+        left: 40px;
+        top: 305px;
+        font-size: 32px;
+        color: var(--dim);
+      }
+      .gmeta b {
+        color: var(--fg);
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .avstack {
+        position: absolute;
+        left: 40px;
+        top: 380px;
+        display: flex;
+      }
+      .avstack span {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 4px solid var(--panel);
+        margin-right: -16px;
+      }
+      .jbtn {
+        position: absolute;
+        right: 40px;
+        top: 375px;
+        width: 220px;
+        height: 72px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 36px;
+        font-weight: 800;
+      }
+      #s2-join {
+        background: var(--accent);
+      }
+      #s2-joined {
+        background: var(--success);
+        color: #0a0a0a;
+      }
+      .chips {
+        position: absolute;
+        left: 0;
+        top: 800px;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 26px;
+        border-radius: 999px;
+        border: 3px solid var(--accent-hi);
+        background: rgba(99, 102, 241, 0.14);
+        font-size: 34px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 3: public vs private ---------- */
+      .post {
+        position: absolute;
+        left: 40px;
+        width: 370px;
+        height: 84px;
+        border-radius: 18px;
+        background: #1c1c2b;
+        border: 3px solid #3a3a52;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding-left: 20px;
+      }
+      .post .pd {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--accent-hi);
+        flex: none;
+      }
+      .post .pb {
+        height: 16px;
+        border-radius: 8px;
+        background: #6b6b80;
+      }
+      .post.frost {
+        background: #16161f;
+        border-color: #26263a;
+      }
+      .post.frost .pd,
+      .post.frost .pb {
+        background: #2a2a3a;
+      }
+      .toggle-row {
+        position: absolute;
+        left: 0;
+        top: 960px;
+        width: 960px;
+        height: 130px;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 40px;
+        font-size: 40px;
+        font-weight: 600;
+      }
+      .track {
+        position: relative;
+        width: 130px;
+        height: 70px;
+        border-radius: 35px;
+        background: #3a3a52;
+      }
+      #s3-track-on {
+        position: absolute;
+        inset: 0;
+        border-radius: 35px;
+        background: var(--success);
+      }
+      #s3-knob {
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: #ffffff;
+      }
+
+      /* ---------- Scene 4: admins ---------- */
+      .admin {
+        position: absolute;
+        left: 20px;
+        top: 300px;
+        width: 240px;
+        height: 240px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #818cf8 0%, #6366f1 45%, #3730a3 100%);
+        box-shadow: 0 0 90px rgba(99, 102, 241, 0.5);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 34px;
+        font-weight: 800;
+      }
+      .rule {
+        position: absolute;
+        left: 400px;
+        width: 560px;
+        height: 96px;
+        border-radius: 22px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding-left: 24px;
+        font-size: 38px;
+        font-weight: 600;
+      }
+      .rule svg {
+        width: 52px;
+        height: 52px;
+        flex: none;
+      }
+      .big-wrap {
+        position: absolute;
+        left: 0;
+        top: 660px;
+        width: 960px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+      }
+      #s4-count {
+        display: inline-block;
+        font-size: 190px;
+        font-weight: 800;
+        letter-spacing: -6px;
+        font-variant-numeric: tabular-nums;
+      }
+      .big-suffix {
+        display: inline-block;
+        font-size: 150px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+      .src {
+        position: absolute;
+        left: 0;
+        top: 1010px;
+        width: 960px;
+        text-align: center;
+        font-size: 30px;
+        color: var(--muted);
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 360px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 64px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 36px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .tag {
+        margin-top: 60px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: megaphone vs room ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-xxtf" class="l">Feeds broadcast.</span>
+              <span data-hf-id="hf-v0y1" class="l a">Groups gather.</span>
+            </div>
+            <div data-hf-id="hf-97fa" class="panel" id="s1-pl" style="left: 0">
+              <div data-hf-id="hf-g9xm" class="panel-label" style="top: 34px">Profile / Page</div>
+              <div data-hf-id="hf-roya" class="panel-label mono" style="top: 560px">1 → many</div>
+            </div>
+            <div data-hf-id="hf-euea" class="panel" id="s1-pr" style="left: 510px">
+              <div data-hf-id="hf-pc0w" class="panel-label" style="top: 34px">Group</div>
+              <div data-hf-id="hf-5a5s" class="panel-label mono" style="top: 560px">many ↔ many</div>
+            </div>
+            <svg data-hf-id="hf-5dwg" class="abs-svg" viewBox="0 0 960 1600" id="s1-svg">
+              <g data-hf-id="hf-52ni" id="s1-mega">
+                <path data-hf-id="hf-8nx3" d="M 60 560 L 60 620 L 100 620 L 190 670 L 190 510 L 100 560 Z" fill="#6366f1" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" />
+                <path data-hf-id="hf-71od" d="M 80 620 L 92 668 L 116 668 L 108 624" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" />
+              </g>
+            </svg>
+            <div data-hf-id="hf-oim1" id="s1-nodes"></div>
+            <div data-hf-id="hf-kftt" class="body" id="s1-body" style="top: 990px">A Group is a room built around <b data-hf-id="hf-55fq">one shared interest</b>, where members talk to each other.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: community hub card ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-r94u" class="l">A Facebook Group =</span>
+              <span data-hf-id="hf-w8fb" class="l a">a community hub.</span>
+            </div>
+            <div data-hf-id="hf-ott7" class="gcard" id="s2-card">
+              <div data-hf-id="hf-4rv2" class="cover" id="s2-cover">
+                <svg data-hf-id="hf-g2zs" style="display: block; width: 100%; height: 100%" viewBox="0 0 760 200" preserveAspectRatio="none">
+                  <path data-hf-id="hf-2ohr" d="M 0 200 L 160 90 L 260 150 L 420 40 L 560 130 L 640 90 L 760 160 L 760 200 Z" fill="#1e1b4b" opacity="0.7" />
+                  <circle data-hf-id="hf-9jgx" cx="640" cy="54" r="26" fill="#ffffff" opacity="0.85" />
+                </svg>
+              </div>
+              <div data-hf-id="hf-gd29" class="gname" id="s2-name">Weekend Trail Runners</div>
+              <div data-hf-id="hf-cbw9" class="gmeta" id="s2-meta">Private group · <b data-hf-id="hf-djb5" id="s2-members">0</b> members</div>
+              <div data-hf-id="hf-d2z1" class="avstack" id="s2-avs">
+                <span data-hf-id="hf-jwgw" style="background: #a5b4fc"></span><span data-hf-id="hf-sihn" style="background: #6366f1"></span><span data-hf-id="hf-tykb" style="background: #22c55e"></span><span data-hf-id="hf-gzo5" style="background: #818cf8"></span><span data-hf-id="hf-4frj" style="background: #4338ca"></span>
+              </div>
+              <div data-hf-id="hf-6bsa" class="jbtn" id="s2-join" data-layout-allow-overlap="" data-layout-allow-occlusion="">Join</div>
+              <div data-hf-id="hf-bn4s" class="jbtn" id="s2-joined" data-layout-allow-overlap="" data-layout-allow-occlusion="">
+                <svg data-hf-id="hf-2b42" width="34" height="34" viewBox="0 0 34 34"><path data-hf-id="hf-yg8j" d="M 7 18 L 14 25 L 27 10" fill="none" stroke="#0a0a0a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                Joined
+              </div>
+            </div>
+            <div data-hf-id="hf-exrd" class="chips">
+              <span data-hf-id="hf-5in0" class="chip s2-chip">Posts</span>
+              <span data-hf-id="hf-sthg" class="chip s2-chip">Events</span>
+              <span data-hf-id="hf-p26o" class="chip s2-chip">Files</span>
+              <span data-hf-id="hf-manj" class="chip s2-chip">Live</span>
+              <span data-hf-id="hf-83ig" class="chip s2-chip">Chats</span>
+            </div>
+            <div data-hf-id="hf-icqo" class="body" id="s2-body" style="top: 960px">One topic, many members: <b data-hf-id="hf-rszc">local swaps</b>, fan clubs, niche hobbies and more.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: public vs private ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-wxa2" class="l">Public or private:</span>
+              <span data-hf-id="hf-kd6c" class="l a">you choose.</span>
+            </div>
+            <div data-hf-id="hf-yy1u" class="panel s3-panel" style="left: 0">
+              <svg data-hf-id="hf-xm8r" style="position: absolute; left: 175px; top: 40px" width="100" height="100" viewBox="0 0 100 100">
+                <path data-hf-id="hf-6e72" class="draw s3-ic" pathLength="1" d="M 10 50 C 26 22, 74 22, 90 50 C 74 78, 26 78, 10 50 Z" stroke="#22c55e" stroke-width="6" />
+                <circle data-hf-id="hf-r41g" class="draw s3-ic" pathLength="1" cx="50" cy="50" r="14" stroke="#22c55e" stroke-width="6" />
+              </svg>
+              <div data-hf-id="hf-0yzb" class="panel-label" style="top: 150px">Public</div>
+              <div data-hf-id="hf-2xry" class="post s3-post" style="top: 240px"><span data-hf-id="hf-7feh" class="pd"></span><span data-hf-id="hf-1avb" class="pb" style="width: 220px"></span></div>
+              <div data-hf-id="hf-ydhf" class="post s3-post" style="top: 344px"><span data-hf-id="hf-uu19" class="pd"></span><span data-hf-id="hf-81nv" class="pb" style="width: 260px"></span></div>
+              <div data-hf-id="hf-z58g" class="post s3-post" style="top: 448px"><span data-hf-id="hf-w0yc" class="pd"></span><span data-hf-id="hf-h7c6" class="pb" style="width: 180px"></span></div>
+              <div data-hf-id="hf-b8ok" class="panel-label mono" style="top: 560px; color: var(--success)">anyone can see</div>
+            </div>
+            <div data-hf-id="hf-d9wc" class="panel s3-panel" style="left: 510px">
+              <svg data-hf-id="hf-zdjg" style="position: absolute; left: 180px; top: 34px" width="90" height="106" viewBox="0 0 90 106">
+                <rect data-hf-id="hf-24iu" class="draw s3-ic" pathLength="1" x="8" y="46" width="74" height="54" rx="12" stroke="#a5b4fc" stroke-width="6" />
+                <path data-hf-id="hf-0cg8" class="draw s3-ic" pathLength="1" d="M 24 46 L 24 30 C 24 4, 66 4, 66 30 L 66 46" stroke="#a5b4fc" stroke-width="6" />
+              </svg>
+              <div data-hf-id="hf-zs5p" class="panel-label" style="top: 150px">Private</div>
+              <div data-hf-id="hf-uz8w" class="post frost s3-post" style="top: 240px"><span data-hf-id="hf-vmnb" class="pd"></span><span data-hf-id="hf-4pk7" class="pb" style="width: 220px"></span></div>
+              <div data-hf-id="hf-smq5" class="post frost s3-post" style="top: 344px"><span data-hf-id="hf-wtke" class="pd"></span><span data-hf-id="hf-iurv" class="pb" style="width: 260px"></span></div>
+              <div data-hf-id="hf-q85a" class="post frost s3-post" style="top: 448px"><span data-hf-id="hf-wf9d" class="pd"></span><span data-hf-id="hf-ayga" class="pb" style="width: 180px"></span></div>
+              <div data-hf-id="hf-y7lx" class="panel-label mono" style="top: 560px">members only</div>
+            </div>
+            <div data-hf-id="hf-tej8" class="toggle-row" id="s3-toggle">
+              <span data-hf-id="hf-38g5">Hidden from search</span>
+              <div data-hf-id="hf-64lp" class="track"><div data-hf-id="hf-5o8t" id="s3-track-on"></div><div data-hf-id="hf-xcek" id="s3-knob"></div></div>
+            </div>
+            <div data-hf-id="hf-etrt" class="body" id="s3-body" style="top: 1140px">Private groups can be <b data-hf-id="hf-kbjy">visible or hidden</b> in search. Admins decide.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: admins + scale ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-8zaf" class="l">Admins set</span>
+              <span data-hf-id="hf-9c7g" class="l a">the rules.</span>
+            </div>
+            <svg data-hf-id="hf-mssp" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-zbju" class="draw s4-ln" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 260 380 C 320 350, 340 348, 400 348" />
+              <path data-hf-id="hf-tzmx" class="draw s4-ln" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 262 420 L 400 458" />
+              <path data-hf-id="hf-by87" class="draw s4-ln" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 240 490 C 300 560, 340 568, 400 568" />
+            </svg>
+            <div data-hf-id="hf-g4pw" class="admin" id="s4-admin">
+              <svg data-hf-id="hf-s1cm" width="88" height="100" viewBox="0 0 56 64"><path data-hf-id="hf-4pds" d="M 28 4 L 52 14 L 52 32 C 52 48, 40 58, 28 62 C 16 58, 4 48, 4 32 L 4 14 Z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" /><path data-hf-id="hf-fuy9" d="M 28 20 L 28 40 M 28 48 L 28 49" stroke="#ffffff" stroke-width="6" stroke-linecap="round" /></svg>
+              <span data-hf-id="hf-jsn4">Admin</span>
+            </div>
+            <div data-hf-id="hf-wk6v" class="rule s4-rule" style="top: 300px">
+              <svg data-hf-id="hf-q4oj" viewBox="0 0 52 52"><rect data-hf-id="hf-ty49" x="3" y="3" width="46" height="46" rx="10" fill="none" stroke="#3a3a52" stroke-width="4" /><path data-hf-id="hf-zdq1" class="draw s4-ck" pathLength="1" d="M 13 27 L 22 36 L 39 17" stroke="#22c55e" stroke-width="6" /></svg>
+              Write the rules
+            </div>
+            <div data-hf-id="hf-tauu" class="rule s4-rule" style="top: 410px">
+              <svg data-hf-id="hf-2v0z" viewBox="0 0 52 52"><rect data-hf-id="hf-5qrx" x="3" y="3" width="46" height="46" rx="10" fill="none" stroke="#3a3a52" stroke-width="4" /><path data-hf-id="hf-w9hp" class="draw s4-ck" pathLength="1" d="M 13 27 L 22 36 L 39 17" stroke="#22c55e" stroke-width="6" /></svg>
+              Approve members
+            </div>
+            <div data-hf-id="hf-kxuu" class="rule s4-rule" style="top: 520px">
+              <svg data-hf-id="hf-2gpy" viewBox="0 0 52 52"><rect data-hf-id="hf-6xp0" x="3" y="3" width="46" height="46" rx="10" fill="none" stroke="#3a3a52" stroke-width="4" /><path data-hf-id="hf-xges" class="draw s4-ck" pathLength="1" d="M 13 27 L 22 36 L 39 17" stroke="#22c55e" stroke-width="6" /></svg>
+              Moderate posts
+            </div>
+            <div data-hf-id="hf-jv1n" class="big-wrap"><span data-hf-id="hf-n2f5" id="s4-count">0.0</span><span data-hf-id="hf-thu7" class="big-suffix" id="s4-suffix">B+</span></div>
+            <div data-hf-id="hf-ndc3" class="body" id="s4-cap" style="top: 930px">people use Groups <b data-hf-id="hf-vuz6">every month</b></div>
+            <div data-hf-id="hf-5qky" class="src" id="s4-src">Source: Meta, 2020</div>
+            <div data-hf-id="hf-y0up" class="body" id="s4-body" style="top: 1120px">Admins and moderators keep the room <b data-hf-id="hf-jqw8">on-topic and safe</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-phjo" class="l">Find your people.</span><span data-hf-id="hf-78uf" class="l a">Or build the room.</span></div>
+            <div data-hf-id="hf-fupe" class="cta-sub" id="s5-sub">Follow for more tech explained in 30 seconds.</div>
+            <div data-hf-id="hf-4tga" class="tag mono" id="s5-tag">FACEBOOK GROUPS · COMMUNITY, NOT A FEED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-vj0r" id="bgm" src="03-strengthcampbeats.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+      const NS = "http://www.w3.org/2000/svg";
+
+      const rise = (sel, at, y = 40, d = 0.6) =>
+        tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      const svgLine = (svg, x1, y1, x2, y2, stroke, cls) => {
+        const ln = document.createElementNS(NS, "line");
+        Object.entries({ x1, y1, x2, y2, stroke, "stroke-width": 4, pathLength: 1, class: `draw ${cls}` }).forEach(([k, v]) => ln.setAttribute(k, v));
+        svg.appendChild(ln);
+      };
+      const dot = (parent, cls, cx, cy, size) => {
+        const d = document.createElement("div");
+        d.className = cls;
+        d.style.left = `${cx - size / 2}px`;
+        d.style.top = `${cy - size / 2}px`;
+        parent.appendChild(d);
+        return d;
+      };
+
+      // Crossfades + ambient glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: broadcast fan vs. mesh ----------
+      {
+        const t = S[0];
+        const svg = document.getElementById("s1-svg");
+        const nodes = document.getElementById("s1-nodes");
+        // left: megaphone fans out to passive listeners (one-way)
+        const fanY = [380, 470, 560, 650, 740];
+        fanY.forEach((y) => {
+          svgLine(svg, 200, 590, 400, y, "#3a3a52", "s1-fan");
+          dot(nodes, "av hit s1-hit", 400, y, 40);
+        });
+        // right: ring of members, everyone connected to everyone
+        const C = { x: 735, y: 560 };
+        const R = 150;
+        const pts = Array.from({ length: 7 }, (_, i) => {
+          const a = (i / 7) * Math.PI * 2 - Math.PI / 2;
+          return [C.x + Math.cos(a) * R, C.y + Math.sin(a) * R];
+        });
+        for (let i = 0; i < 7; i++) for (let j = i + 1; j < 7; j++) svgLine(svg, pts[i][0], pts[i][1], pts[j][0], pts[j][1], "#6366f1", "s1-mesh");
+        pts.forEach(([x, y]) => dot(nodes, "av s1-av", x, y, 56));
+
+        rise("#s1-head", t + 0.1);
+        tl.fromTo(["#s1-pl", "#s1-pr"], { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: E, stagger: 0.3 }, t + 0.4);
+        tl.fromTo("#s1-mega", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 0.9);
+        tl.to(".s1-fan", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", stagger: 0.08 }, t + 1.3);
+        tl.fromTo(".s1-hit", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: E, stagger: 0.08 }, t + 1.6);
+        tl.fromTo(".s1-av", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out", stagger: 0.06 }, t + 1.5);
+        tl.to(".s1-mesh", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.04 }, t + 2.1);
+        tl.fromTo(".s1-av", { scale: 1 }, { scale: 1.15, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 3, stagger: 0.05 }, t + 3.3);
+        rise("#s1-body", t + 3.4, 24);
+      }
+
+      // ---------- Scene 2: group card, join → joined, feature chips ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo("#s2-card", { opacity: 0, y: 60, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "expo.out" }, t + 0.5);
+        tl.fromTo("#s2-cover", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: E }, t + 0.7);
+        rise("#s2-name", t + 0.9, 20, 0.5);
+        rise("#s2-meta", t + 1.1, 20, 0.5);
+        const st = { v: 0 };
+        const mem = document.getElementById("s2-members");
+        tl.fromTo(st, { v: 0 }, { v: 12400, duration: 1.4, ease: "power2.out", onUpdate: () => (mem.textContent = Math.round(st.v).toLocaleString("en-US")) }, t + 1.1);
+        tl.fromTo("#s2-avs span", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.4, ease: E, stagger: 0.08 }, t + 1.3);
+        tl.fromTo("#s2-join", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, t + 1.5);
+        tl.fromTo("#s2-joined", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, t + 2.4);
+        tl.to("#s2-join", { opacity: 0, duration: 0.2, ease: "power2.out" }, t + 2.4);
+        tl.fromTo(".s2-chip", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: E, stagger: 0.27 }, t + 2.7);
+        rise("#s2-body", t + 4.1, 24);
+      }
+
+      // ---------- Scene 3: public vs private, hidden toggle ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.fromTo(".s3-panel", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: E, stagger: 0.35 }, t + 0.5);
+        tl.to(".s3-ic", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: 0.27 }, t + 0.8);
+        tl.fromTo(".s3-post", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.4, ease: E, stagger: 0.12 }, t + 1.4);
+        tl.fromTo("#s3-toggle", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 2.6);
+        tl.fromTo("#s3-track-on", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, t + 3.3);
+        tl.fromTo("#s3-knob", { x: 0 }, { x: 60, duration: 0.35, ease: "power3.out" }, t + 3.3);
+        rise("#s3-body", t + 3.8, 24);
+      }
+
+      // ---------- Scene 4: admin checklist + 1.8B count-up ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo("#s4-admin", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, t + 0.5);
+        tl.to(".s4-ln", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.3 }, t + 0.9);
+        tl.fromTo(".s4-rule", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.45, ease: E, stagger: 0.3 }, t + 1.0);
+        tl.to(".s4-ck", { strokeDashoffset: 0, duration: 0.35, ease: "power2.out", stagger: 0.3 }, t + 1.5);
+        const st = { v: 0 };
+        const el = document.getElementById("s4-count");
+        tl.fromTo(st, { v: 0 }, { v: 1.8, duration: 1.3, ease: "power2.out", onUpdate: () => (el.textContent = st.v.toFixed(1)) }, t + 2.4);
+        tl.fromTo("#s4-count", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, t + 2.4);
+        tl.fromTo("#s4-suffix", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: E }, t + 3.6);
+        rise("#s4-cap", t + 3.0, 16, 0.5);
+        rise("#s4-src", t + 3.3, 12, 0.5);
+        rise("#s4-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32) — deterministic particle field
+        let seed = 57;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.5);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

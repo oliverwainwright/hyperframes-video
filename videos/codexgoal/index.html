@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 80px;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .abs-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .card {
+        position: absolute;
+        border-radius: 26px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+      }
+
+      /* ---------- Scene 1: timeline ---------- */
+      .row {
+        left: 130px;
+        width: 760px;
+        height: 84px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding-left: 28px;
+        font-size: 34px;
+        font-weight: 600;
+      }
+      .row .n {
+        color: var(--accent-hi);
+        font-variant-numeric: tabular-nums;
+      }
+      .row.ok {
+        border-color: var(--success);
+        background: #0f1f16;
+        color: var(--success);
+      }
+      #s1-wait {
+        border-style: dashed;
+        color: var(--dim);
+      }
+      #s1-cmd {
+        border-color: var(--accent);
+        background: #15153a;
+      }
+
+      /* ---------- Scene 2: objective + target ---------- */
+      .term {
+        left: 0;
+        top: 250px;
+        width: 960px;
+        height: 210px;
+        padding: 30px 36px;
+        font-size: 34px;
+        line-height: 1.45;
+        background: #0f0f1a;
+        border-color: var(--accent);
+      }
+      .term .p {
+        color: var(--success);
+      }
+      #s2-target {
+        position: absolute;
+        left: 280px;
+        top: 510px;
+        width: 400px;
+        height: 400px;
+      }
+      .tdot {
+        position: absolute;
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: var(--accent-hi);
+        color: #0a0a0a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 800;
+      }
+
+      /* ---------- Scene 3: definition of done ---------- */
+      .spec {
+        left: 0;
+        top: 250px;
+        width: 960px;
+        height: 330px;
+        padding: 26px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+      .spec .r {
+        display: flex;
+        align-items: baseline;
+        gap: 24px;
+        font-size: 36px;
+      }
+      .spec .k {
+        width: 240px;
+        flex: none;
+        font-weight: 800;
+        color: var(--accent-hi);
+      }
+      .log {
+        left: 0;
+        top: 620px;
+        width: 960px;
+        height: 300px;
+        padding: 26px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+      .log .lt {
+        font-size: 30px;
+        font-weight: 600;
+        color: var(--dim);
+        letter-spacing: 2px;
+      }
+      .log .li {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 34px;
+      }
+      .log svg {
+        width: 44px;
+        height: 44px;
+        flex: none;
+      }
+
+      /* ---------- Scene 4: controls + use cases ---------- */
+      .ctl {
+        top: 260px;
+        width: 290px;
+        height: 190px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        font-size: 30px;
+      }
+      .ctl svg {
+        width: 70px;
+        height: 70px;
+      }
+      .use {
+        top: 510px;
+        width: 290px;
+        height: 230px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        text-align: center;
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1.15;
+      }
+      .use svg {
+        width: 80px;
+        height: 80px;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 360px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 64px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 36px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .tag {
+        margin-top: 60px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: one turn vs many ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-o050" class="l">One turn, then it waits.</span>
+              <span data-hf-id="hf-5fzp" class="l a">Goals keep going.</span>
+            </div>
+            <svg data-hf-id="hf-mssp" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-t5qf" class="draw" id="s1-rail" pathLength="1" stroke="#6366f1" stroke-width="6" d="M 80 290 L 80 1010" />
+            </svg>
+            <div data-hf-id="hf-oonh" class="card row" id="s1-reply" style="top: 250px"><span data-hf-id="hf-mu15" class="n">Turn 1</span> Done. What's next?</div>
+            <div data-hf-id="hf-vrh0" class="card row" id="s1-wait" style="top: 350px">
+              <svg data-hf-id="hf-2b42" width="34" height="34" viewBox="0 0 34 34"><rect data-hf-id="hf-0mzj" x="7" y="5" width="7" height="24" rx="2" fill="#a3a3b8" /><rect data-hf-id="hf-fd6o" x="20" y="5" width="7" height="24" rx="2" fill="#a3a3b8" /></svg>
+              waiting for you…
+            </div>
+            <div data-hf-id="hf-eija" class="card row mono" id="s1-cmd" style="top: 470px"><span data-hf-id="hf-xajh" id="s1-typed"></span></div>
+            <div data-hf-id="hf-g0tk" class="card row s1-turn" style="top: 590px"><span data-hf-id="hf-o0y8" class="n">Turn 2</span> run the tests</div>
+            <div data-hf-id="hf-b2vg" class="card row s1-turn" style="top: 690px"><span data-hf-id="hf-nmn7" class="n">Turn 3</span> fix 4 failures</div>
+            <div data-hf-id="hf-sfdk" class="card row s1-turn" style="top: 790px"><span data-hf-id="hf-ln42" class="n">Turn 4</span> re-run the tests</div>
+            <div data-hf-id="hf-pwx7" class="card row ok s1-turn" style="top: 890px"><span data-hf-id="hf-u1o3" class="n" style="color: var(--success)">Turn 5</span> all green, goal met</div>
+            <div data-hf-id="hf-47z4" class="body" id="s1-body" style="top: 1060px">Normally Codex replies and waits. With a Goal, it <b data-hf-id="hf-cmjm">keeps working</b>, for hours if needed.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: one objective, many turns ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-xizs" class="l mono" style="letter-spacing: -2px">/goal =</span>
+              <span data-hf-id="hf-p8pf" class="l a" style="font-size: 66px; letter-spacing: -1.5px">one objective, many turns</span>
+            </div>
+            <div data-hf-id="hf-obcn" class="card term mono" id="s2-term"><span data-hf-id="hf-m04r" class="p">/goal </span><span data-hf-id="hf-56dq" id="s2-typed"></span></div>
+            <svg data-hf-id="hf-r7xs" id="s2-target" viewBox="0 0 400 400">
+              <circle data-hf-id="hf-oksq" class="draw s2-ring" pathLength="1" cx="200" cy="200" r="180" stroke="#3a3a52" stroke-width="8" />
+              <circle data-hf-id="hf-znzw" class="draw s2-ring" pathLength="1" cx="200" cy="200" r="125" stroke="#6366f1" stroke-width="8" />
+              <circle data-hf-id="hf-w0zq" class="draw s2-ring" pathLength="1" cx="200" cy="200" r="70" stroke="#a5b4fc" stroke-width="8" />
+              <circle data-hf-id="hf-8v2o" id="s2-bull" cx="200" cy="200" r="26" fill="#22c55e" />
+            </svg>
+            <div data-hf-id="hf-bs37" id="s2-dots"></div>
+            <div data-hf-id="hf-ve6k" class="body" id="s2-body" style="top: 960px">One durable objective. Codex works <b data-hf-id="hf-41tr">across many turns</b> instead of stopping after one reply.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: define done ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-amo4" class="l">Define "done"</span>
+              <span data-hf-id="hf-qs97" class="l a">before it starts.</span>
+            </div>
+            <div data-hf-id="hf-jcgl" class="card spec" id="s3-spec">
+              <div data-hf-id="hf-igly" class="r s3-r"><span data-hf-id="hf-qxzb" class="k">Objective</span>Migrate to the new stack</div>
+              <div data-hf-id="hf-705a" class="r s3-r"><span data-hf-id="hf-sblg" class="k">Stop when</span>all tests pass</div>
+              <div data-hf-id="hf-e3e5" class="r s3-r"><span data-hf-id="hf-ztgy" class="k">Proof</span><span data-hf-id="hf-vx7j" class="mono">npm test</span></div>
+            </div>
+            <div data-hf-id="hf-hoh9" class="card log" id="s3-log">
+              <div data-hf-id="hf-ampx" class="lt">PROGRESS LOG</div>
+              <div data-hf-id="hf-44l8" class="li s3-li"><svg data-hf-id="hf-b65t" viewBox="0 0 44 44"><circle data-hf-id="hf-oqam" cx="22" cy="22" r="19" fill="none" stroke="#22c55e" stroke-width="4" /><path data-hf-id="hf-qz6x" class="draw s3-ck" pathLength="1" d="M 12 23 L 19 30 L 32 15" stroke="#22c55e" stroke-width="5" /></svg>Checkpoint 1: routes ported</div>
+              <div data-hf-id="hf-skbi" class="li s3-li"><svg data-hf-id="hf-57mt" viewBox="0 0 44 44"><circle data-hf-id="hf-7myq" cx="22" cy="22" r="19" fill="none" stroke="#22c55e" stroke-width="4" /><path data-hf-id="hf-atul" class="draw s3-ck" pathLength="1" d="M 12 23 L 19 30 L 32 15" stroke="#22c55e" stroke-width="5" /></svg>Checkpoint 2: screens verified</div>
+              <div data-hf-id="hf-0jnc" class="li s3-li"><svg data-hf-id="hf-6ejw" viewBox="0 0 44 44"><circle data-hf-id="hf-819r" cx="22" cy="22" r="19" fill="none" stroke="#22c55e" stroke-width="4" /><path data-hf-id="hf-c0ro" class="draw s3-ck" pathLength="1" d="M 12 23 L 19 30 L 32 15" stroke="#22c55e" stroke-width="5" /></svg>Checkpoint 3: tests green</div>
+            </div>
+            <div data-hf-id="hf-9kjn" class="body" id="s3-body" style="top: 970px">Vague goals wander. A clear <b data-hf-id="hf-z8mg">proof command</b> tells Codex when it's finished.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: controls + use cases ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-osvg" class="l">Pause. Resume.</span>
+              <span data-hf-id="hf-in8v" class="l a">Clear.</span>
+            </div>
+            <div data-hf-id="hf-kl4c" class="card ctl s4-ctl mono" style="left: 0">
+              <svg data-hf-id="hf-i6ef" viewBox="0 0 70 70"><rect data-hf-id="hf-zf53" x="16" y="12" width="12" height="46" rx="3" fill="#a5b4fc" /><rect data-hf-id="hf-k16q" x="42" y="12" width="12" height="46" rx="3" fill="#a5b4fc" /></svg>
+              /goal pause
+            </div>
+            <div data-hf-id="hf-k7ca" class="card ctl s4-ctl mono" style="left: 335px">
+              <svg data-hf-id="hf-q0zr" viewBox="0 0 70 70"><path data-hf-id="hf-dqru" d="M 20 10 L 58 35 L 20 60 Z" fill="#22c55e" stroke="#22c55e" stroke-width="4" stroke-linejoin="round" /></svg>
+              /goal resume
+            </div>
+            <div data-hf-id="hf-cq8e" class="card ctl s4-ctl mono" style="left: 670px">
+              <svg data-hf-id="hf-pmoq" viewBox="0 0 70 70"><path data-hf-id="hf-n2eg" d="M 16 16 L 54 54 M 54 16 L 16 54" stroke="#a3a3b8" stroke-width="8" stroke-linecap="round" /></svg>
+              /goal clear
+            </div>
+            <div data-hf-id="hf-sok8" class="card use s4-use" style="left: 0">
+              <svg data-hf-id="hf-e2ht" viewBox="0 0 80 80"><path data-hf-id="hf-hgah" class="draw s4-ic" pathLength="1" d="M 8 24 L 40 24 M 30 14 L 40 24 L 30 34 M 72 56 L 40 56 M 50 46 L 40 56 L 50 66" stroke="#a5b4fc" stroke-width="6" /></svg>
+              Migrations
+            </div>
+            <div data-hf-id="hf-w6cx" class="card use s4-use" style="left: 335px">
+              <svg data-hf-id="hf-yqt1" viewBox="0 0 80 80"><path data-hf-id="hf-hl7x" class="draw s4-ic" pathLength="1" d="M 14 6 L 52 6 L 68 22 L 68 74 L 14 74 Z M 26 36 L 56 36 M 26 50 L 56 50 M 26 62 L 44 62" stroke="#a5b4fc" stroke-width="5" /></svg>
+              PLAN.md builds
+            </div>
+            <div data-hf-id="hf-qfwt" class="card use s4-use" style="left: 670px">
+              <svg data-hf-id="hf-zxq4" viewBox="0 0 80 80"><path data-hf-id="hf-mkrr" class="draw s4-ic" pathLength="1" d="M 8 70 L 72 70 M 18 70 L 18 50 M 34 70 L 34 38 M 50 70 L 50 26 M 66 70 L 66 12" stroke="#a5b4fc" stroke-width="7" /></svg>
+              Eval tuning
+            </div>
+            <div data-hf-id="hf-fdsz" class="body" id="s4-body" style="top: 800px">Best fit: work with a <b data-hf-id="hf-caon">clear target</b> and a way to check progress.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-az6b" class="l">Give it a finish line.</span><span data-hf-id="hf-d4bp" class="l a">Let it run.</span></div>
+            <div data-hf-id="hf-zk10" class="cta-sub" id="s5-sub">Follow for more AI &amp; tech explained in 30 seconds.</div>
+            <div data-hf-id="hf-e1ez" class="tag mono" id="s5-tag">CODEX · /GOAL &lt;OBJECTIVE&gt;</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-vj0r" id="bgm" src="03-strengthcampbeats.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      const rise = (sel, at, y = 40, d = 0.6) =>
+        tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      const typeInto = (el, text, at, dur) => {
+        const o = { n: 0 };
+        tl.fromTo(o, { n: 0 }, { n: text.length, duration: dur, ease: "none", onUpdate: () => (el.textContent = text.slice(0, Math.round(o.n))) }, at);
+      };
+
+      // Crossfades + ambient glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: reply → waiting → /goal → turns stack ----------
+      {
+        const t = S[0];
+        rise("#s1-head", t + 0.1);
+        tl.to("#s1-rail", { strokeDashoffset: 0, duration: 3.6, ease: "power2.inOut" }, t + 0.5);
+        tl.fromTo("#s1-reply", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 0.5);
+        tl.fromTo("#s1-wait", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 0.9);
+        tl.fromTo("#s1-wait", { opacity: 1 }, { opacity: 0.45, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 1.4);
+        tl.fromTo("#s1-cmd", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, t + 2.0);
+        typeInto(document.getElementById("s1-typed"), "/goal ship v2, tests green", t + 2.1, 0.8);
+        tl.fromTo(".s1-turn", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: E, stagger: 0.27 }, t + 3.0);
+        rise("#s1-body", t + 4.3, 24);
+      }
+
+      // ---------- Scene 2: objective typed, turns walk into the target ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo("#s2-term", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 0.5);
+        typeInto(document.getElementById("s2-typed"), "Migrate the app to the new stack without stopping until all tests pass", t + 0.7, 1.6);
+        tl.to(".s2-ring", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: 0.27 }, t + 1.2);
+        tl.fromTo("#s2-bull", { opacity: 0, attr: { r: 0 } }, { opacity: 1, attr: { r: 26 }, duration: 0.4, ease: "expo.out" }, t + 2.0);
+        // turn dots step inward along a spiral (deterministic positions)
+        const field = document.getElementById("s2-dots");
+        const C = { x: 480, y: 710 };
+        const pts = [
+          [195, -2.4],
+          [165, -1.4],
+          [130, -0.4],
+          [95, 0.6],
+          [55, 1.6],
+        ];
+        pts.forEach(([r, a], i) => {
+          const d = document.createElement("div");
+          d.className = "tdot";
+          d.textContent = String(i + 1);
+          d.style.left = `${C.x + Math.cos(a) * r - 27}px`;
+          d.style.top = `${C.y + Math.sin(a) * r - 27}px`;
+          field.appendChild(d);
+          tl.fromTo(d, { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, t + 2.3 + i * 0.3);
+        });
+        tl.fromTo("#s2-bull", { attr: { r: 26 } }, { attr: { r: 36 }, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 3.9);
+        rise("#s2-body", t + 4.0, 24);
+      }
+
+      // ---------- Scene 3: spec rows, then checkpoints tick ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.fromTo("#s3-spec", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 0.5);
+        tl.fromTo(".s3-r", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: E, stagger: 0.3 }, t + 0.7);
+        tl.fromTo("#s3-log", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 1.8);
+        tl.fromTo(".s3-li", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.4, ease: E, stagger: 0.4 }, t + 2.1);
+        tl.to(".s3-ck", { strokeDashoffset: 0, duration: 0.35, ease: "power2.out", stagger: 0.4 }, t + 2.4);
+        tl.to("#s3-log", { borderColor: "#22c55e", duration: 0.4, ease: "power2.out" }, t + 3.4);
+        rise("#s3-body", t + 3.7, 24);
+      }
+
+      // ---------- Scene 4: controls light in sequence, use-case tiles ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo(".s4-ctl", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.3 }, t + 0.5);
+        document.querySelectorAll(".s4-ctl").forEach((el, i) => {
+          tl.fromTo(el, { borderColor: "#26263a" }, { borderColor: "#6366f1", duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 1 }, t + 1.6 + i * 0.35);
+        });
+        tl.fromTo(".s4-use", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.3 }, t + 2.5);
+        tl.to(".s4-ic", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.3 }, t + 2.7);
+        rise("#s4-body", t + 3.7, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32) — deterministic particle field
+        let seed = 113;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.5);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
