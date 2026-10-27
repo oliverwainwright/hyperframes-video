@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .law-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .law-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      .fig-label {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .fig {
+        position: absolute;
+        left: 0;
+        width: 960px;
+      }
+      .node {
+        position: absolute;
+        left: 150px;
+        width: 660px;
+        height: 140px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 0 40px;
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .node .n {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.2);
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+      .node.bad {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .node.bad .n {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+      .node.good {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.12);
+        color: var(--success);
+      }
+      .node.good .n {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--success);
+      }
+      .big-num {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .date-cap {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+      .badge {
+        position: absolute;
+        border-radius: 28px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 30px;
+        color: var(--success);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .badge svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .chip {
+        position: absolute;
+        top: 940px;
+        width: 300px;
+        height: 100px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.14);
+        color: var(--accent-hi);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        font-weight: 700;
+      }
+      #s4-type {
+        position: absolute;
+        left: 0;
+        top: 790px;
+        width: 960px;
+        text-align: center;
+        font-size: 48px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: var(--accent-hi);
+        white-space: pre;
+      }
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #crown-icon {
+        margin-top: 56px;
+        width: 220px;
+        height: 150px;
+      }
+      .tag {
+        margin-top: 44px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+            <!-- ================= Scene 1 ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-la5f" class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">LOOK</div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-2gbq" class="law-tag" id="s1-tag"><span data-hf-id="hf-8y9c" class="mono">48 LAWS OF POWER · LAW 6</span></div>
+            <div data-hf-id="hf-98cf" class="headline" id="s1-head" style="top: 100px">
+              <span data-hf-id="hf-9u28" class="l">Court attention</span>
+              <span data-hf-id="hf-4nfc" class="l a">at all costs.</span>
+            </div>
+            <svg data-hf-id="hf-pa3m" id="s1-fig" class="fig" style="top: 330px; height: 900px" data-layout-allow-overflow="" viewBox="0 0 960 900">
+              <circle data-hf-id="hf-9eed" id="s1-halo" cx="480" cy="420" r="150" fill="#6366f1" fill-opacity="0.18" />
+              <g data-hf-id="hf-dyvp" id="s1-lines"></g>
+              <g data-hf-id="hf-6ei8" id="s1-dots"></g>
+              <circle data-hf-id="hf-2pls" id="s1-star" cx="480" cy="420" r="26" fill="#3f3f55" />
+              <text data-hf-id="hf-5e9p" id="s1-lab" class="fig-label" x="480" y="850" text-anchor="middle" fill="#a3a3b8">ALL EYES ON ONE</text>
+            </svg>
+            <div data-hf-id="hf-cs8c" class="body" id="s1-body" style="top: 1300px">Stand out. Be <b data-hf-id="hf-x7gj">bigger, bolder, stranger</b> than the crowd. Never get <b data-hf-id="hf-ey5n">lost in it</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2 ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-9nn4" class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">SEEN</div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-qmgh" class="l">Unseen means</span>
+              <span data-hf-id="hf-019e" class="l a">forgotten.</span>
+            </div>
+            <svg data-hf-id="hf-hbiu" id="s2-fig" class="fig" style="top: 230px; height: 660px" data-layout-allow-overflow="" viewBox="0 0 960 660">
+              <path data-hf-id="hf-9aom" class="draw" id="s2-axes" pathLength="1" stroke="#3f3f55" stroke-width="5" d="M 80 40 L 80 560 L 900 560" />
+              <path data-hf-id="hf-9sfv" class="draw" id="s2-up" pathLength="1" stroke="#22c55e" stroke-width="9" d="M 80 470 C 300 460, 420 380, 560 280 S 800 90, 880 70" />
+              <path data-hf-id="hf-ah27" class="draw" id="s2-down" pathLength="1" stroke="#ef4444" stroke-width="9" d="M 80 440 C 300 450, 460 500, 600 530 S 820 552, 880 555" />
+              <text data-hf-id="hf-dmym" id="s2-lu" class="fig-label" x="110" y="70" text-anchor="start" fill="#22c55e">NOTICED → POWER</text>
+              <text data-hf-id="hf-easi" id="s2-ld" class="fig-label" x="860" y="480" text-anchor="end" fill="#ef4444">IGNORED → GONE</text>
+              <text data-hf-id="hf-2a4s" id="s2-lt" class="fig-label" x="490" y="620" text-anchor="middle" fill="#a3a3b8">TIME</text>
+            </svg>
+            <div data-hf-id="hf-6ovk" class="chip s2-chip" style="left: 0">Seen</div>
+            <div data-hf-id="hf-rh1w" class="chip s2-chip" style="left: 330px">Discussed</div>
+            <div data-hf-id="hf-mnwl" class="chip s2-chip" style="left: 660px">Remembered</div>
+            <div data-hf-id="hf-k2kr" class="body" id="s2-body" style="top: 1110px">Power lives in <b data-hf-id="hf-moas">appearances</b>. Even scandal beats being <b data-hf-id="hf-hjid">ignored</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3 ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-zolc" class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">1841</div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-qiia" class="l">Barnum turned</span>
+              <span data-hf-id="hf-bmyu" class="l a">noise into crowds.</span>
+            </div>
+            <svg data-hf-id="hf-cjf2" id="s3-fig" class="fig" style="top: 220px; height: 580px" data-layout-allow-overflow="" viewBox="0 0 960 580">
+              <path data-hf-id="hf-7erh" class="draw s3-b" pathLength="1" stroke="#26263a" stroke-width="4" d="M 20 540 L 940 540" />
+              <path data-hf-id="hf-smq5" class="draw s3-b" pathLength="1" stroke="#ffffff" stroke-width="7" d="M 180 540 L 180 200 L 680 200 L 680 540" />
+              <path data-hf-id="hf-lm28" class="draw s3-b" pathLength="1" stroke="#a5b4fc" stroke-width="7" d="M 150 200 L 430 90 L 710 200 Z" />
+              <path data-hf-id="hf-wtmk" class="draw s3-b" pathLength="1" stroke="#6366f1" stroke-width="7" d="M 385 540 L 385 430 C 385 390, 475 390, 475 430 L 475 540" />
+              <path data-hf-id="hf-op2u" class="draw s3-b" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 180 330 L 680 330" />
+              <text data-hf-id="hf-pyis" id="s3-sign" class="fig-label" x="430" y="280" text-anchor="middle" fill="#a5b4fc">AMERICAN MUSEUM</text>
+              <g data-hf-id="hf-y00n" id="s3-noise" stroke="#ef4444" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <path data-hf-id="hf-plf6" class="s3-n" d="M 230 320 L 210 300 L 230 280 L 210 260 L 230 240" />
+                <path data-hf-id="hf-di4x" class="s3-n" d="M 620 320 L 640 300 L 620 280 L 640 260 L 620 240" />
+                <path data-hf-id="hf-d0p7" class="s3-n" d="M 140 380 L 110 370 L 130 350 L 100 340" />
+                <path data-hf-id="hf-mrbj" class="s3-n" d="M 720 380 L 750 370 L 730 350 L 760 340" />
+              </g>
+              <g data-hf-id="hf-dcuo" id="s3-crowd" fill="#22c55e"></g>
+            </svg>
+            <div data-hf-id="hf-9t0d" class="big-num mono" id="s3-num" style="top: 830px">0</div>
+            <div data-hf-id="hf-93nx" class="date-cap mono" id="s3-cap" style="top: 970px; color: var(--success)">VISITORS, 1841–1865</div>
+            <div data-hf-id="hf-jz4t" class="body" id="s3-body" style="top: 1080px"><b data-hf-id="hf-iiuk">P.T. Barnum</b> hired a deliberately bad band to play outside his museum. Crowds <b data-hf-id="hf-ieu4">paid to get inside</b>, away from the noise.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4 ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-4e3g" class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">1905</div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-bnbl" class="l">Then wrap it</span>
+              <span data-hf-id="hf-pse6" class="l a">in mystery.</span>
+            </div>
+            <svg data-hf-id="hf-87rl" id="s4-fig" class="fig" style="top: 220px; height: 560px" data-layout-allow-overflow="" viewBox="0 0 960 560">
+              <circle data-hf-id="hf-z7r4" id="s4-glow" cx="480" cy="300" r="200" fill="#6366f1" fill-opacity="0.16" />
+              <path data-hf-id="hf-vhrt" class="draw" id="s4-q" pathLength="1" stroke="#ffffff" stroke-width="22" d="M 400 220 C 400 120, 560 120, 560 220 C 560 290, 480 300, 480 370 L 480 400" />
+              <circle data-hf-id="hf-do5w" id="s4-qd" cx="480" cy="470" r="18" fill="#ffffff" />
+              <path data-hf-id="hf-0jsr" id="s4-cl" d="M 100 20 L 480 20 C 440 160, 490 340, 450 540 L 100 540 Z" fill="#1e1b4b" stroke="#6366f1" stroke-width="6" stroke-linejoin="round" />
+              <path data-hf-id="hf-uni5" id="s4-cr" d="M 860 20 L 480 20 C 520 160, 470 340, 510 540 L 860 540 Z" fill="#1e1b4b" stroke="#6366f1" stroke-width="6" stroke-linejoin="round" />
+              <path data-hf-id="hf-u2ew" class="draw" id="s4-rail" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 80 20 L 880 20" />
+            </svg>
+            <div data-hf-id="hf-3gof" id="s4-type" class="mono"> </div>
+            <div data-hf-id="hf-7mp0" class="body" id="s4-body" style="top: 920px">In 1905, Dutch-born <b data-hf-id="hf-ytdp">Margaretha Zelle</b> reinvented herself as <b data-hf-id="hf-g9g2">Mata Hari</b>, with an exotic past nobody could check. Paris couldn't look away.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-0r0u" class="l">Get seen.</span><span data-hf-id="hf-m1hb" class="l a">Stay talked about.</span></div>
+            <div data-hf-id="hf-i8jm" class="cta-sub" id="s5-sub">Follow for more big ideas explained in 30 seconds.</div>
+            <svg data-hf-id="hf-qaeg" id="crown-icon" viewBox="0 0 220 150">              <path data-hf-id="hf-l6wb" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 26 70 Q 110 -4 194 70 Q 110 144 26 70 Z" />
+              <circle data-hf-id="hf-u543" class="draw ic" pathLength="1" stroke="#6366f1" stroke-width="8" cx="110" cy="70" r="24" />
+              <path data-hf-id="hf-1vf9" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="7" d="M 40 142 L 180 142" /></svg>
+            <div data-hf-id="hf-fywd" class="tag mono" id="s5-tag">LAW 6 OF 48, EXPLAINED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      // Shared: rise-in helper, crossfades, ambient glow breath + ghost drift
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: one dot draws every eye ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        const NS = "http://www.w3.org/2000/svg";
+        const dg = document.getElementById("s1-dots"), lg = document.getElementById("s1-lines");
+        const dots = [], lines = [];
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < 5; c++) {
+            if (r === 2 && c === 2) continue;
+            const x = 180 + c * 150, y = 120 + r * 150;
+            const d = document.createElementNS(NS, "circle");
+            Object.entries({ cx: x, cy: y, r: 18, fill: "#3f3f55" }).forEach(([k, v]) => d.setAttribute(k, v));
+            dg.appendChild(d);
+            dots.push(d);
+            const l = document.createElementNS(NS, "path");
+            const ex = x + (480 - x) * 0.55, ey = y + (420 - y) * 0.55;
+            Object.entries({ d: `M ${x} ${y} L ${ex} ${ey}`, class: "draw", pathLength: 1, stroke: "#6366f1", "stroke-width": 4 }).forEach(([k, v]) => l.setAttribute(k, v));
+            lg.appendChild(l);
+            lines.push(l);
+          }
+        }
+        tl.fromTo(dots, { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: E, stagger: { each: 0.03, from: "center" } }, t + 0.6);
+        tl.fromTo("#s1-star", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, t + 0.9);
+        // the one that stands out
+        tl.to("#s1-star", { attr: { r: 60, fill: "#a5b4fc" }, duration: 0.7, ease: "expo.out" }, t + 1.8);
+        tl.fromTo("#s1-halo", { opacity: 0, scale: 0.3, svgOrigin: "480 420" }, { opacity: 1, scale: 1, duration: 0.9, ease: E }, t + 1.9);
+        tl.to(lines, { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: { each: 0.03, from: "edges" } }, t + 2.3);
+        tl.to(dots, { attr: { fill: "#6b6b80" }, duration: 0.4, ease: E }, t + 2.3);
+        tl.fromTo("#s1-halo", { scale: 1 }, { scale: 1.1, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3, svgOrigin: "480 420" }, t + 3.2);
+        tl.fromTo("#s1-lab", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.0);
+        rise("#s1-body", t + 3.4, 24);
+      }
+
+      // ---------- Scene 2: attention chart ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.to("#s2-axes", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.5);
+        tl.fromTo("#s2-lt", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 0.8);
+        tl.to("#s2-up", { strokeDashoffset: 0, duration: 1.2, ease: "power2.inOut" }, t + 1.0);
+        tl.to("#s2-down", { strokeDashoffset: 0, duration: 1.2, ease: "power2.inOut" }, t + 1.3);
+        tl.fromTo("#s2-lu", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.4, ease: E }, t + 2.1);
+        tl.fromTo("#s2-ld", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.4, ease: E }, t + 2.4);
+        tl.fromTo(".s2-chip", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: E, stagger: 0.3 }, t + 2.7);
+        rise("#s2-body", t + 3.7, 24);
+      }
+
+      // ---------- Scene 3: Barnum's museum ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.to(".s3-b", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.12 }, t + 0.5);
+        tl.fromTo("#s3-sign", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.0);
+        tl.fromTo(".s3-n", { opacity: 0, scale: 0.4, transformOrigin: "50% 100%" }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out", stagger: 0.1 }, t + 1.3);
+        tl.fromTo("#s3-noise", { x: 0 }, { x: 6, duration: 0.1, ease: "sine.inOut", yoyo: true, repeat: 9 }, t + 1.7);
+        // crowd streams into the door (hard-coded start points)
+        const NS = "http://www.w3.org/2000/svg";
+        const cg = document.getElementById("s3-crowd");
+        const starts = [[930, 520], [880, 500], [840, 525], [800, 505], [760, 522], [920, 470], [870, 455], [820, 480]];
+        starts.forEach(([x, y], i) => {
+          const c = document.createElementNS(NS, "circle");
+          Object.entries({ cx: x, cy: y, r: 14 }).forEach(([k, v]) => c.setAttribute(k, v));
+          cg.appendChild(c);
+          const at = t + 1.6 + i * 0.12;
+          tl.fromTo(c, { opacity: 0, x: 0, y: 0 }, { opacity: 1, x: 430 - x, y: 515 - y, duration: 1.1, ease: "power2.inOut" }, at);
+          tl.to(c, { opacity: 0, duration: 0.2, ease: "power2.out" }, at + 1.1);
+        });
+        rise("#s3-num", t + 1.4, 20, 0.5);
+        rise("#s3-cap", t + 1.5, 16, 0.5);
+        const c = { v: 0 };
+        const ne = document.getElementById("s3-num");
+        tl.fromTo(c, { v: 0 }, { v: 38000000, duration: 1.8, ease: "power2.out", onUpdate: () => (ne.textContent = Math.round(c.v / 100000) * 100000 > 0 ? (Math.round(c.v / 100000) * 100000).toLocaleString("en-US") : "0") }, t + 1.6);
+        rise("#s3-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 4: curtains part on a question ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.to("#s4-rail", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t + 0.4);
+        tl.fromTo("#s4-cl, #s4-cr", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 0.5);
+        tl.fromTo("#s4-cl", { scaleX: 1, svgOrigin: "100 280" }, { scaleX: 0.3, duration: 1.0, ease: "power2.inOut" }, t + 1.1);
+        tl.fromTo("#s4-cr", { scaleX: 1, svgOrigin: "860 280" }, { scaleX: 0.3, duration: 1.0, ease: "power2.inOut" }, t + 1.1);
+        tl.fromTo("#s4-glow", { opacity: 0, scale: 0.4, svgOrigin: "480 300" }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 1.5);
+        tl.to("#s4-q", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out" }, t + 1.6);
+        tl.fromTo("#s4-qd", { opacity: 0, scale: 0.2, svgOrigin: "480 470" }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, t + 2.3);
+        tl.fromTo("#s4-glow", { scale: 1 }, { scale: 1.12, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3, svgOrigin: "480 300" }, t + 2.6);
+        const typed = "1905 · PARIS · MATA HARI";
+        const ty = document.getElementById("s4-type");
+        const tp = { n: 0 };
+        tl.fromTo(tp, { n: 0 }, { n: typed.length, duration: 1.0, ease: "power1.inOut", onUpdate: () => (ty.textContent = typed.slice(0, Math.round(tp.n)) || " ") }, t + 2.4);
+        rise("#s4-body", t + 3.5, 24);
+      }
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32): deterministic particle field
+        let seed = 11;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#crown-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.25 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

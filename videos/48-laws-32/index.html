@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .law-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .law-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      /* ---------- Shared figure / node / badge ---------- */
+      .fig-label {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .node {
+        position: absolute;
+        left: 150px;
+        width: 660px;
+        height: 140px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 0 40px;
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .node .n {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.2);
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+      .node.bad {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .node.bad .n {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+      .badge {
+        position: absolute;
+        left: 500px;
+        top: 870px;
+        width: 440px;
+        height: 160px;
+        border-radius: 28px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 30px;
+        color: var(--success);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .badge svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #cta-icon {
+        margin-top: 56px;
+        width: 220px;
+        height: 150px;
+      }
+      .tag {
+        margin-top: 44px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+
+      /* ---------- Law 32 scenes ---------- */
+
+      .fig { position: absolute; left: 0; width: 960px; }
+      .lnode { position: absolute; left: 170px; width: 790px; height: 110px; display: flex; align-items: center; font-size: 44px; font-weight: 700; }
+      .lnode.hi { color: var(--accent-hi); }
+      .ticker { position: absolute; left: 0; top: 640px; width: 960px; text-align: center; }
+      .ticker span { display: inline-block; font-size: 120px; font-weight: 800; letter-spacing: -4px; font-variant-numeric: tabular-nums; }
+      .cap { position: absolute; left: 0; top: 790px; width: 960px; text-align: center; font-size: 34px; font-weight: 700; letter-spacing: 3px; }
+      .pitch {
+        position: absolute; left: 80px; width: 800px; height: 200px; border-radius: 28px;
+        display: flex; flex-direction: column; justify-content: center; padding: 0 40px; gap: 8px;
+      }
+      .pitch .k { font-size: 28px; font-weight: 700; letter-spacing: 3px; }
+      .pitch .v { font-size: 50px; font-weight: 800; }
+      .pitch.dull { border: 3px solid var(--line); background: var(--panel); color: var(--muted); }
+      .pitch.dream { border: 3px solid var(--accent); background: rgba(99, 102, 241, 0.18); color: var(--fg); box-shadow: 0 0 60px rgba(99, 102, 241, 0.35); }
+      .strike { position: absolute; left: 40px; top: 120px; width: 720px; height: 6px; border-radius: 3px; background: var(--danger); }
+
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+
+      <!-- ================= Scene 1: reality vs the portal ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-xd6x" class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">LAW 32</div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-2gbq" class="law-tag" id="s1-tag"><span data-hf-id="hf-hyh3" class="mono">48 LAWS OF POWER · LAW 32</span></div>
+            <div data-hf-id="hf-98cf" class="headline" id="s1-head" style="top: 100px">
+              <span data-hf-id="hf-lhnf" class="l">Play to people's</span>
+              <span data-hf-id="hf-dba2" class="l a">fantasies.</span>
+            </div>
+            <svg data-hf-id="hf-57jn" id="s1-fig" class="fig" style="top: 330px; height: 900px" viewBox="0 0 960 900">
+              <defs data-hf-id="hf-mh0t">
+                <radialGradient data-hf-id="hf-ey8h" id="portal-g">
+                  <stop data-hf-id="hf-1kvk" offset="0" stop-color="#a5b4fc" stop-opacity="0.75" />
+                  <stop data-hf-id="hf-2usx" offset="1" stop-color="#6366f1" stop-opacity="0.05" />
+                </radialGradient>
+              </defs>
+              <g data-hf-id="hf-a4pi" id="s1-rain">
+                <path data-hf-id="hf-gks6" stroke="#6b6b80" stroke-width="4" stroke-linecap="round" fill="none" d="M 60 140 L 45 190 M 140 110 L 125 160 M 220 160 L 205 210 M 90 260 L 75 310 M 180 300 L 165 350 M 270 240 L 255 290 M 60 400 L 45 450 M 150 440 L 135 490 M 250 380 L 235 430" />
+              </g>
+              <path data-hf-id="hf-kyds" class="draw s1-g" pathLength="1" stroke="#6b6b80" stroke-width="6" d="M 20 620 L 940 620" />
+              <text data-hf-id="hf-67hy" id="s1-real" class="fig-label" x="160" y="680" text-anchor="middle" fill="#6b6b80">REALITY</text>
+              <rect data-hf-id="hf-wo6m" id="s1-glowdoor" x="560" y="200" width="240" height="420" rx="120" fill="url(#portal-g)" />
+              <path data-hf-id="hf-ehgv" id="s1-door" class="draw" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 560 620 L 560 320 C 560 160, 800 160, 800 320 L 800 620" />
+              <g data-hf-id="hf-yalr" id="s1-stars"></g>
+              <text data-hf-id="hf-o02b" id="s1-fan" class="fig-label" x="680" y="680" text-anchor="middle" fill="#a5b4fc">FANTASY</text>
+              <g data-hf-id="hf-t42w" id="s1-ppl"></g>
+            </svg>
+            <div data-hf-id="hf-6e5j" class="body" id="s1-body" style="top: 1300px">The truth is often dull. Offer the <b data-hf-id="hf-di64">dream</b> people crave and they will <b data-hf-id="hf-91fw">flock to you</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: dotted chain ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-uhze" class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">DREAM</div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-lmkn" class="l">Reality disappoints.</span>
+              <span data-hf-id="hf-0knp" class="l a">Fantasy sells.</span>
+            </div>
+            <svg data-hf-id="hf-h4kq" class="fig" style="top: 0; height: 1100px" viewBox="0 0 960 1100">
+              <path data-hf-id="hf-2oud" id="s2-spine" class="draw" pathLength="1" stroke="#26263a" stroke-width="6" d="M 80 355 L 80 905" />
+              <circle data-hf-id="hf-dyho" class="s2-c" cx="80" cy="355" r="34" fill="#111118" stroke="#6b6b80" stroke-width="6" />
+              <circle data-hf-id="hf-k773" class="s2-c" cx="80" cy="540" r="34" fill="#111118" stroke="#a5b4fc" stroke-width="6" />
+              <circle data-hf-id="hf-t5zi" class="s2-c" cx="80" cy="720" r="34" fill="#111118" stroke="#6366f1" stroke-width="6" />
+              <circle data-hf-id="hf-y33l" class="s2-c" cx="80" cy="905" r="34" fill="#6366f1" stroke="#a5b4fc" stroke-width="6" />
+            </svg>
+            <div data-hf-id="hf-bhnm" class="lnode" id="l1" style="top: 300px; color: var(--dim)">Daily life disappoints</div>
+            <div data-hf-id="hf-cxhs" class="lnode" id="l2" style="top: 485px">People crave an escape</div>
+            <div data-hf-id="hf-1kzs" class="lnode" id="l3" style="top: 665px">You offer the dream</div>
+            <div data-hf-id="hf-yu55" class="lnode hi" id="l4" style="top: 850px">They follow the dreamer</div>
+            <div data-hf-id="hf-bjfg" class="body" id="s2-body" style="top: 1050px">Those who peddle <b data-hf-id="hf-zpru">hard truths</b> get ignored. Those who sell <b data-hf-id="hf-46ve">wonder</b> get power.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: Bragadino the alchemist ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-cabg" class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">GOLD</div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-is9i" class="l">Venice wanted</span>
+              <span data-hf-id="hf-e69h" class="l a">magic gold.</span>
+            </div>
+            <svg data-hf-id="hf-74fo" id="s3-fig" class="fig" style="top: 210px; height: 420px" viewBox="0 0 960 420">
+              <path data-hf-id="hf-upqc" class="draw s3-fl" pathLength="1" stroke="#ffffff" stroke-width="7" d="M 330 40 L 330 170 L 220 380 L 440 380 L 330 170 M 300 40 L 360 40" />
+              <path data-hf-id="hf-4iim" class="draw s3-fl" pathLength="1" stroke="#6366f1" stroke-width="6" d="M 262 300 L 398 300" />
+              <circle data-hf-id="hf-3hjf" class="s3-bub" cx="320" cy="330" r="10" fill="#a5b4fc" />
+              <circle data-hf-id="hf-4ynd" class="s3-bub" cx="345" cy="350" r="8" fill="#a5b4fc" />
+              <circle data-hf-id="hf-g0ac" class="s3-bub" cx="300" cy="355" r="7" fill="#a5b4fc" />
+              <path data-hf-id="hf-m5i6" class="draw s3-fl" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 470 210 L 540 210 M 520 190 L 540 210 L 520 230" />
+              <g data-hf-id="hf-qkwh" id="s3-coin">
+                <circle data-hf-id="hf-suny" cx="680" cy="210" r="110" fill="#f59e0b" fill-opacity="0.18" stroke="#fbbf24" stroke-width="8" />
+                <circle data-hf-id="hf-rawj" cx="680" cy="210" r="80" fill="none" stroke="#fbbf24" stroke-width="4" />
+                <path data-hf-id="hf-839b" d="M 680 160 L 680 260 M 655 180 C 655 165, 705 165, 705 185 C 705 205, 655 210, 655 232 C 655 255, 705 255, 705 240" fill="none" stroke="#fbbf24" stroke-width="7" stroke-linecap="round" />
+              </g>
+              <path data-hf-id="hf-qduw" id="s3-crack" class="draw" pathLength="1" stroke="#ef4444" stroke-width="7" d="M 640 100 L 690 180 L 660 230 L 720 320" />
+            </svg>
+            <div data-hf-id="hf-laaa" class="ticker"><span data-hf-id="hf-qgkg" class="mono" id="s3-year">1580</span></div>
+            <div data-hf-id="hf-3wrl" class="cap mono" id="cap-a" style="color: #fbbf24">VENICE · GOLD PROMISED</div>
+            <div data-hf-id="hf-acyy" class="cap mono" id="cap-b" style="color: var(--danger)">HANGED IN MUNICH</div>
+            <div data-hf-id="hf-lm0f" class="body" id="s3-body" style="top: 900px">Alchemist <b data-hf-id="hf-pzpi">Marco Bragadino</b> dazzled Venice with visions of endless gold. The fantasy kept him rich, until the gold <b data-hf-id="hf-0gw5">never came</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: the pitch flip ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-h019" class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">VISION</div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-q5a0" class="l">Sell the vision,</span>
+              <span data-hf-id="hf-hfri" class="l a">not the specs.</span>
+            </div>
+            <div data-hf-id="hf-iht0" class="pitch dull" id="p1" style="top: 290px"><span data-hf-id="hf-f3xg" class="k mono">WHAT IT IS</span><span data-hf-id="hf-uwjb" class="v">Features. Facts. Effort.</span><div data-hf-id="hf-hemc" class="strike" id="p1-strike"></div></div>
+            <svg data-hf-id="hf-ff6g" class="fig" style="top: 510px; height: 120px" viewBox="0 0 960 120">
+              <path data-hf-id="hf-ao3o" id="s4-ar" class="draw" pathLength="1" stroke="#a5b4fc" stroke-width="7" d="M 480 10 L 480 100 M 456 76 L 480 100 L 504 76" />
+            </svg>
+            <div data-hf-id="hf-ujw1" class="pitch dream" id="p2" style="top: 650px"><span data-hf-id="hf-fx89" class="k mono" style="color: var(--accent-hi)">WHO THEY BECOME</span><span data-hf-id="hf-zbd7" class="v">Rich. Loved. Free.</span></div>
+            <div data-hf-id="hf-nbep" class="body" id="s4-body" style="top: 920px">Paint the life they want. Keep it close to real, but <b data-hf-id="hf-uihx">never too specific</b>.</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-3aix" class="l">Sell the dream,</span><span data-hf-id="hf-x45d" class="l a">not the truth.</span></div>
+            <div data-hf-id="hf-i8jm" class="cta-sub" id="s5-sub">Follow for more big ideas explained in 30 seconds.</div>
+            <svg data-hf-id="hf-0r2d" id="cta-icon" viewBox="0 0 220 150">
+              <path data-hf-id="hf-okhe" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="7" d="M 120 14 C 70 24, 50 80, 80 116 C 106 146, 156 140, 176 110 C 130 118, 96 80, 120 14 Z" />
+              <path data-hf-id="hf-m7ym" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="6" d="M 46 30 L 46 62 M 30 46 L 62 46 M 180 30 L 180 50 M 170 40 L 190 40" />
+</svg>
+            <div data-hf-id="hf-rwew" class="tag mono" id="s5-tag">LAW 32 OF 48, EXPLAINED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      // Shared: rise-in helper, crossfades, ambient glow breath + ghost drift
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+
+      const SVGNS = "http://www.w3.org/2000/svg";
+      const mk = (tag, attrs, parent) => {
+        const n = document.createElementNS(SVGNS, tag);
+        Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v));
+        parent.appendChild(n);
+        return n;
+      };
+
+      // ---------- Scene 1: drab rain vs glowing portal ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        tl.to(".s1-g", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, t + 0.6);
+        tl.fromTo("#s1-rain", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, t + 0.7);
+        tl.fromTo("#s1-rain", { y: 0 }, { y: 30, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 7, immediateRender: false }, t + 1.3);
+        tl.fromTo("#s1-real", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.0);
+        tl.to("#s1-door", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out" }, t + 1.2);
+        tl.fromTo("#s1-glowdoor", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: E }, t + 1.6);
+        tl.fromTo("#s1-fan", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.8);
+        const sg = document.getElementById("s1-stars");
+        const stars = [[640, 300, 9], [720, 260, 7], [700, 380, 11], [610, 460, 7], [760, 470, 9], [660, 540, 6], [740, 340, 6]];
+        const sEls = stars.map(([x, y, r]) => mk("circle", { cx: x, cy: y, r, fill: "#ffffff" }, sg));
+        tl.fromTo(sEls, { opacity: 0, scale: 0.2, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: E, stagger: 0.08 }, t + 2.0);
+        // people walk out of the rain toward the portal
+        const pg = document.getElementById("s1-ppl");
+        const xs = [80, 170, 260];
+        xs.forEach((x, i) => {
+          const g = mk("g", {}, pg);
+          mk("circle", { cx: x, cy: 545, r: 16, fill: "none", stroke: "#ffffff", "stroke-width": 5 }, g);
+          mk("path", { d: `M ${x - 22} 610 C ${x - 22} 572, ${x + 22} 572, ${x + 22} 610`, fill: "none", stroke: "#ffffff", "stroke-width": 5, "stroke-linecap": "round" }, g);
+          tl.fromTo(g, { opacity: 0, x: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 2.2 + i * 0.1);
+          tl.to(g, { x: [740, 680, 620][i] - x, duration: 1.6, ease: "power2.inOut" }, t + 2.7 + i * 0.27);
+        });
+        rise("#s1-body", t + 3.4, 24);
+      }
+
+      // ---------- Scene 2: timeline chain ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.to("#s2-spine", { strokeDashoffset: 0, duration: 2.2, ease: "power2.inOut" }, t + 0.7);
+        const cs = gsap.utils.toArray(".s2-c");
+        ["#l1", "#l2", "#l3", "#l4"].forEach((n, i) => {
+          const at = t + 0.7 + i * 0.7;
+          tl.fromTo(cs[i], { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, at);
+          tl.fromTo(n, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, at + 0.1);
+        });
+        tl.to(cs[3], { scale: 1.25, transformOrigin: "50% 50%", duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 3.5);
+        rise("#s2-body", t + 3.8, 24);
+      }
+
+      // ---------- Scene 3: flask -> gold -> crack ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.to(".s3-fl", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.27 }, t + 0.5);
+        tl.fromTo(".s3-bub", { opacity: 0, y: 0 }, { opacity: 1, y: -120, duration: 1.0, ease: "power2.out", stagger: 0.27 }, t + 1.0);
+        tl.fromTo("#s3-coin", { opacity: 0, scale: 0.4, svgOrigin: "680 210" }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, t + 1.5);
+        tl.to("#s3-coin", { rotation: 8, svgOrigin: "680 210", duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 2.1);
+        rise(".ticker", t + 1.3, 20, 0.5);
+        rise("#cap-a", t + 1.4, 16, 0.5);
+        const el = document.getElementById("s3-year");
+        const st = { y: 1580 };
+        tl.fromTo(st, { y: 1580 }, { y: 1591, duration: 1.4, ease: "power2.inOut", onUpdate: () => (el.textContent = String(Math.round(st.y))) }, t + 1.9);
+        tl.to("#s3-crack", { strokeDashoffset: 0, duration: 0.35, ease: "expo.out" }, t + 3.3);
+        tl.to("#s3-coin", { opacity: 0.3, duration: 0.5, ease: E }, t + 3.5);
+        tl.to("#cap-a", { opacity: 0, duration: 0.3, ease: E }, t + 3.3);
+        tl.fromTo("#cap-b", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.4);
+        tl.to("#s3-year", { color: "#ef4444", duration: 0.3, ease: E }, t + 3.4);
+        rise("#s3-body", t + 3.7, 24);
+      }
+
+      // ---------- Scene 4: dull pitch struck through, dream pitch glows ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo("#p1", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 0.6);
+        tl.fromTo("#p1-strike", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.5, ease: "expo.out" }, t + 1.4);
+        tl.to("#p1", { opacity: 0.45, duration: 0.5, ease: E }, t + 1.8);
+        tl.to("#s4-ar", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t + 1.9);
+        tl.fromTo("#p2", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, t + 2.3);
+        tl.to("#p2", { scale: 1.04, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 3.0);
+        rise("#s4-body", t + 3.4, 24);
+      }
+
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32): deterministic particle field
+        let seed = 11;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#cta-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.25 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

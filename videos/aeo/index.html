@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 -> 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .pill-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .pill-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 2px;
+      }
+      .lbl {
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: 2px;
+      }
+
+      /* ---------- Scene 1: ten links -> one answer ---------- */
+      .search {
+        position: absolute;
+        left: 0;
+        top: 330px;
+        width: 960px;
+        height: 104px;
+        border-radius: 52px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 0 40px;
+      }
+      .search svg {
+        width: 48px;
+        height: 48px;
+        flex: none;
+      }
+      #s1-query {
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--fg);
+        white-space: pre;
+      }
+      #s1-list {
+        position: absolute;
+        left: 0;
+        top: 470px;
+        width: 960px;
+        height: 700px;
+      }
+      #s1-ans {
+        position: absolute;
+        left: 0;
+        top: 560px;
+        width: 960px;
+        height: 330px;
+        border-radius: 32px;
+        border: 4px solid var(--accent);
+        background: rgba(99, 102, 241, 0.12);
+        box-shadow: 0 30px 90px rgba(99, 102, 241, 0.3);
+        padding: 44px 50px;
+      }
+      #s1-ans .lbl {
+        color: var(--accent-hi);
+      }
+      .ans-text {
+        margin-top: 22px;
+        font-size: 56px;
+        font-weight: 800;
+        line-height: 1.12;
+        letter-spacing: -1.5px;
+      }
+      .ans-src {
+        margin-top: 26px;
+        font-size: 30px;
+        color: var(--success);
+        font-weight: 600;
+      }
+      .count-wrap {
+        position: absolute;
+        left: 0;
+        top: 1170px;
+        width: 960px;
+        text-align: center;
+      }
+      #s1-count {
+        display: inline-block;
+        font-size: 120px;
+        font-weight: 800;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+      }
+      .count-cap {
+        position: absolute;
+        left: 0;
+        top: 1310px;
+        width: 960px;
+        text-align: center;
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: 3px;
+      }
+
+      /* ---------- Scene 2: answer engines ---------- */
+      .eng {
+        position: absolute;
+        top: 330px;
+        width: 290px;
+        height: 300px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+      }
+      .eng svg {
+        width: 160px;
+        height: 160px;
+      }
+      .eng .lbl {
+        color: var(--accent-hi);
+      }
+      #s2-lines {
+        position: absolute;
+        left: 0;
+        top: 630px;
+        width: 960px;
+        height: 300px;
+      }
+      #s2-one {
+        position: absolute;
+        left: 200px;
+        top: 930px;
+        width: 560px;
+        height: 130px;
+        border-radius: 65px;
+        border: 4px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        color: var(--success);
+        font-size: 48px;
+        font-weight: 800;
+        letter-spacing: 1px;
+      }
+      #s2-one svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+
+      /* ---------- Scene 3: SEO vs AEO ---------- */
+      .panel {
+        position: absolute;
+        top: 300px;
+        width: 460px;
+        height: 640px;
+        border-radius: 32px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+      }
+      .panel-h {
+        position: absolute;
+        left: 0;
+        top: 26px;
+        width: 460px;
+        text-align: center;
+        font-size: 44px;
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
+      .panel-s {
+        position: absolute;
+        left: 0;
+        top: 84px;
+        width: 460px;
+        text-align: center;
+        color: var(--dim);
+      }
+      .rank {
+        position: absolute;
+        left: 30px;
+        width: 44px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .rbar {
+        position: absolute;
+        left: 90px;
+        width: 330px;
+        height: 70px;
+        border-radius: 18px;
+        background: #1c1c2b;
+        border: 3px solid var(--line);
+      }
+      #s3-you {
+        background: rgba(99, 102, 241, 0.3);
+        border-color: var(--accent);
+        display: flex;
+        align-items: center;
+        padding-left: 28px;
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: 2px;
+      }
+      #s3-card {
+        position: absolute;
+        left: 30px;
+        top: 160px;
+        width: 400px;
+        height: 290px;
+        border-radius: 24px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.1);
+      }
+      #s3-card .lbl {
+        position: absolute;
+        left: 30px;
+        top: 26px;
+        color: var(--accent-hi);
+      }
+      #s3-card svg {
+        position: absolute;
+        left: 30px;
+        top: 90px;
+        width: 340px;
+        height: 170px;
+      }
+      #s3-chip {
+        position: absolute;
+        left: 30px;
+        top: 490px;
+        width: 400px;
+        height: 100px;
+        border-radius: 50px;
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--dim);
+      }
+      #s3-chip svg {
+        width: 48px;
+        height: 48px;
+        flex: none;
+      }
+      #s3-chip-on {
+        position: absolute;
+        inset: -3px;
+        border-radius: 50px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+      }
+      #s3-chip span,
+      #s3-chip svg {
+        position: relative;
+      }
+      .trio {
+        position: absolute;
+        top: 1180px;
+        width: 260px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .trio .tp {
+        width: 200px;
+        height: 84px;
+        border-radius: 42px;
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: var(--dim);
+      }
+      .trio.on .tp {
+        border-color: var(--accent);
+        background: rgba(99, 102, 241, 0.22);
+        color: var(--fg);
+      }
+      .trio .lbl {
+        color: var(--muted);
+        text-align: center;
+      }
+      .trio.on .lbl {
+        color: var(--accent-hi);
+      }
+      #s3-arrows {
+        position: absolute;
+        left: 0;
+        top: 1180px;
+        width: 960px;
+        height: 84px;
+      }
+
+      /* ---------- Scene 4: how to get picked ---------- */
+      #s4-page {
+        position: absolute;
+        left: 0;
+        top: 300px;
+        width: 960px;
+        height: 440px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        overflow: hidden;
+      }
+      .chrome {
+        height: 56px;
+        border-bottom: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-left: 28px;
+      }
+      .chrome i {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--line);
+      }
+      .mrow {
+        position: absolute;
+        left: 40px;
+        border-radius: 18px;
+        border: 3px solid transparent;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+      }
+      #m-q {
+        top: 84px;
+        width: 880px;
+        height: 90px;
+        font-size: 44px;
+        font-weight: 800;
+        letter-spacing: -1px;
+      }
+      #m-a {
+        top: 190px;
+        width: 880px;
+        height: 96px;
+        font-size: 36px;
+        color: var(--dim);
+      }
+      #m-s {
+        top: 306px;
+        width: 560px;
+        height: 90px;
+        font-size: 30px;
+        color: var(--accent-hi);
+      }
+      .hl {
+        position: absolute;
+        inset: -3px;
+        border-radius: 18px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.12);
+      }
+      .mrow span {
+        position: relative;
+      }
+      .step {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        font-size: 46px;
+        font-weight: 600;
+      }
+      .step svg {
+        width: 96px;
+        height: 96px;
+        flex: none;
+      }
+
+      /* ---------- Scene 5: CTA ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #cta-icon {
+        margin-top: 50px;
+        width: 200px;
+        height: 160px;
+      }
+      .tag {
+        margin-top: 40px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: ten links -> one answer ================= -->
+      <div id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div class="si" id="s1-in">
+          <div class="glow" id="s1-glow"></div>
+          <div class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">AEO</div>
+          <div class="safe">
+            <div class="pill-tag" id="s1-tag"><span class="mono">ANSWER ENGINE OPTIMIZATION</span></div>
+            <div class="headline" id="s1-head" style="top: 100px">
+              <span class="l">What is</span>
+              <span class="l a">AEO?</span>
+            </div>
+            <div class="search" id="s1-search">
+              <svg viewBox="0 0 48 48"><circle cx="20" cy="20" r="13" fill="none" stroke="#a5b4fc" stroke-width="5" /><path d="M 30 30 L 42 42" stroke="#a5b4fc" stroke-width="5" stroke-linecap="round" /></svg>
+              <span id="s1-query"> </span>
+            </div>
+            <svg id="s1-list" viewBox="0 0 960 700">
+              <g class="s1-row"><circle cx="40" cy="32" r="16" fill="#26263a" /><rect x="80" y="14" width="620" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="44" width="341" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="100" r="16" fill="#26263a" /><rect x="80" y="82" width="540" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="112" width="297" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="168" r="16" fill="#26263a" /><rect x="80" y="150" width="700" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="180" width="385" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="236" r="16" fill="#26263a" /><rect x="80" y="218" width="480" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="248" width="264" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="304" r="16" fill="#26263a" /><rect x="80" y="286" width="600" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="316" width="330" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="372" r="16" fill="#26263a" /><rect x="80" y="354" width="660" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="384" width="363" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="440" r="16" fill="#26263a" /><rect x="80" y="422" width="520" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="452" width="286" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="508" r="16" fill="#26263a" /><rect x="80" y="490" width="580" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="520" width="319" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="576" r="16" fill="#26263a" /><rect x="80" y="558" width="640" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="588" width="352" height="12" rx="6" fill="#26263a" /></g>
+              <g class="s1-row"><circle cx="40" cy="644" r="16" fill="#26263a" /><rect x="80" y="626" width="500" height="20" rx="10" fill="#3a3a6a" /><rect x="80" y="656" width="275" height="12" rx="6" fill="#26263a" /></g>
+            </svg>
+            <div id="s1-ans">
+              <div class="lbl mono">THE ANSWER</div>
+              <div class="ans-text">About 10 minutes for a hard-boiled egg.</div>
+              <div class="ans-src mono">SOURCE: YOURSITE.COM</div>
+            </div>
+            <div class="count-wrap"><span id="s1-count" class="mono">0</span></div>
+            <div class="count-cap mono" id="cap-links" style="color: var(--dim)">BLUE LINKS</div>
+            <div class="count-cap mono" id="cap-one" style="color: var(--success)">DIRECT ANSWER</div>
+            <div class="body" id="s1-body" style="top: 1400px">Search used to give you <b>ten links</b>. Now it gives you <b>one answer</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: answer engines ================= -->
+      <div id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div class="si" id="s2-in">
+          <div class="glow" id="s2-glow"></div>
+          <div class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">Q&amp;A</div>
+          <div class="safe">
+            <div class="headline" id="s2-head" style="top: 60px">
+              <span class="l">Meet the</span>
+              <span class="l a">answer engines.</span>
+            </div>
+            <div class="eng" id="e1" style="left: 0px">
+              <svg viewBox="0 0 160 160">
+                <rect class="draw e1d" pathLength="1" x="16" y="16" width="128" height="128" rx="16" stroke="#ffffff" stroke-width="6" />
+                <rect class="draw e1d" pathLength="1" x="34" y="36" width="92" height="40" rx="8" stroke="#a5b4fc" stroke-width="6" />
+                <path class="draw e1d" pathLength="1" d="M 34 98 L 126 98 M 34 120 L 96 120" stroke="#6b6b80" stroke-width="6" />
+              </svg>
+              <div class="lbl mono">SNIPPET</div>
+            </div>
+            <div class="eng" id="e2" style="left: 335px">
+              <svg viewBox="0 0 160 160">
+                <rect class="draw e2d" pathLength="1" x="62" y="18" width="36" height="70" rx="18" stroke="#ffffff" stroke-width="6" />
+                <path class="draw e2d" pathLength="1" d="M 42 70 C 42 118, 118 118, 118 70 M 80 106 L 80 136 M 56 138 L 104 138" stroke="#ffffff" stroke-width="6" />
+                <path class="draw e2d" pathLength="1" d="M 24 40 C 14 58, 14 82, 24 100 M 136 40 C 146 58, 146 82, 136 100" stroke="#a5b4fc" stroke-width="6" />
+              </svg>
+              <div class="lbl mono">VOICE</div>
+            </div>
+            <div class="eng" id="e3" style="left: 670px">
+              <svg viewBox="0 0 160 160">
+                <path class="draw e3d" pathLength="1" d="M 32 22 L 128 22 Q 144 22 144 38 L 144 100 Q 144 116 128 116 L 70 116 L 40 142 L 44 116 L 32 116 Q 16 116 16 100 L 16 38 Q 16 22 32 22 Z" stroke="#ffffff" stroke-width="6" />
+                <path class="draw e3d" pathLength="1" d="M 80 40 L 87 61 L 108 69 L 87 77 L 80 98 L 73 77 L 52 69 L 73 61 Z" stroke="#a5b4fc" stroke-width="5" />
+              </svg>
+              <div class="lbl mono">AI CHAT</div>
+            </div>
+            <svg id="s2-lines" viewBox="0 0 960 300">
+              <path class="draw s2-ln" pathLength="1" d="M 145 10 C 145 160, 480 130, 480 290" stroke="#6366f1" stroke-width="6" />
+              <path class="draw s2-ln" pathLength="1" d="M 480 10 L 480 290" stroke="#6366f1" stroke-width="6" />
+              <path class="draw s2-ln" pathLength="1" d="M 815 10 C 815 160, 480 130, 480 290" stroke="#6366f1" stroke-width="6" />
+            </svg>
+            <div id="s2-one">
+              <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="none" stroke="#22c55e" stroke-width="5" /><path class="draw" id="s2-check" pathLength="1" stroke="#22c55e" stroke-width="6" d="M 19 33 L 28 42 L 46 23" /></svg>
+              <span>ONE ANSWER</span>
+            </div>
+            <div class="body" id="s2-body" style="top: 1130px">Featured snippets, voice assistants and AI chatbots don't list options. <b>They reply with one answer.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: SEO vs AEO ================= -->
+      <div id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div class="si" id="s3-in">
+          <div class="glow" id="s3-glow"></div>
+          <div class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">VS</div>
+          <div class="safe">
+            <div class="headline" id="s3-head" style="top: 60px">
+              <span class="l">AEO = become</span>
+              <span class="l a">the answer.</span>
+            </div>
+            <div class="panel" id="p-seo" style="left: 0px">
+              <div class="panel-h">SEO</div>
+              <div class="panel-s lbl mono">RANKS YOU</div>
+              <div class="rank mono" style="top: 160px">1</div>
+              <div class="rank mono" style="top: 250px">2</div>
+              <div class="rank mono" style="top: 340px">3</div>
+              <div class="rank mono" style="top: 430px">4</div>
+              <div class="rank mono" style="top: 520px">5</div>
+              <div class="rbar s3-bar" style="top: 160px"></div>
+              <div class="rbar s3-bar" style="top: 250px"></div>
+              <div class="rbar s3-bar" style="top: 340px"></div>
+              <div class="rbar s3-bar" style="top: 430px"></div>
+              <div class="rbar mono" id="s3-you" style="top: 520px">YOU</div>
+            </div>
+            <div class="panel" id="p-aeo" style="left: 500px">
+              <div class="panel-h" style="color: var(--accent-hi)">AEO</div>
+              <div class="panel-s lbl mono">PICKS YOU</div>
+              <div id="s3-card">
+                <div class="lbl mono">ANSWER</div>
+                <svg viewBox="0 0 340 170">
+                  <path class="draw s3-tx" pathLength="1" d="M 4 20 L 330 20" stroke="#ffffff" stroke-width="18" />
+                  <path class="draw s3-tx" pathLength="1" d="M 4 80 L 290 80" stroke="#6b6b80" stroke-width="14" />
+                  <path class="draw s3-tx" pathLength="1" d="M 4 130 L 220 130" stroke="#6b6b80" stroke-width="14" />
+                </svg>
+              </div>
+              <div id="s3-chip">
+                <div id="s3-chip-on"></div>
+                <svg viewBox="0 0 48 48"><path class="draw" id="s3-check" pathLength="1" stroke="#22c55e" stroke-width="6" d="M 10 25 L 20 35 L 38 14" /></svg>
+                <span class="mono" id="s3-site">yoursite.com</span>
+              </div>
+            </div>
+            <div class="body" id="s3-body" style="top: 990px">SEO earns you a <b>ranking</b>. AEO gets your content <b>chosen as the answer</b>.</div>
+            <svg id="s3-arrows" viewBox="0 0 960 84">
+              <path class="draw s3-ar" pathLength="1" d="M 240 42 L 340 42 M 322 28 L 340 42 L 322 56" stroke="#6366f1" stroke-width="5" />
+              <path class="draw s3-ar" pathLength="1" d="M 620 42 L 720 42 M 702 28 L 720 42 L 702 56" stroke="#6366f1" stroke-width="5" />
+            </svg>
+            <div class="trio" id="t1" style="left: 0px"><div class="tp">SEO</div><div class="lbl mono">RANKED</div></div>
+            <div class="trio on" id="t2" style="left: 350px"><div class="tp">AEO</div><div class="lbl mono">THE ANSWER</div></div>
+            <div class="trio" id="t3" style="left: 700px"><div class="tp">GEO</div><div class="lbl mono">CITED BY AI</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: how to get picked ================= -->
+      <div id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div class="si" id="s4-in">
+          <div class="glow" id="s4-glow"></div>
+          <div class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">HOW</div>
+          <div class="safe">
+            <div class="headline" id="s4-head" style="top: 60px">
+              <span class="l">How to get</span>
+              <span class="l a">picked.</span>
+            </div>
+            <div id="s4-page">
+              <div class="chrome"><i></i><i></i><i></i></div>
+              <div class="mrow" id="m-q"><div class="hl" id="hl-q"></div><span>How long to boil an egg?</span></div>
+              <div class="mrow" id="m-a"><div class="hl" id="hl-a"></div><span>About 10 minutes for hard-boiled.</span></div>
+              <div class="mrow mono" id="m-s"><div class="hl" id="hl-s"></div><span>"@type": "FAQPage"</span></div>
+            </div>
+            <div class="step" id="st1" style="top: 800px">
+              <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" fill="rgba(99,102,241,0.18)" stroke="#6366f1" stroke-width="5" /><path class="draw st-ck" pathLength="1" stroke="#22c55e" stroke-width="8" d="M 30 50 L 43 63 L 67 36" /></svg>
+              <span>Ask the real question</span>
+            </div>
+            <div class="step" id="st2" style="top: 940px">
+              <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" fill="rgba(99,102,241,0.18)" stroke="#6366f1" stroke-width="5" /><path class="draw st-ck" pathLength="1" stroke="#22c55e" stroke-width="8" d="M 30 50 L 43 63 L 67 36" /></svg>
+              <span>Answer it in two lines</span>
+            </div>
+            <div class="step" id="st3" style="top: 1080px">
+              <svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="42" fill="rgba(99,102,241,0.18)" stroke="#6366f1" stroke-width="5" /><path class="draw st-ck" pathLength="1" stroke="#22c55e" stroke-width="8" d="M 30 50 L 43 63 L 67 36" /></svg>
+              <span>Add schema markup</span>
+            </div>
+            <div class="body" id="s4-body" style="top: 1250px">Make the answer easy for a machine to <b>find, lift and trust</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div class="si" id="s5-in">
+          <div class="glow" id="s5-glow" style="top: 120px"></div>
+          <div id="particles"></div>
+          <div class="cta">
+            <div class="shot-wrap" id="s5-shot">
+              <svg id="ring" viewBox="0 0 440 440">
+                <circle cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div class="shot"><img src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div class="cta-head" id="s5-head">Be the answer,<br><span class="a">not a link.</span></div>
+            <div class="cta-sub" id="s5-sub">Follow for more AI &amp; tech explained in 30 seconds.</div>
+            <svg id="cta-icon" viewBox="0 0 200 160">
+              <path class="draw ic" pathLength="1" d="M 40 14 L 160 14 Q 184 14 184 38 L 184 98 Q 184 122 160 122 L 84 122 L 46 150 L 52 122 L 40 122 Q 16 122 16 98 L 16 38 Q 16 14 40 14 Z" stroke="#a5b4fc" stroke-width="8" />
+              <path class="draw ic" pathLength="1" d="M 68 70 L 92 94 L 136 46" stroke="#22c55e" stroke-width="9" />
+            </svg>
+            <div class="tag mono" id="s5-tag">AEO, EXPLAINED IN 30s</div>
+          </div>
+        </div>
+      </div>
+
+      <audio id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: ten links collapse into one answer ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        rise("#s1-search", t + 0.4, 30, 0.5);
+        const q = "how long to boil an egg?";
+        const qe = document.getElementById("s1-query");
+        const tp = { n: 0 };
+        tl.fromTo(tp, { n: 0 }, { n: q.length, duration: 0.8, ease: "power1.inOut", onUpdate: () => (qe.textContent = q.slice(0, Math.round(tp.n)) || " ") }, t + 0.6);
+        // rows stack in while the counter climbs 0 -> 10
+        tl.fromTo(".s1-row", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.4, ease: E, stagger: 0.27 }, t + 0.8);
+        rise(".count-wrap", t + 0.8, 20, 0.4);
+        rise("#cap-links", t + 0.9, 16, 0.4);
+        const cnt = document.getElementById("s1-count");
+        const c = { v: 0 };
+        tl.fromTo(c, { v: 0 }, { v: 10, duration: 2.6, ease: "none", onUpdate: () => (cnt.textContent = Math.round(c.v)) }, t + 0.8);
+        // collapse to one answer
+        tl.to("#s1-list", { opacity: 0, scaleY: 0.2, transformOrigin: "50% 50%", duration: 0.5, ease: "power3.in" }, t + 3.4);
+        tl.fromTo("#s1-ans", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, t + 3.8);
+        const c2 = { v: 10 };
+        tl.fromTo(c2, { v: 10 }, { v: 1, duration: 0.6, ease: "power2.out", immediateRender: false, onUpdate: () => (cnt.textContent = Math.round(c2.v)) }, t + 3.5);
+        tl.to("#s1-count", { color: "#22c55e", duration: 0.4, ease: E }, t + 3.8);
+        tl.to("#cap-links", { opacity: 0, duration: 0.3, ease: "power2.out" }, t + 3.7);
+        tl.fromTo("#cap-one", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.9);
+        rise("#s1-body", t + 4.1, 24);
+      }
+
+      // ---------- Scene 2: three engines converge on one answer ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        ["#e1", "#e2", "#e3"].forEach((e, i) => {
+          const at = t + 0.7 + i * 0.35;
+          tl.fromTo(e, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, at);
+          tl.to(`.e${i + 1}d`, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.27 }, at + 0.2);
+        });
+        tl.to(".s2-ln", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.3 }, t + 2.2);
+        tl.fromTo("#s2-one", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, t + 3.0);
+        tl.to("#s2-check", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, t + 3.3);
+        tl.fromTo("#s2-one", { scale: 1 }, { scale: 1.05, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3, immediateRender: false }, t + 3.7);
+        rise("#s2-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 3: SEO ladder vs AEO answer ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.fromTo("#p-seo", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 0.6);
+        tl.fromTo("#p-aeo", { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 0.9);
+        // YOU climbs from 5 to 1, others shift down
+        tl.to("#s3-you", { y: -360, duration: 1.0, ease: "power3.inOut" }, t + 1.5);
+        tl.to(".s3-bar", { y: 90, duration: 1.0, ease: "power3.inOut" }, t + 1.5);
+        // AEO: answer card writes itself, source chip lights up
+        tl.to(".s3-tx", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: 0.27 }, t + 1.4);
+        tl.fromTo("#s3-chip-on", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: E }, t + 2.4);
+        tl.to("#s3-site", { color: "#22c55e", duration: 0.5, ease: E }, t + 2.4);
+        tl.to("#s3-check", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, t + 2.5);
+        tl.fromTo("#s3-chip", { scale: 1 }, { scale: 1.05, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 2.9);
+        rise("#s3-body", t + 3.0, 24);
+        // trio chain
+        ["#t1", "#t2", "#t3"].forEach((e, i) => rise(e, t + 3.6 + i * 0.3, 24, 0.5));
+        tl.to(".s3-ar", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.3 }, t + 3.8);
+      }
+
+      // ---------- Scene 4: checklist lights up the page ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo("#s4-page", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, t + 0.5);
+        tl.fromTo(".mrow span", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E, stagger: 0.27 }, t + 0.8);
+        const steps = ["#st1", "#st2", "#st3"];
+        const hls = ["#hl-q", "#hl-a", "#hl-s"];
+        const checks = gsap.utils.toArray(".st-ck");
+        steps.forEach((s, i) => {
+          const at = t + 1.6 + i * 0.8;
+          tl.fromTo(s, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, at);
+          tl.to(checks[i], { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, at + 0.3);
+          tl.fromTo(hls[i], { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, at + 0.3);
+        });
+        rise("#s4-body", t + 4.2, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        let seed = 23;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#cta-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.3 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

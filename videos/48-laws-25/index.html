@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .law-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .law-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      /* ---------- Scene 1 ---------- */
+      #s1-fig {
+        position: absolute;
+        left: 0;
+        top: 330px;
+        width: 960px;
+        height: 900px;
+      }
+      .fig-label {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .node {
+        position: absolute;
+        left: 150px;
+        width: 660px;
+        height: 140px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 0 40px;
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .node .n {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.2);
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+      .node.bad {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .node.bad .n {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+      .badge {
+        position: absolute;
+        left: 500px;
+        top: 870px;
+        width: 440px;
+        height: 160px;
+        border-radius: 28px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 30px;
+        color: var(--success);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .badge svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #cta-icon {
+        margin-top: 56px;
+        width: 220px;
+        height: 150px;
+      }
+      .tag {
+        margin-top: 44px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }      .fig {
+        position: absolute;
+        left: 0;
+        width: 960px;
+      }
+      .big-num {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .cap {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+      .typed {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: var(--accent-hi);
+        white-space: pre;
+      }
+
+
+      /* ---------- Law 25 scenes ---------- */
+      .tag2 {
+        position: absolute;
+        height: 84px;
+        border-radius: 16px;
+        border: 3px solid var(--muted);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--dim);
+      }
+      .tag2 .strike {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        top: 38px;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--danger);
+      }
+      #s2-new {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        color: var(--success);
+        font-size: 42px;
+      }
+      #s3-name {
+        font-size: 76px;
+        color: var(--fg);
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1 ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-w95q" class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">NEW</div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-2gbq" class="law-tag" id="s1-tag"><span data-hf-id="hf-0iaz" class="mono">48 LAWS OF POWER · LAW 25</span></div>
+            <div data-hf-id="hf-98cf" class="headline" id="s1-head" style="top: 100px">
+              <span data-hf-id="hf-dd0d" class="l">Re-create</span>
+              <span data-hf-id="hf-ehur" class="l a">yourself.</span>
+            </div>
+            <svg data-hf-id="hf-pa3m" id="s1-fig" class="fig" style="top: 330px; height: 900px" data-layout-allow-overflow="" viewBox="0 0 960 900">
+              <g data-hf-id="hf-fm8x" id="s1-old" stroke="#6b6b80" stroke-width="7" fill="none" stroke-dasharray="16 14" stroke-linecap="round">
+                <circle data-hf-id="hf-9dhz" cx="420" cy="420" r="72" />
+                <path data-hf-id="hf-g063" d="M 270 740 C 270 580, 540 590, 560 740" />
+              </g>
+              <circle data-hf-id="hf-qwdt" class="draw s1-n" pathLength="1" stroke="#6366f1" stroke-width="9" cx="500" cy="330" r="82" />
+              <path data-hf-id="hf-euqy" class="draw s1-n" pathLength="1" stroke="#6366f1" stroke-width="9" d="M 340 740 C 340 530, 660 530, 660 740" />
+              <g data-hf-id="hf-0ufx" id="s1-spark" fill="#a5b4fc">
+                <path data-hf-id="hf-bpfp" class="s1-sp" d="M 700 200 L 710 230 L 740 240 L 710 250 L 700 280 L 690 250 L 660 240 L 690 230 Z" />
+                <path data-hf-id="hf-icyk" class="s1-sp" d="M 290 250 L 297 270 L 317 277 L 297 284 L 290 304 L 283 284 L 263 277 L 283 270 Z" />
+                <path data-hf-id="hf-b36y" class="s1-sp" d="M 760 470 L 766 486 L 782 492 L 766 498 L 760 514 L 754 498 L 738 492 L 754 486 Z" />
+              </g>
+              <path data-hf-id="hf-gg4r" class="draw s1-floor" pathLength="1" stroke="#26263a" stroke-width="4" d="M 40 760 L 920 760" />
+              <text data-hf-id="hf-xbn2" id="s1-l1" class="fig-label" x="480" y="840" text-anchor="middle" fill="#a3a3b8">ASSIGNED</text>
+              <text data-hf-id="hf-rrdt" id="s1-l2" class="fig-label" x="480" y="840" text-anchor="middle" fill="#a5b4fc" font-size="38">AUTHORED</text>
+            </svg>
+            <div data-hf-id="hf-qh7s" class="body" id="s1-body" style="top: 1290px">Don't accept the self you were handed. <b data-hf-id="hf-h7td">Forge a new identity</b> that <b data-hf-id="hf-f6el">commands attention</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2 ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-8cef" class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">ROLE</div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-xyw5" class="l">Don't accept</span>
+              <span data-hf-id="hf-czew" class="l a">the role given.</span>
+            </div>
+            <svg data-hf-id="hf-gezs" id="s2-fig" class="fig" style="top: 0; height: 1000px" viewBox="0 0 960 1000">
+              <circle data-hf-id="hf-mbc4" cx="480" cy="410" r="62" fill="none" stroke="#ffffff" stroke-width="7" id="s2-h" />
+              <path data-hf-id="hf-39cp" id="s2-b" d="M 380 580 C 380 480, 580 480, 580 580" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" />
+              <g data-hf-id="hf-ema1" stroke="#6b6b80" stroke-width="4">
+                <path data-hf-id="hf-ho2y" class="draw s2-pin" pathLength="1" d="M 270 372 L 410 420" />
+                <path data-hf-id="hf-fi8r" class="draw s2-pin" pathLength="1" d="M 690 372 L 550 420" />
+                <path data-hf-id="hf-cv7t" class="draw s2-pin" pathLength="1" d="M 480 650 L 480 590" />
+              </g>
+            </svg>
+            <div data-hf-id="hf-5aiz" class="tag2 s2-t" style="left: 30px; top: 330px; width: 240px">QUIET<span data-hf-id="hf-2svb" class="strike"></span></div>
+            <div data-hf-id="hf-g9pq" class="tag2 s2-t" style="left: 690px; top: 330px; width: 240px">JUNIOR<span data-hf-id="hf-tt8n" class="strike"></span></div>
+            <div data-hf-id="hf-c0rd" class="tag2 s2-t" style="left: 300px; top: 650px; width: 360px">THE NEW GUY<span data-hf-id="hf-texm" class="strike"></span></div>
+            <div data-hf-id="hf-l56w" class="tag2" id="s2-new" style="left: 200px; top: 820px; width: 560px; height: 100px">YOU, BY DESIGN</div>
+            <div data-hf-id="hf-pxa2" class="body" id="s2-body" style="top: 1010px">If you don't shape your image, <b data-hf-id="hf-6iz0">others will do it for you</b>. Take control of the character you play.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3 ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-gc5e" class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">1832</div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-xkmm" class="l">She wrote</span>
+              <span data-hf-id="hf-dqv0" class="l a">a new name.</span>
+            </div>
+            <div data-hf-id="hf-c82z" class="typed mono" id="s3-name" style="top: 300px"> </div>
+            <svg data-hf-id="hf-himk" id="s3-quill" class="fig" style="top: 420px; height: 120px" viewBox="0 0 960 120">
+              <path data-hf-id="hf-86q1" class="draw" id="s3-ul" pathLength="1" stroke="#22c55e" stroke-width="7" d="M 230 40 C 400 70, 560 20, 730 50" />
+              <path data-hf-id="hf-mk99" id="s3-nib" d="M 738 50 L 800 12 M 738 50 L 766 8" fill="none" stroke="#a5b4fc" stroke-width="6" stroke-linecap="round" />
+            </svg>
+            <div data-hf-id="hf-0jjl" class="big-num mono" id="s3-num" style="top: 600px">1804</div>
+            <div data-hf-id="hf-pd68" class="cap mono" id="s3-cap1" style="top: 740px; color: var(--dim)">BORN AURORE DUPIN</div>
+            <div data-hf-id="hf-3srv" class="cap mono" id="s3-cap2" style="top: 740px; color: var(--success)">INDIANA · AS GEORGE SAND</div>
+            <div data-hf-id="hf-9dvr" class="body" id="s3-body" style="top: 860px"><b data-hf-id="hf-xjhf">Aurore Dupin</b> reinvented herself as <b data-hf-id="hf-tu82">George Sand</b>: a man's name, men's clothes, cigars in public, and <b data-hf-id="hf-1lvg">a persona she controlled</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4 ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-79ax" class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">STAGE</div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-9sef" class="l">Caesar played</span>
+              <span data-hf-id="hf-yiuh" class="l a">to the crowd.</span>
+            </div>
+            <svg data-hf-id="hf-khht" id="s4-fig" class="fig" style="top: 230px; height: 700px" viewBox="0 0 960 700">
+              <path data-hf-id="hf-tbbc" class="draw s4-fr" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 120 520 L 120 60 L 840 60 L 840 520" />
+              <path data-hf-id="hf-x0yb" class="draw s4-fr" pathLength="1" stroke="#ffffff" stroke-width="6" d="M 80 520 L 880 520" />
+              <g data-hf-id="hf-qyw0" id="s4-laurel" stroke="#22c55e" stroke-width="6" fill="none" stroke-linecap="round"></g>
+              <text data-hf-id="hf-2m2s" id="s4-name" class="fig-label" x="480" y="460" text-anchor="middle" fill="#ffffff" font-size="44">CAESAR</text>
+              <path data-hf-id="hf-prep" id="s4-cl" d="M 124 64 L 480 64 C 450 200, 470 380, 420 516 L 124 516 Z" fill="#312e81" stroke="#6366f1" stroke-width="4" />
+              <path data-hf-id="hf-8off" id="s4-cr" d="M 836 64 L 480 64 C 510 200, 490 380, 540 516 L 836 516 Z" fill="#312e81" stroke="#6366f1" stroke-width="4" />
+              <g data-hf-id="hf-mfm2" id="s4-crowd"></g>
+            </svg>
+            <div data-hf-id="hf-vpc6" class="body" id="s4-body" style="top: 980px"><b data-hf-id="hf-g62y">Julius Caesar</b> staged his life like theater: <b data-hf-id="hf-759q">lavish public games</b>, dramatic entrances, a carefully crafted image.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-kzr0" class="cta-head" id="s5-head">Write your <span data-hf-id="hf-zpyk" class="a">own role.</span></div>
+            <div data-hf-id="hf-i8jm" class="cta-sub" id="s5-sub">Follow for more big ideas explained in 30 seconds.</div>
+            <svg data-hf-id="hf-0r2d" id="cta-icon" viewBox="0 0 220 150">
+              <path data-hf-id="hf-qo80" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 110 8 L 150 66 L 110 128 L 70 66 Z M 110 66 L 110 128" />
+              <circle data-hf-id="hf-u07q" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="6" cx="110" cy="62" r="9" />
+              <path data-hf-id="hf-7xtx" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="7" d="M 40 144 L 180 144" />
+            </svg>
+            <div data-hf-id="hf-pumo" class="tag mono" id="s5-tag">LAW 25 OF 48, EXPLAINED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      // Shared: rise-in helper, crossfades, ambient glow breath + ghost drift
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+      const NS = "http://www.w3.org/2000/svg";
+      const mk = (tag, attrs, parent) => {
+        const el = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+        parent.appendChild(el);
+        return el;
+      };
+
+      // ---------- Scene 1: old self fades, new self draws ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        tl.to(".s1-floor", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, t + 0.6);
+        tl.fromTo("#s1-old", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: E }, t + 0.7);
+        tl.fromTo("#s1-l1", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 1.0);
+        tl.to("#s1-old", { opacity: 0.18, x: -40, duration: 0.8, ease: E }, t + 2.0);
+        tl.to(".s1-n", { strokeDashoffset: 0, duration: 0.9, ease: "power2.out", stagger: 0.3 }, t + 2.1);
+        tl.to("#s1-l1", { opacity: 0, duration: 0.3, ease: "power2.out" }, t + 2.8);
+        tl.fromTo("#s1-l2", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.0);
+        tl.fromTo(".s1-sp", { opacity: 0, scale: 0.2, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out", stagger: 0.27 }, t + 3.1);
+        rise("#s1-body", t + 3.5, 24);
+      }
+
+      // ---------- Scene 2: labels pinned on you, then replaced ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo("#s2-h, #s2-b", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: E }, t + 0.5);
+        const tags = gsap.utils.toArray(".s2-t");
+        const pins = gsap.utils.toArray(".s2-pin");
+        tags.forEach((g, i) => {
+          const at = t + 0.9 + i * 0.4;
+          tl.fromTo(g, { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, at);
+          tl.to(pins[i], { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, at + 0.2);
+        });
+        tl.fromTo(".s2-t .strike", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.3, ease: "power2.out", stagger: 0.27 }, t + 2.5);
+        tl.to(".s2-t", { opacity: 0.2, duration: 0.4, ease: E, stagger: 0.27 }, t + 2.8);
+        tl.to(".s2-pin", { opacity: 0, duration: 0.4, ease: E }, t + 3.3);
+        tl.to("#s2-h, #s2-b", { attr: { stroke: "#22c55e" }, duration: 0.4, ease: E }, t + 3.4);
+        tl.fromTo("#s2-new", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.4);
+        rise("#s2-body", t + 3.8, 24);
+      }
+
+      // ---------- Scene 3: Aurore Dupin becomes George Sand ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        const A = "AURORE DUPIN";
+        const B = "GEORGE SAND";
+        const nm = document.getElementById("s3-name");
+        const show = (p) => {
+          let s;
+          if (p < 1) s = A.slice(0, Math.round(p * A.length));
+          else if (p < 1.6) s = A;
+          else if (p < 2.2) s = A.slice(0, Math.round((1 - (p - 1.6) / 0.6) * A.length));
+          else if (p < 3.2) s = B.slice(0, Math.round(((p - 2.2) / 1.0) * B.length));
+          else s = B;
+          nm.textContent = s || " ";
+        };
+        const tp = { p: 0 };
+        tl.fromTo(tp, { p: 0 }, { p: 3.4, duration: 3.4, ease: "none", onUpdate: () => show(tp.p) }, t + 0.5);
+        rise("#s3-num", t + 0.6, 20, 0.5);
+        rise("#s3-cap1", t + 0.7, 16, 0.5);
+        const st = { y: 1804 };
+        const num = document.getElementById("s3-num");
+        tl.fromTo(st, { y: 1804 }, { y: 1832, duration: 1.4, ease: "power2.inOut", onUpdate: () => (num.textContent = Math.round(st.y)) }, t + 2.1);
+        tl.to("#s3-cap1", { opacity: 0, duration: 0.3, ease: "power2.out" }, t + 3.4);
+        tl.fromTo("#s3-cap2", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.5);
+        tl.to("#s3-num", { color: "#22c55e", duration: 0.4, ease: E }, t + 3.5);
+        tl.to("#s3-ul", { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, t + 3.6);
+        tl.fromTo("#s3-nib", { opacity: 0, x: -500 }, { opacity: 1, x: 0, duration: 0.8, ease: "power2.inOut" }, t + 3.6);
+        rise("#s3-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 4: Caesar's stage ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.to(".s4-fr", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.2 }, t + 0.5);
+        tl.fromTo("#s4-cl, #s4-cr", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 0.5);
+        tl.fromTo("#s4-cl", { scaleX: 1, svgOrigin: "124 290" }, { scaleX: 0.18, duration: 1.0, ease: "power3.inOut" }, t + 1.3);
+        tl.fromTo("#s4-cr", { scaleX: 1, svgOrigin: "836 290" }, { scaleX: 0.18, duration: 1.0, ease: "power3.inOut" }, t + 1.3);
+        // laurel wreath: two arcs + leaves
+        const lg = document.getElementById("s4-laurel");
+        mk("path", { class: "draw s4-arc", pathLength: 1, d: "M 470 390 C 380 370, 340 260, 400 170" }, lg);
+        mk("path", { class: "draw s4-arc", pathLength: 1, d: "M 490 390 C 580 370, 620 260, 560 170" }, lg);
+        const leaves = [];
+        for (let k = 0; k < 5; k++) {
+          const u = k / 5;
+          const y = 370 - u * 190;
+          const dx = 70 * Math.sin(u * Math.PI * 0.9);
+          const lx = 445 - dx;
+          leaves.push(mk("path", { d: `M ${lx} ${y} Q ${lx - 24} ${y - 12}, ${lx - 18} ${y - 40} Q ${lx + 4} ${y - 22}, ${lx} ${y} Z`, fill: "#22c55e", stroke: "none", class: "s4-leaf" }, lg));
+          const rx = 515 + dx;
+          leaves.push(mk("path", { d: `M ${rx} ${y} Q ${rx + 24} ${y - 12}, ${rx + 18} ${y - 40} Q ${rx - 4} ${y - 22}, ${rx} ${y} Z`, fill: "#22c55e", stroke: "none", class: "s4-leaf" }, lg));
+        }
+        tl.to(".s4-arc", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.1 }, t + 2.0);
+        tl.fromTo(leaves, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E, stagger: 0.06 }, t + 2.3);
+        tl.fromTo("#s4-name", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 2.6);
+        const cg = document.getElementById("s4-crowd");
+        const heads = [];
+        for (let k = 0; k < 11; k++) heads.push(mk("circle", { cx: 130 + k * 70, cy: 610, r: 30, fill: "#0a0a0a", stroke: "#6b6b80", "stroke-width": 5 }, cg));
+        tl.fromTo(heads, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: { each: 0.05, from: "center" } }, t + 3.0);
+        tl.to(heads, { y: -12, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 3, stagger: { each: 0.03, from: "center" } }, t + 3.7);
+        rise("#s4-body", t + 3.5, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32): deterministic particle field
+        let seed = 11;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#cta-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.25 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

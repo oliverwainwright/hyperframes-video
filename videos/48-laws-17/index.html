@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .law-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .law-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      .fig-label {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .node {
+        position: absolute;
+        left: 80px;
+        width: 800px;
+        height: 140px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 0 40px;
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .node .n {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.2);
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+      .node.bad {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .node.bad .n {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+      .node.good {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.12);
+        color: var(--success);
+      }
+      .node.good .n {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--success);
+      }
+      .badge {
+        position: absolute;
+        border-radius: 28px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 30px;
+        color: var(--success);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .badge svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+      .big-num {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .cap {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+      .fig {
+        position: absolute;
+        left: 0;
+        width: 960px;
+      }
+      #s1-fig { top: 330px; height: 900px; }
+      #s2-fig { top: 250px; height: 860px; }
+      #s3-fig { top: 220px; height: 520px; }
+      #s4-fig { top: 250px; height: 760px; }
+      .qm { font-size: 96px; font-weight: 900; }
+      .score-col {
+        position: absolute;
+        top: 770px;
+        width: 480px;
+        text-align: center;
+      }
+      .score-col .who {
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+      .score-col .pts {
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        margin-top: 28px;
+      }
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #crown-icon {
+        margin-top: 56px;
+        width: 220px;
+        height: 150px;
+      }
+      .tag {
+        margin-top: 44px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: the tumbling die ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-ydl0" class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">LAW 17</div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-2gbq" class="law-tag" id="s1-tag"><span data-hf-id="hf-0nvq" class="mono">48 LAWS OF POWER · LAW 17</span></div>
+            <div data-hf-id="hf-98cf" class="headline" id="s1-head" style="top: 100px">
+              <span data-hf-id="hf-63cq" class="l">Be</span>
+              <span data-hf-id="hf-njq4" class="l a">unpredictable.</span>
+            </div>
+            <svg data-hf-id="hf-1jt4" id="s1-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 900">
+              <g data-hf-id="hf-piub" id="die">
+                <rect data-hf-id="hf-tbn7" x="320" y="290" width="320" height="320" rx="48" fill="#111118" />
+                <rect data-hf-id="hf-j9el" class="draw s1-d" pathLength="1" x="320" y="290" width="320" height="320" rx="48" stroke="#ffffff" stroke-width="10" />
+                <g data-hf-id="hf-15b7" id="pips" fill="#a5b4fc">
+                  <circle data-hf-id="hf-ksra" class="pip" cx="400" cy="370" r="26" />
+                  <circle data-hf-id="hf-gy0t" class="pip" cx="560" cy="370" r="26" />
+                  <circle data-hf-id="hf-4unh" class="pip" cx="400" cy="450" r="26" />
+                  <circle data-hf-id="hf-ad7p" class="pip" cx="480" cy="450" r="26" />
+                  <circle data-hf-id="hf-ogb6" class="pip" cx="560" cy="450" r="26" />
+                  <circle data-hf-id="hf-apg8" class="pip" cx="400" cy="530" r="26" />
+                  <circle data-hf-id="hf-68i7" class="pip" cx="560" cy="530" r="26" />
+                </g>
+              </g>
+              <text data-hf-id="hf-lwon" class="qm s1-q" x="200" y="300" text-anchor="middle" fill="#6366f1">?</text>
+              <text data-hf-id="hf-2tzi" class="qm s1-q" x="780" y="260" text-anchor="middle" fill="#a5b4fc">?</text>
+              <text data-hf-id="hf-edh4" class="qm s1-q" x="160" y="680" text-anchor="middle" fill="#a5b4fc">?</text>
+              <text data-hf-id="hf-3blp" class="qm s1-q" x="800" y="700" text-anchor="middle" fill="#6366f1">?</text>
+              <text data-hf-id="hf-bo0o" id="s1-lab" class="fig-label" x="480" y="820" text-anchor="middle" fill="#a3a3b8">NOBODY KNOWS YOUR NEXT ROLL</text>
+            </svg>
+            <div data-hf-id="hf-4b1b" class="body" id="s1-body" style="top: 1300px">Predictable people are easy to read. <b data-hf-id="hf-myd7">Unpredictable ones keep everyone off balance.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: patterns get read ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-neif" class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">READ</div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-izw0" class="l">Patterns</span>
+              <span data-hf-id="hf-4vvo" class="l a">get read.</span>
+            </div>
+            <svg data-hf-id="hf-yz90" id="s2-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 860">
+              <text data-hf-id="hf-2jap" id="s2-r1" class="fig-label" x="20" y="60" fill="#a3a3b8">PREDICTABLE</text>
+              <g data-hf-id="hf-wohf" class="s2-row1">
+                <circle data-hf-id="hf-kb9k" cx="90" cy="170" r="42" fill="#6366f1" />
+                <path data-hf-id="hf-pwwf" d="M 230 128 L 272 206 L 188 206 Z" fill="#a5b4fc" />
+                <circle data-hf-id="hf-ml7r" cx="370" cy="170" r="42" fill="#6366f1" />
+                <path data-hf-id="hf-5ic6" d="M 510 128 L 552 206 L 468 206 Z" fill="#a5b4fc" />
+                <circle data-hf-id="hf-da6q" cx="650" cy="170" r="42" fill="#6366f1" />
+              </g>
+              <path data-hf-id="hf-s6p6" id="s2-g1" class="draw" pathLength="1" stroke="#ef4444" stroke-width="5" stroke-dasharray="0.06 0.04" d="M 830 120 L 878 210 L 782 210 Z" />
+              <path data-hf-id="hf-sdwf" id="s2-a1" d="M 830 128 L 872 206 L 788 206 Z" fill="#a5b4fc" />
+              <text data-hf-id="hf-l10b" id="s2-res1" class="fig-label" x="940" y="300" text-anchor="end" fill="#ef4444">THEY READ YOU</text>
+              <path data-hf-id="hf-rji2" class="draw s2-sep" pathLength="1" stroke="#26263a" stroke-width="4" d="M 20 390 L 940 390" />
+              <text data-hf-id="hf-5yvd" id="s2-r2" class="fig-label" x="20" y="480" fill="#a3a3b8">UNPREDICTABLE</text>
+              <g data-hf-id="hf-o0lk" class="s2-row2">
+                <circle data-hf-id="hf-9qbi" cx="90" cy="600" r="42" fill="#6366f1" />
+                <rect data-hf-id="hf-gkcm" x="190" y="545" width="80" height="80" rx="8" fill="#22c55e" />
+                <path data-hf-id="hf-jvgv" d="M 370 600 L 412 678 L 328 678 Z" fill="#a5b4fc" />
+                <circle data-hf-id="hf-l9ed" cx="510" cy="560" r="30" fill="#ffffff" />
+                <rect data-hf-id="hf-h530" x="610" y="580" width="80" height="80" rx="40" fill="#6366f1" />
+              </g>
+              <circle data-hf-id="hf-kano" id="s2-g2" class="draw" pathLength="1" stroke="#ef4444" stroke-width="5" cx="830" cy="600" r="46" />
+              <path data-hf-id="hf-3ovc" id="s2-x2" class="draw" pathLength="1" stroke="#ef4444" stroke-width="9" d="M 795 565 L 865 635 M 865 565 L 795 635" />
+              <path data-hf-id="hf-blfm" id="s2-a2" d="M 830 680 L 846 716 L 885 720 L 856 745 L 864 784 L 830 764 L 796 784 L 804 745 L 775 720 L 814 716 Z" fill="#22c55e" />
+              <text data-hf-id="hf-x7lj" id="s2-res2" class="fig-label" x="940" y="835" text-anchor="end" fill="#22c55e">THEY'RE LOST</text>
+            </svg>
+            <div data-hf-id="hf-nt4n" class="body" id="s2-body" style="top: 1130px">If they can predict you, they can control you. <b data-hf-id="hf-349x">Break the pattern</b> and they lose their footing.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: Fischer vs Spassky ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-4fah" class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">1972</div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-0eo1" class="l">Chaos won</span>
+              <span data-hf-id="hf-kkcw" class="l a">the crown.</span>
+            </div>
+            <svg data-hf-id="hf-xdag" id="s3-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 520">
+              <path data-hf-id="hf-fpzl" class="draw ck" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 290 160 L 290 128 L 370 128 L 370 160 M 590 160 L 590 128 L 670 128 L 670 160" />
+              <rect data-hf-id="hf-0qk1" class="draw ck" pathLength="1" x="170" y="160" width="620" height="290" rx="36" stroke="#ffffff" stroke-width="9" />
+              <circle data-hf-id="hf-8uqm" class="draw ck" pathLength="1" stroke="#6366f1" stroke-width="7" cx="330" cy="305" r="100" />
+              <circle data-hf-id="hf-uwqj" class="draw ck" pathLength="1" stroke="#6366f1" stroke-width="7" cx="630" cy="305" r="100" />
+              <path data-hf-id="hf-bh8u" id="hand-l" d="M 330 305 L 330 225" stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+              <path data-hf-id="hf-77a9" id="hand-r" d="M 630 305 L 630 225" stroke="#ef4444" stroke-width="8" stroke-linecap="round" />
+              <circle data-hf-id="hf-to66" cx="330" cy="305" r="10" fill="#ffffff" />
+              <circle data-hf-id="hf-pd39" cx="630" cy="305" r="10" fill="#ffffff" />
+            </svg>
+            <div data-hf-id="hf-jjkp" class="score-col" id="sc-f" style="left: 0">
+              <div data-hf-id="hf-v0n3" class="who mono" style="color: var(--success)">FISCHER</div>
+              <div data-hf-id="hf-rhy8" class="pts mono" id="pts-f">0</div>
+            </div>
+            <div data-hf-id="hf-1wjs" class="score-col" id="sc-s" style="left: 480px">
+              <div data-hf-id="hf-0qhi" class="who mono" style="color: var(--dim)">SPASSKY</div>
+              <div data-hf-id="hf-dsst" class="pts mono" id="pts-s">2</div>
+            </div>
+            <div data-hf-id="hf-p6gq" class="body" id="s3-body" style="top: 1010px">In 1972 <b data-hf-id="hf-ea67">Bobby Fischer</b> showed up late, made wild demands and forfeited a game. <b data-hf-id="hf-q7wy">Spassky, rattled, lost the world title.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: keep them guessing ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-afjh" class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">MISS</div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-48d4" class="l">Keep them</span>
+              <span data-hf-id="hf-rtfp" class="l a">guessing.</span>
+            </div>
+            <svg data-hf-id="hf-3m35" id="s4-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 760">
+              <rect data-hf-id="hf-2apl" class="draw s4-frame" pathLength="1" x="20" y="20" width="920" height="640" rx="30" stroke="#26263a" stroke-width="5" />
+              <g data-hf-id="hf-na98" id="s4-you">
+                <circle data-hf-id="hf-1p0g" cx="0" cy="0" r="30" fill="#ffffff" />
+                <text data-hf-id="hf-feaa" class="fig-label" x="0" y="-48" text-anchor="middle" fill="#ffffff">YOU</text>
+              </g>
+              <g data-hf-id="hf-ifnp" id="s4-ret" fill="none" stroke="#ef4444" stroke-width="6">
+                <circle data-hf-id="hf-xozn" cx="0" cy="0" r="58" />
+                <path data-hf-id="hf-48te" d="M -84 0 L -36 0 M 36 0 L 84 0 M 0 -84 L 0 -36 M 0 36 L 0 84" />
+              </g>
+              <text data-hf-id="hf-dr35" id="s4-miss" class="fig-label" x="480" y="730" text-anchor="middle" fill="#ef4444">THEIR GUESS: MISSED AGAIN</text>
+            </svg>
+            <div data-hf-id="hf-9apo" class="body" id="s4-body" style="top: 1090px">Now and then, <b data-hf-id="hf-svnc">do the unexpected.</b> People who can't read you can't plan against you.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-g285" class="cta-head" id="s5-head">Never be <span data-hf-id="hf-43uj" class="a">easy to read.</span></div>
+            <div data-hf-id="hf-i8jm" class="cta-sub" id="s5-sub">Follow for more big ideas explained in 30 seconds.</div>
+            <svg data-hf-id="hf-qaeg" id="crown-icon" viewBox="0 0 220 150">
+              <rect data-hf-id="hf-yj6o" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="8" x="50" y="10" width="130" height="130" rx="22" />
+              <circle data-hf-id="hf-l2no" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="8" cx="85" cy="45" r="8" />
+              <circle data-hf-id="hf-d5fj" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="8" cx="115" cy="75" r="8" />
+              <circle data-hf-id="hf-zz92" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="8" cx="145" cy="105" r="8" />
+            </svg>
+            <div data-hf-id="hf-1uev" class="tag mono" id="s5-tag">LAW 17 OF 48, EXPLAINED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      // Shared: rise-in helper, crossfades, ambient glow breath + ghost drift
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: die tumbles through faces ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        const pips = gsap.utils.toArray("#pips .pip");
+        const FACES = { 1: [3], 2: [0, 6], 3: [0, 3, 6], 4: [0, 1, 5, 6], 5: [0, 1, 3, 5, 6], 6: [0, 1, 2, 4, 5, 6] };
+        const seq = [3, 6, 1, 5, 2, 4, 6, 1, 3, 5];
+        const show = (f) => pips.forEach((p, i) => (p.style.opacity = FACES[f].includes(i) ? 1 : 0));
+        show(seq[0]);
+        tl.to(".s1-d", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, t + 0.5);
+        tl.fromTo("#pips", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 0.9);
+        const roll = { k: 0 };
+        tl.fromTo(roll, { k: 0 }, { k: seq.length - 1, duration: 2.2, ease: "power3.out", onUpdate: () => show(seq[Math.round(roll.k)]) }, t + 1.3);
+        tl.fromTo("#die", { rotation: 0, svgOrigin: "480 450" }, { rotation: 720, svgOrigin: "480 450", duration: 2.2, ease: "power3.out" }, t + 1.3);
+        tl.fromTo(".s1-q", { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out", stagger: 0.3 }, t + 2.4);
+        tl.fromTo("#s1-lab", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.4);
+        rise("#s1-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 2: predictable vs unpredictable rows ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo("#s2-r1", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 0.5);
+        tl.fromTo(".s2-row1 > *", { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.35, ease: E, stagger: 0.12 }, t + 0.6);
+        tl.to("#s2-g1", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, t + 1.3);
+        tl.fromTo("#s2-a1", { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.35, ease: E }, t + 1.75);
+        tl.fromTo("#s2-res1", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: E }, t + 2.0);
+        tl.to(".s2-sep", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t + 2.0);
+        tl.fromTo("#s2-r2", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 2.3);
+        tl.fromTo(".s2-row2 > *", { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.35, ease: E, stagger: 0.12 }, t + 2.4);
+        tl.to("#s2-g2", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, t + 3.1);
+        tl.fromTo("#s2-a2", { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, t + 3.5);
+        tl.to("#s2-x2", { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" }, t + 3.6);
+        tl.fromTo("#s2-res2", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: E }, t + 3.8);
+        rise("#s2-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 3: chess clock + scoreboard ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.to(".ck", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.15 }, t + 0.5);
+        tl.fromTo("#hand-l", { rotation: 0, svgOrigin: "330 305" }, { rotation: 300, svgOrigin: "330 305", duration: 4.8, ease: "none" }, t + 1.0);
+        tl.fromTo("#hand-r", { rotation: 0, svgOrigin: "630 305" }, { rotation: 540, svgOrigin: "630 305", duration: 4.8, ease: "none" }, t + 1.0);
+        tl.fromTo("#sc-f, #sc-s", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.3 }, t + 1.2);
+        tl.fromTo("#pts-f", { color: "#ffffff" }, { color: "#ef4444", duration: 0.3, ease: E }, t + 1.8);
+        const half = (v) => {
+          const h = Math.round(v * 2) / 2;
+          return Number.isInteger(h) ? String(h) : `${Math.floor(h)}½`;
+        };
+        const score = { f: 0, s: 2 };
+        const pf = document.getElementById("pts-f"), ps = document.getElementById("pts-s");
+        tl.fromTo(score, { f: 0, s: 2 }, { f: 12.5, s: 8.5, duration: 2.0, ease: "power2.inOut", onUpdate: () => { pf.textContent = half(score.f); ps.textContent = half(score.s); } }, t + 2.3);
+        tl.to("#pts-f", { color: "#22c55e", duration: 0.4, ease: E }, t + 2.8);
+        tl.fromTo("#sc-f", { scale: 1 }, { scale: 1.06, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3, immediateRender: false }, t + 4.4);
+        rise("#s3-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 4: the reticle always arrives too late ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.to(".s4-frame", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.4);
+        const P = [[280, 250], [700, 470], [300, 520], [740, 190], [520, 380], [200, 330]];
+        tl.fromTo("#s4-you", { x: P[0][0], y: P[0][1], opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, t + 0.8);
+        tl.fromTo("#s4-ret", { x: 480, y: 340, opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.0);
+        for (let k = 0; k < P.length - 1; k++) {
+          const at = t + 1.3 + k * 0.5;
+          // reticle heads to where YOU are now
+          tl.to("#s4-ret", { x: P[k][0], y: P[k][1], duration: 0.55, ease: "power3.out" }, at);
+          // YOU jumps away before it lands
+          tl.to("#s4-you", { x: P[k + 1][0], y: P[k + 1][1], duration: 0.18, ease: "expo.out" }, at + 0.32);
+        }
+        tl.fromTo("#s4-miss", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.6);
+        rise("#s4-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32): deterministic particle field
+        let seed = 113;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#crown-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.25 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

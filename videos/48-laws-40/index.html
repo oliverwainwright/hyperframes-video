@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .law-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .law-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      /* ---------- Shared: flow nodes + badge ---------- */
+      .node {
+        position: absolute;
+        left: 150px;
+        width: 660px;
+        height: 140px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 0 40px;
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .node .n {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.2);
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+      .node.bad {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .node.bad .n {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+      .badge {
+        position: absolute;
+        left: 500px;
+        top: 870px;
+        width: 440px;
+        height: 160px;
+        border-radius: 28px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 30px;
+        color: var(--success);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .badge svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+
+      /* ---------- Law 40 scenes ---------- */
+      #s1-fig {
+        position: absolute;
+        left: 0;
+        top: 330px;
+        width: 960px;
+        height: 900px;
+      }
+      .fig-label {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      #s2-fig {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1100px;
+      }
+      #s3-fig {
+        position: absolute;
+        left: 0;
+        top: 230px;
+        width: 960px;
+        height: 460px;
+      }
+      .date-wrap {
+        position: absolute;
+        left: 0;
+        top: 720px;
+        width: 960px;
+        text-align: center;
+      }
+      .big-num {
+        display: inline-block;
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .date-cap {
+        position: absolute;
+        left: 0;
+        top: 870px;
+        width: 960px;
+        text-align: center;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+      #s4-fig {
+        position: absolute;
+        left: 0;
+        top: 230px;
+        width: 960px;
+        height: 720px;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #cta-icon {
+        margin-top: 56px;
+        width: 220px;
+        height: 150px;
+      }
+      .tag {
+        margin-top: 44px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: strings attached ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-yxgs" class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">LAW 40</div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-2gbq" class="law-tag" id="s1-tag"><span data-hf-id="hf-xs2a" class="mono">48 LAWS OF POWER · LAW 40</span></div>
+            <div data-hf-id="hf-98cf" class="headline" id="s1-head" style="top: 100px">
+              <span data-hf-id="hf-vs7g" class="l">Nothing is free.</span>
+              <span data-hf-id="hf-zndu" class="l a">Despise the free lunch.</span>
+            </div>
+            <svg data-hf-id="hf-fev1" id="s1-fig" data-layout-allow-overflow="" viewBox="0 0 960 900">
+              <path data-hf-id="hf-6hyg" class="draw s1-ctl" pathLength="1" stroke="#ef4444" stroke-width="10" d="M 330 90 L 630 90 M 480 30 L 480 150" />
+              <path data-hf-id="hf-htjs" class="draw s1-str" pathLength="1" stroke="#ef4444" stroke-width="3" d="M 330 90 L 340 470" />
+              <path data-hf-id="hf-xrr0" class="draw s1-str" pathLength="1" stroke="#ef4444" stroke-width="3" d="M 630 90 L 620 470" />
+              <path data-hf-id="hf-h9na" class="draw s1-str" pathLength="1" stroke="#ef4444" stroke-width="3" d="M 480 150 L 480 380" />
+              <g data-hf-id="hf-i633" id="s1-box">
+                <path data-hf-id="hf-27fa" class="draw s1-b" pathLength="1" stroke="#ffffff" stroke-width="8" d="M 340 470 L 620 470 L 620 720 L 340 720 Z" />
+                <path data-hf-id="hf-0pa3" class="draw s1-b" pathLength="1" stroke="#6366f1" stroke-width="16" d="M 480 470 L 480 720" />
+              </g>
+              <g data-hf-id="hf-elan" id="s1-lid">
+                <path data-hf-id="hf-l3xm" class="draw s1-b" pathLength="1" stroke="#ffffff" stroke-width="8" d="M 320 420 L 640 420 L 640 470 L 320 470 Z" />
+                <path data-hf-id="hf-18w2" class="draw s1-b" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 480 420 C 430 340, 380 380, 480 420 C 580 380, 530 340, 480 420" />
+              </g>
+              <g data-hf-id="hf-naf2" id="s1-tag2">
+                <path data-hf-id="hf-whgt" class="draw s1-tg" pathLength="1" stroke="#a3a3b8" stroke-width="4" d="M 620 560 L 700 600" />
+                <rect data-hf-id="hf-3fml" id="s1-tagbox" x="690" y="590" width="190" height="80" rx="16" fill="rgba(34, 197, 94, 0.15)" stroke="#22c55e" stroke-width="4" />
+                <text data-hf-id="hf-wcae" id="s1-free" x="785" y="644" text-anchor="middle" fill="#22c55e" font-size="40" font-weight="800">FREE</text>
+                <text data-hf-id="hf-a7pr" id="s1-owed" x="785" y="644" text-anchor="middle" fill="#ef4444" font-size="40" font-weight="800">OWED</text>
+              </g>
+              <path data-hf-id="hf-gg4r" class="draw s1-floor" pathLength="1" stroke="#26263a" stroke-width="4" d="M 40 760 L 920 760" />
+              <text data-hf-id="hf-wwdy" id="s1-lab" class="fig-label" x="480" y="830" text-anchor="middle" fill="#ef4444">STRINGS ATTACHED</text>
+            </svg>
+            <div data-hf-id="hf-012o" class="body" id="s1-body" style="top: 1300px">Free gifts come with <b data-hf-id="hf-ewrb">hidden strings</b>. Pay full price and <b data-hf-id="hf-fo7q">stay in control</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: the debt scale ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-gi0m" class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">DEBT</div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-b723" class="l">A gift is a</span>
+              <span data-hf-id="hf-pbln" class="l a">hidden debt.</span>
+            </div>
+            <svg data-hf-id="hf-ohts" id="s2-fig" viewBox="0 0 960 1100">
+              <path data-hf-id="hf-0rre" class="draw s2-post" pathLength="1" stroke="#6b6b80" stroke-width="10" d="M 480 430 L 480 860 M 370 860 L 590 860" />
+              <g data-hf-id="hf-5vt4" id="s2-beam"><path data-hf-id="hf-atrz" class="draw s2-bm" pathLength="1" stroke="#ffffff" stroke-width="10" d="M 180 420 L 780 420" /></g>
+              <circle data-hf-id="hf-775x" id="s2-pivot" cx="480" cy="420" r="18" fill="#a5b4fc" />
+              <g data-hf-id="hf-44re" id="s2-panl">
+                <path data-hf-id="hf-g5li" class="draw s2-pan" pathLength="1" stroke="#a3a3b8" stroke-width="4" d="M 0 0 L -90 200 M 0 0 L 90 200" />
+                <path data-hf-id="hf-qvd1" class="draw s2-pan" pathLength="1" stroke="#ffffff" stroke-width="7" d="M -110 200 L 110 200 C 90 250, -90 250, -110 200 Z" />
+                <g data-hf-id="hf-yaij" id="s2-gift">
+                  <rect data-hf-id="hf-3te3" x="-40" y="120" width="80" height="80" rx="6" fill="none" stroke="#22c55e" stroke-width="6" />
+                  <path data-hf-id="hf-ehai" d="M 0 120 L 0 200 M -40 145 L 40 145" stroke="#22c55e" stroke-width="6" fill="none" />
+                </g>
+                <text data-hf-id="hf-1bok" class="fig-label s2-lab" x="0" y="300" text-anchor="middle" fill="#22c55e">FREE GIFT</text>
+              </g>
+              <g data-hf-id="hf-t5sc" id="s2-panr">
+                <path data-hf-id="hf-gk6y" class="draw s2-pan" pathLength="1" stroke="#a3a3b8" stroke-width="4" d="M 0 0 L -90 200 M 0 0 L 90 200" />
+                <path data-hf-id="hf-d8d5" class="draw s2-pan" pathLength="1" stroke="#ffffff" stroke-width="7" d="M -110 200 L 110 200 C 90 250, -90 250, -110 200 Z" />
+                <g data-hf-id="hf-neza" id="s2-debt">
+                  <rect data-hf-id="hf-86it" x="-80" y="80" width="160" height="120" rx="10" fill="rgba(239, 68, 68, 0.2)" stroke="#ef4444" stroke-width="6" />
+                  <text data-hf-id="hf-juy8" x="0" y="156" text-anchor="middle" fill="#ef4444" font-size="38" font-weight="800">DEBT</text>
+                </g>
+                <text data-hf-id="hf-0ka1" class="fig-label s2-lab" x="0" y="300" text-anchor="middle" fill="#ef4444">WHAT YOU OWE</text>
+              </g>
+            </svg>
+            <div data-hf-id="hf-1w0d" class="body" id="s2-body" style="top: 1110px">Accept something free and you are <b data-hf-id="hf-wokj">in their debt</b>. Paying your way keeps you <b data-hf-id="hf-44jf">free</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: Pizarro and the room of gold ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-be0p" class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">1532</div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-rqee" class="l">Spain's easy gold</span>
+              <span data-hf-id="hf-56ee" class="l a">became a curse.</span>
+            </div>
+            <svg data-hf-id="hf-t26t" id="s3-fig" viewBox="0 0 960 460">
+              <path data-hf-id="hf-9gqs" class="draw s3-room" pathLength="1" stroke="#ffffff" stroke-width="7" d="M 180 420 L 180 60 L 780 60 L 780 420" />
+              <path data-hf-id="hf-a6kt" class="draw s3-room" pathLength="1" stroke="#26263a" stroke-width="5" d="M 60 420 L 900 420" />
+              <g data-hf-id="hf-xd28" id="s3-gold"></g>
+              <path data-hf-id="hf-px62" id="s3-line" class="draw" pathLength="1" stroke="#ef4444" stroke-width="5" d="M 180 150 L 780 150" />
+              <text data-hf-id="hf-3vo6" id="s3-line-t" class="fig-label" x="480" y="125" text-anchor="middle" fill="#ef4444">AS HIGH AS HE COULD REACH</text>
+            </svg>
+            <div data-hf-id="hf-zthd" class="date-wrap"><span data-hf-id="hf-vui5" id="s3-year" class="big-num mono">1500</span></div>
+            <div data-hf-id="hf-b1gd" class="date-cap mono" id="cap-a" style="color: #facc15">A ROOM FULL OF GOLD</div>
+            <div data-hf-id="hf-4d9x" class="date-cap mono" id="cap-b" style="color: var(--danger)">THEN: CHASING EL DORADO</div>
+            <div data-hf-id="hf-lxje" class="body" id="s3-body" style="top: 960px">In 1532 <b data-hf-id="hf-kdcs">Pizarro</b> seized the Inca emperor and a ransom of gold. Hooked on easy treasure, Spain chased El Dorado and <b data-hf-id="hf-cz4t">slid into decline</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: the Medici pay their way ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-cxlg" class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">MEDICI</div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-86c7" class="l">The Medici</span>
+              <span data-hf-id="hf-iv3b" class="l a">paid their way.</span>
+            </div>
+            <svg data-hf-id="hf-8s8x" id="s4-fig" viewBox="0 0 960 720">
+              <g data-hf-id="hf-muq4" id="s4-spokes"></g>
+              <g data-hf-id="hf-y47j" id="s4-coins"></g>
+              <circle data-hf-id="hf-zdhd" id="s4-hub" cx="480" cy="380" r="110" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" stroke-width="6" />
+              <text data-hf-id="hf-c7b4" id="s4-hub-t" x="480" y="393" text-anchor="middle" fill="#ffffff" font-size="38" font-weight="800">MEDICI</text>
+              <g data-hf-id="hf-54ce" id="s4-nodes"></g>
+            </svg>
+            <div data-hf-id="hf-q0o7" class="body" id="s4-body" style="top: 980px">Florence's bankers spent generously on <b data-hf-id="hf-rici">art, churches and allies</b>. Their money bought <b data-hf-id="hf-8aep">loyalty</b>, never debts.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-asna" class="cta-head" id="s5-head">Pay your way. <span data-hf-id="hf-nz83" class="a">Stay free.</span></div>
+            <div data-hf-id="hf-i8jm" class="cta-sub" id="s5-sub">Follow for more big ideas explained in 30 seconds.</div>
+            <svg data-hf-id="hf-0r2d" id="cta-icon" viewBox="0 0 220 150">
+              <circle data-hf-id="hf-y936" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="8" cx="85" cy="75" r="60" />
+              <circle data-hf-id="hf-nlcs" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="5" cx="85" cy="75" r="38" />
+              <path data-hf-id="hf-gyv3" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="8" d="M 150 78 L 172 100 L 210 52" />
+            </svg>
+            <div data-hf-id="hf-eepr" class="tag mono" id="s5-tag">LAW 40 OF 48, EXPLAINED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      // Shared: rise-in helper, crossfades, ambient glow breath + ghost drift
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: the gift with strings ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        tl.to(".s1-floor", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.5);
+        tl.to(".s1-b", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.2 }, t + 0.7);
+        tl.to(".s1-tg", { strokeDashoffset: 0, duration: 0.3, ease: "power2.out" }, t + 1.4);
+        tl.fromTo("#s1-tagbox, #s1-free", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.5);
+        tl.fromTo("#s1-tag2", { rotation: 0, svgOrigin: "620 560" }, { rotation: 6, duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 1.8);
+        // the strings reveal themselves
+        tl.to(".s1-ctl", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t + 2.4);
+        tl.to(".s1-str", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: 0.1 }, t + 2.7);
+        tl.to("#s1-free", { opacity: 0, duration: 0.25, ease: E }, t + 3.3);
+        tl.fromTo("#s1-owed", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: E }, t + 3.4);
+        tl.to("#s1-tagbox", { attr: { stroke: "#ef4444", fill: "rgba(239, 68, 68, 0.15)" }, duration: 0.3, ease: E }, t + 3.4);
+        tl.fromTo("#s1-lab", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: E }, t + 3.5);
+        tl.fromTo("#s1-box, #s1-lid", { y: 0 }, { y: -18, duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 3, stagger: 0.05 }, t + 3.6);
+        rise("#s1-body", t + 3.0, 24);
+      }
+
+      // ---------- Scene 2: the scale tips toward debt ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        const panL = document.getElementById("s2-panl");
+        const panR = document.getElementById("s2-panr");
+        const beam = { a: 0 };
+        const placeBeam = () => {
+          const r = (beam.a * Math.PI) / 180;
+          const dx = Math.cos(r) * 300, dy = Math.sin(r) * 300;
+          panL.setAttribute("transform", `translate(${(480 - dx).toFixed(1)} ${(420 - dy).toFixed(1)})`);
+          panR.setAttribute("transform", `translate(${(480 + dx).toFixed(1)} ${(420 + dy).toFixed(1)})`);
+          document.getElementById("s2-beam").setAttribute("transform", `rotate(${beam.a.toFixed(2)} 480 420)`);
+        };
+        placeBeam();
+        tl.to(".s2-post", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.5);
+        tl.to(".s2-bm", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.8);
+        tl.fromTo("#s2-pivot", { scale: 0, svgOrigin: "480 420" }, { scale: 1, duration: 0.4, ease: "expo.out" }, t + 0.9);
+        tl.to(".s2-pan", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.1 }, t + 1.1);
+        tl.fromTo("#s2-gift", { opacity: 0, y: -60 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 1.6);
+        tl.fromTo(".s2-lab", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E, stagger: 0.6 }, t + 1.8);
+        tl.fromTo("#s2-debt", { opacity: 0, scale: 0.3, transformOrigin: "50% 100%" }, { opacity: 1, scale: 1, duration: 0.7, ease: E }, t + 2.3);
+        tl.fromTo(beam, { a: -6 }, { a: 14, duration: 1.2, ease: "power3.out", onUpdate: placeBeam }, t + 2.4);
+        tl.fromTo("#s2-debt", { scale: 1 }, { scale: 1.08, transformOrigin: "50% 100%", duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 3.6);
+        rise("#s2-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 3: the room fills with gold, then the chase ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.to(".s3-room", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.2 }, t + 0.5);
+        tl.to("#s3-line", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t + 1.0);
+        tl.fromTo("#s3-line-t", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.2);
+        const NS = "http://www.w3.org/2000/svg";
+        const gold = document.getElementById("s3-gold");
+        for (let row = 0; row < 6; row++) {
+          for (let c = 0; c < 7; c++) {
+            const off = row % 2 ? 40 : 0;
+            if (row % 2 && c === 6) continue;
+            const r = document.createElementNS(NS, "rect");
+            Object.entries({ x: 196 + off + c * 82, y: 370 - row * 44, width: 76, height: 38, rx: 6, fill: "#facc15", stroke: "#a16207", "stroke-width": 3, class: "bar" }).forEach(([k, v]) => r.setAttribute(k, v));
+            gold.appendChild(r);
+          }
+        }
+        tl.fromTo(".bar", { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.25, ease: E, stagger: 0.03 }, t + 1.3);
+        rise(".date-wrap", t + 1.0, 20, 0.5);
+        rise("#cap-a", t + 1.1, 16, 0.5);
+        const yr = { v: 1500 };
+        const el = document.getElementById("s3-year");
+        tl.fromTo(yr, { v: 1500 }, { v: 1532, duration: 1.4, ease: "power2.out", onUpdate: () => (el.textContent = Math.round(yr.v)) }, t + 1.2);
+        tl.to("#s3-year", { color: "#facc15", duration: 0.4, ease: E }, t + 2.6);
+        // the curse: the gold drains, the chase begins
+        tl.to(".bar", { opacity: 0.15, duration: 0.4, ease: E, stagger: { each: 0.015, from: "end" } }, t + 3.4);
+        tl.to("#cap-a", { opacity: 0, duration: 0.3, ease: "power2.out" }, t + 3.4);
+        tl.fromTo("#cap-b", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.5);
+        tl.to("#s3-year", { color: "#ef4444", duration: 0.4, ease: E }, t + 3.5);
+        rise("#s3-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 4: patronage network, coins flow out ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        const NS = "http://www.w3.org/2000/svg";
+        const labels = ["ARTISTS", "CHURCHES", "ALLIES", "SCHOLARS", "THE CITY"];
+        const spokes = document.getElementById("s4-spokes");
+        const nodes = document.getElementById("s4-nodes");
+        const coins = document.getElementById("s4-coins");
+        labels.forEach((lab, i) => {
+          const a = ((-90 + i * 72) * Math.PI) / 180;
+          const ex = 480 + Math.cos(a) * 300, ey = 380 + Math.sin(a) * 270;
+          const sx = 480 + Math.cos(a) * 115, sy = 380 + Math.sin(a) * 115;
+          const p = document.createElementNS(NS, "path");
+          Object.entries({ d: `M ${sx.toFixed(1)} ${sy.toFixed(1)} L ${ex.toFixed(1)} ${ey.toFixed(1)}`, class: "draw s4-sp", pathLength: 1, stroke: "#6366f1", "stroke-width": 5 }).forEach(([k, v]) => p.setAttribute(k, v));
+          spokes.appendChild(p);
+          const g = document.createElementNS(NS, "g");
+          g.setAttribute("class", "s4-node");
+          const r = document.createElementNS(NS, "rect");
+          Object.entries({ x: (ex - 105).toFixed(1), y: (ey - 34).toFixed(1), width: 210, height: 68, rx: 20, fill: "#111118", stroke: "#26263a", "stroke-width": 4, class: "s4-nr" }).forEach(([k, v]) => r.setAttribute(k, v));
+          const tx = document.createElementNS(NS, "text");
+          Object.entries({ x: ex.toFixed(1), y: (ey + 11).toFixed(1), "text-anchor": "middle", fill: "#ffffff", "font-size": 30, "font-weight": 700 }).forEach(([k, v]) => tx.setAttribute(k, v));
+          tx.textContent = lab;
+          g.appendChild(r);
+          g.appendChild(tx);
+          nodes.appendChild(g);
+          const c = document.createElementNS(NS, "circle");
+          Object.entries({ cx: sx.toFixed(1), cy: sy.toFixed(1), r: 14, fill: "#facc15", stroke: "#a16207", "stroke-width": 3 }).forEach(([k, v]) => c.setAttribute(k, v));
+          coins.appendChild(c);
+          const at = t + 1.6 + i * 0.27;
+          tl.fromTo(c, { opacity: 0, x: 0, y: 0 }, { opacity: 1, x: ex - sx, y: ey - sy, duration: 0.8, ease: "power2.inOut" }, at);
+          tl.to(c, { opacity: 0, duration: 0.2, ease: E }, at + 0.8);
+          tl.to(r, { attr: { stroke: "#22c55e", fill: "#0f2417" }, duration: 0.3, ease: E }, at + 0.8);
+        });
+        tl.fromTo("#s4-hub, #s4-hub-t", { opacity: 0, scale: 0.5, svgOrigin: "480 380" }, { opacity: 1, scale: 1, duration: 0.6, ease: E }, t + 0.5);
+        tl.to(".s4-sp", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.1 }, t + 0.9);
+        tl.fromTo(".s4-node", { opacity: 0, scale: 0.8, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: E, stagger: 0.1 }, t + 1.1);
+        rise("#s4-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32): deterministic particle field
+        let seed = 11;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#cta-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.25 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

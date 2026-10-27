@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .law-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .law-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      /* ---------- Scene 1 ---------- */
+      #s1-fig {
+        position: absolute;
+        left: 0;
+        top: 330px;
+        width: 960px;
+        height: 900px;
+      }
+      .fig-label {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* ---------- Scene 2 ---------- */
+      #s2-arrows {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .node {
+        position: absolute;
+        left: 150px;
+        width: 660px;
+        height: 140px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 0 40px;
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .node .n {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.2);
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+      .node.bad {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .node.bad .n {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+
+      /* ---------- Scene 3 ---------- */
+      #chateau,
+      .bars {
+        position: absolute;
+        left: 0;
+        top: 240px;
+        width: 960px;
+        height: 620px;
+      }
+      .bars {
+        overflow: hidden;
+      }
+      .pbar {
+        position: absolute;
+        top: 0;
+        width: 22px;
+        height: 620px;
+        border-radius: 11px;
+        background: #d4d4d8;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+      }
+      .date-wrap {
+        position: absolute;
+        left: 0;
+        top: 900px;
+        width: 960px;
+        text-align: center;
+      }
+      #s3-date {
+        display: inline-block;
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .date-cap {
+        position: absolute;
+        left: 0;
+        top: 1050px;
+        width: 960px;
+        text-align: center;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+
+      /* ---------- Scene 4 ---------- */
+      #jupiter {
+        position: absolute;
+        left: 0;
+        top: 220px;
+        width: 960px;
+        height: 460px;
+      }
+      #s4-type {
+        position: absolute;
+        left: 0;
+        top: 700px;
+        width: 960px;
+        text-align: center;
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: var(--accent-hi);
+        white-space: pre;
+      }
+      #crest {
+        position: absolute;
+        left: 40px;
+        top: 840px;
+        width: 180px;
+        height: 210px;
+      }
+      .crest-label {
+        position: absolute;
+        left: 20px;
+        top: 1066px;
+        width: 220px;
+        text-align: center;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--dim);
+      }
+      #s4-arrow {
+        position: absolute;
+        left: 240px;
+        top: 900px;
+        width: 240px;
+        height: 100px;
+      }
+      .badge {
+        position: absolute;
+        left: 500px;
+        top: 870px;
+        width: 440px;
+        height: 160px;
+        border-radius: 28px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 30px;
+        color: var(--success);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .badge svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #crown-icon {
+        margin-top: 56px;
+        width: 220px;
+        height: 150px;
+      }
+      .tag {
+        margin-top: 44px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: never outshine the master ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-c74r" class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">LAW 1</div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-2gbq" class="law-tag" id="s1-tag"><span data-hf-id="hf-2451" class="mono">48 LAWS OF POWER · LAW 1</span></div>
+            <div data-hf-id="hf-98cf" class="headline" id="s1-head" style="top: 100px">
+              <span data-hf-id="hf-2v5e" class="l">Never outshine</span>
+              <span data-hf-id="hf-0mu5" class="l a">the master.</span>
+            </div>
+            <svg data-hf-id="hf-fev1" id="s1-fig" data-layout-allow-overflow="" viewBox="0 0 960 900">
+              <defs data-hf-id="hf-mh0t">
+                <lineargradient data-hf-id="hf-beyi" id="spot-g" x1="0" y1="0" x2="0" y2="1">
+                  <stop data-hf-id="hf-nkg9" offset="0" stop-color="#ffffff" stop-opacity="0.22" />
+                  <stop data-hf-id="hf-t3ig" offset="1" stop-color="#ffffff" stop-opacity="0.02" />
+                </lineargradient>
+                <radialgradient data-hf-id="hf-55l4" id="shine-g">
+                  <stop data-hf-id="hf-egqv" offset="0" stop-color="#ffffff" stop-opacity="0.55" />
+                  <stop data-hf-id="hf-dn2l" offset="0.45" stop-color="#a5b4fc" stop-opacity="0.22" />
+                  <stop data-hf-id="hf-r3cz" offset="1" stop-color="#a5b4fc" stop-opacity="0" />
+                </radialgradient>
+              </defs>
+              <path data-hf-id="hf-xpah" id="s1-spot" d="M 300 0 L 360 0 L 540 820 L 120 820 Z" fill="url(#spot-g)" />
+              <path data-hf-id="hf-zprn" class="draw s1-floor" pathLength="1" stroke="#26263a" stroke-width="4" d="M 40 820 L 920 820" />
+              <circle data-hf-id="hf-65cx" id="s1-shine" cx="720" cy="700" r="300" fill="url(#shine-g)" />
+              <g data-hf-id="hf-xjyj" id="s1-rays">
+                <path data-hf-id="hf-b5ur" class="draw s1-ray" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 847 573 L 883 537" />
+                <path data-hf-id="hf-ylir" class="draw s1-ray" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 593 573 L 557 537" />
+                <path data-hf-id="hf-5vuk" class="draw s1-ray" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 900 700 L 945 700" />
+                <path data-hf-id="hf-1g6q" class="draw s1-ray" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 540 700 L 495 700" />
+              </g>
+              <g data-hf-id="hf-z4zy" id="s1-master">
+                <path data-hf-id="hf-9lap" class="draw s1-m" pathLength="1" stroke="#ffffff" stroke-width="8" d="M 180 820 L 180 700 C 180 580, 480 580, 480 700 L 480 820" />
+                <circle data-hf-id="hf-h0q9" class="draw s1-m" pathLength="1" stroke="#ffffff" stroke-width="8" cx="330" cy="500" r="75" />
+                <path data-hf-id="hf-9f7c" id="s1-crown" d="M 270 425 L 255 345 L 295 385 L 330 330 L 365 385 L 405 345 L 390 425 Z" fill="#6366f1" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" />
+                <text data-hf-id="hf-173f" class="fig-label" x="330" y="890" text-anchor="middle" fill="#a3a3b8">MASTER</text>
+              </g>
+              <g data-hf-id="hf-hbx1" id="s1-you">
+                <path data-hf-id="hf-vgxz" class="draw s1-y" pathLength="1" stroke="#6b6b80" stroke-width="7" d="M 630 820 L 630 760 C 630 700, 810 700, 810 760 L 810 820" />
+                <circle data-hf-id="hf-1427" class="draw s1-y" pathLength="1" stroke="#6b6b80" stroke-width="7" cx="720" cy="640" r="50" />
+                <text data-hf-id="hf-l1pp" class="fig-label" x="720" y="890" text-anchor="middle" fill="#a3a3b8">YOU</text>
+              </g>
+              <g data-hf-id="hf-mf5c" id="s1-warn">
+                <circle data-hf-id="hf-ubaf" id="s1-ring" class="draw" pathLength="1" stroke="#ef4444" stroke-width="7" cx="720" cy="690" r="160" transform="rotate(-90 720 690)" />
+              </g>
+              <text data-hf-id="hf-sxme" id="s1-threat" class="fig-label" x="720" y="510" text-anchor="middle" fill="#ef4444" font-size="34">THREAT</text>
+            </svg>
+            <div data-hf-id="hf-t6hw" class="body" id="s1-body" style="top: 1300px">Make the people above you <b data-hf-id="hf-2qnf">look good</b>. Never make them feel <b data-hf-id="hf-btva">overshadowed</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: insecurity is the trigger ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-rulc" class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">EGO</div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-l2y6" class="l">Insecurity is</span>
+              <span data-hf-id="hf-eo49" class="l a">the trigger.</span>
+            </div>
+            <svg data-hf-id="hf-nz5v" id="s2-arrows" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-j5ui" class="draw s2-ar" pathLength="1" stroke="#6366f1" stroke-width="6" d="M 480 450 L 480 548 M 458 524 L 480 548 L 502 524" />
+              <path data-hf-id="hf-m0cb" class="draw s2-ar" pathLength="1" stroke="#6366f1" stroke-width="6" d="M 480 710 L 480 808 M 458 784 L 480 808 L 502 784" />
+              <path data-hf-id="hf-cdos" class="draw s2-ar" pathLength="1" stroke="#ef4444" stroke-width="6" d="M 480 970 L 480 1068 M 458 1044 L 480 1068 L 502 1044" />
+            </svg>
+            <div data-hf-id="hf-aaqf" class="node" id="n1" style="top: 300px"><span data-hf-id="hf-jkf5" class="n mono">1</span>You shine</div>
+            <div data-hf-id="hf-twem" class="node" id="n2" style="top: 560px"><span data-hf-id="hf-krc8" class="n mono">2</span>They feel smaller</div>
+            <div data-hf-id="hf-dxez" class="node" id="n3" style="top: 820px"><span data-hf-id="hf-kd17" class="n mono">3</span>Insecurity sets in</div>
+            <div data-hf-id="hf-m1cp" class="node bad" id="n4" style="top: 1080px"><span data-hf-id="hf-idi2" class="n mono">4</span>You're a threat</div>
+            <div data-hf-id="hf-fo33" class="body" id="s2-body" style="top: 1290px">Make them doubt their brilliance and you go from <b data-hf-id="hf-pvsr">asset</b> to <b data-hf-id="hf-e4e9">threat</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: Fouquet's party ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-sm0s" class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">1661</div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-328b" class="l">The party that</span>
+              <span data-hf-id="hf-n1lg" class="l a">cost a career.</span>
+            </div>
+            <svg data-hf-id="hf-tm95" id="chateau" viewBox="0 0 960 620">
+              <g data-hf-id="hf-qcau" id="fw" />
+              <g data-hf-id="hf-3g8e" id="s3-build">
+                <path data-hf-id="hf-qwdx" class="draw ch" pathLength="1" stroke="#26263a" stroke-width="4" d="M 30 560 L 930 560" />
+                <path data-hf-id="hf-gv1q" class="draw ch" pathLength="1" stroke="#ffffff" stroke-width="6" d="M 200 560 L 200 330 L 760 330 L 760 560" />
+                <path data-hf-id="hf-p77e" class="draw ch" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 380 330 C 380 200, 580 200, 580 330" />
+                <path data-hf-id="hf-5nhh" class="draw ch" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 465 236 L 465 196 L 495 196 L 495 236 M 480 196 L 480 170" />
+                <path data-hf-id="hf-xzxs" class="draw ch" pathLength="1" stroke="#ffffff" stroke-width="6" d="M 200 400 L 60 400 L 60 560 M 760 400 L 900 400 L 900 560" />
+                <path data-hf-id="hf-gg0j" class="draw ch" pathLength="1" stroke="#ffffff" stroke-width="5" d="M 60 400 L 130 350 L 200 400 M 760 400 L 830 350 L 900 400" />
+                <path data-hf-id="hf-2moz" class="draw ch" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 440 560 L 440 470 C 440 430, 520 430, 520 470 L 520 560" />
+                <path data-hf-id="hf-dinw" class="draw ch" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 240 380 L 280 380 L 280 440 L 240 440 Z M 320 380 L 360 380 L 360 440 L 320 440 Z M 600 380 L 640 380 L 640 440 L 600 440 Z M 680 380 L 720 380 L 720 440 L 680 440 Z" />
+                <path data-hf-id="hf-q88w" class="draw ch" pathLength="1" stroke="#6366f1" stroke-width="5" d="M 110 450 L 150 450 L 150 510 L 110 510 Z M 810 450 L 850 450 L 850 510 L 810 510 Z" />
+              </g>
+            </svg>
+            <div data-hf-id="hf-wn8e" class="bars" id="s3-bars" data-layout-allow-overflow="">
+              <div data-hf-id="hf-9v3n" class="pbar" style="left: 120px"></div>
+              <div data-hf-id="hf-5k9q" class="pbar" style="left: 240px"></div>
+              <div data-hf-id="hf-qw7x" class="pbar" style="left: 360px"></div>
+              <div data-hf-id="hf-qd18" class="pbar" style="left: 480px"></div>
+              <div data-hf-id="hf-nhse" class="pbar" style="left: 600px"></div>
+              <div data-hf-id="hf-60v9" class="pbar" style="left: 720px"></div>
+              <div data-hf-id="hf-93ms" class="pbar" style="left: 840px"></div>
+            </div>
+            <div data-hf-id="hf-zthd" class="date-wrap"><span data-hf-id="hf-qetw" id="s3-date" class="mono">AUG 17</span></div>
+            <div data-hf-id="hf-4t3a" class="date-cap mono" id="cap-party" style="color: var(--accent-hi)">1661 · THE PARTY</div>
+            <div data-hf-id="hf-i7hb" class="date-cap mono" id="cap-arrest" style="color: var(--danger)">1661 · THE ARREST</div>
+            <div data-hf-id="hf-qnd9" class="body" id="s3-body" style="top: 1150px">Finance minister <b data-hf-id="hf-ppqv">Nicolas Fouquet</b> out-dazzled Louis XIV. Nineteen days later he was arrested. <b data-hf-id="hf-rhqg">He died in prison.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: Galileo ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-9td7" class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">1610</div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-ctg5" class="l">Galileo gave</span>
+              <span data-hf-id="hf-2lnq" class="l a">the credit away.</span>
+            </div>
+            <svg data-hf-id="hf-ubzl" id="jupiter" viewBox="0 0 960 460">
+              <ellipse data-hf-id="hf-o4zs" class="draw orb" pathLength="1" stroke="#26263a" stroke-width="3" cx="480" cy="230" rx="170" ry="50" />
+              <ellipse data-hf-id="hf-4sgg" class="draw orb" pathLength="1" stroke="#26263a" stroke-width="3" cx="480" cy="230" rx="240" ry="70" />
+              <ellipse data-hf-id="hf-tvx9" class="draw orb" pathLength="1" stroke="#26263a" stroke-width="3" cx="480" cy="230" rx="320" ry="94" />
+              <ellipse data-hf-id="hf-odlc" class="draw orb" pathLength="1" stroke="#26263a" stroke-width="3" cx="480" cy="230" rx="420" ry="122" />
+              <g data-hf-id="hf-r729" id="planet">
+                <circle data-hf-id="hf-o6jv" cx="480" cy="230" r="100" fill="#1e1b4b" stroke="#a5b4fc" stroke-width="6" />
+                <path data-hf-id="hf-nhun" stroke="#6366f1" stroke-width="10" stroke-linecap="round" fill="none" d="M 400 190 L 560 190 M 384 230 L 576 230 M 400 270 L 560 270" />
+              </g>
+              <circle data-hf-id="hf-kw22" class="moon" r="13" fill="#ffffff" />
+              <circle data-hf-id="hf-ou63" class="moon" r="12" fill="#ffffff" />
+              <circle data-hf-id="hf-1cok" class="moon" r="15" fill="#ffffff" />
+              <circle data-hf-id="hf-g6a8" class="moon" r="11" fill="#ffffff" />
+            </svg>
+            <div data-hf-id="hf-3gof" id="s4-type" class="mono"> </div>
+            <svg data-hf-id="hf-us6q" id="crest" viewBox="0 0 180 210">
+              <path data-hf-id="hf-9qk6" class="draw cr" pathLength="1" stroke="#a5b4fc" stroke-width="6" d="M 12 12 L 168 12 L 168 110 C 168 168, 90 200, 90 200 C 90 200, 12 168, 12 110 Z" />
+              <g data-hf-id="hf-7ecn" id="palle">
+                <circle data-hf-id="hf-4epo" cx="90" cy="46" r="13" fill="#6366f1" />
+                <circle data-hf-id="hf-ihia" cx="52" cy="72" r="13" fill="#ef4444" />
+                <circle data-hf-id="hf-2teo" cx="128" cy="72" r="13" fill="#ef4444" />
+                <circle data-hf-id="hf-s9r7" cx="52" cy="110" r="13" fill="#ef4444" />
+                <circle data-hf-id="hf-atvp" cx="128" cy="110" r="13" fill="#ef4444" />
+                <circle data-hf-id="hf-1svo" cx="90" cy="146" r="13" fill="#ef4444" />
+              </g>
+            </svg>
+            <div data-hf-id="hf-z182" class="crest-label" id="crest-label">The Medici</div>
+            <svg data-hf-id="hf-li3p" id="s4-arrow" viewBox="0 0 240 100">
+              <path data-hf-id="hf-1a15" class="draw" id="s4-arr" pathLength="1" stroke="#22c55e" stroke-width="7" d="M 10 50 L 220 50 M 194 26 L 220 50 L 194 74" />
+            </svg>
+            <div data-hf-id="hf-74mk" class="badge" id="s4-badge">
+              <svg data-hf-id="hf-l6o9" viewBox="0 0 64 64"><circle data-hf-id="hf-nh7v" cx="32" cy="32" r="28" fill="none" stroke="#22c55e" stroke-width="5" /><path data-hf-id="hf-5i1i" class="draw" id="s4-check" pathLength="1" stroke="#22c55e" stroke-width="6" d="M 19 33 L 28 42 L 46 23" /></svg>
+              <span data-hf-id="hf-4zln">Court<br data-hf-id="hf-x5px">Mathematician</span>
+            </div>
+            <div data-hf-id="hf-vic2" class="body" id="s4-body" style="top: 1130px">He named Jupiter's moons after his patrons. <b data-hf-id="hf-feqg">They made him their court mathematician.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-pjx7" class="cta-head" id="s5-head">Make your <span data-hf-id="hf-66rj" class="a">master shine.</span></div>
+            <div data-hf-id="hf-i8jm" class="cta-sub" id="s5-sub">Follow for more big ideas explained in 30 seconds.</div>
+            <svg data-hf-id="hf-qaeg" id="crown-icon" viewBox="0 0 220 150">
+              <path data-hf-id="hf-8ogq" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 40 120 L 24 34 L 74 76 L 110 18 L 146 76 L 196 34 L 180 120 Z" />
+              <path data-hf-id="hf-133p" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="7" d="M 40 138 L 180 138" />
+            </svg>
+            <div data-hf-id="hf-nqui" class="tag mono" id="s5-tag">LAW 1 OF 48, EXPLAINED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      // Shared: rise-in helper, crossfades, ambient glow breath + ghost drift
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: master vs. you, the outshine ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        tl.to(".s1-floor", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, t + 0.6);
+        tl.fromTo("#s1-spot", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: E }, t + 0.7);
+        tl.to(".s1-m", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.3 }, t + 0.8);
+        tl.fromTo("#s1-crown", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, t + 1.4);
+        tl.to(".s1-y", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.3 }, t + 1.2);
+        tl.fromTo("#s1-master text, #s1-you text", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: E, stagger: 0.3 }, t + 1.5);
+        // the outshine: you glow, the master dims
+        tl.fromTo("#s1-shine", { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 1.2, ease: E }, t + 2.1);
+        tl.to(".s1-y", { attr: { stroke: "#ffffff" }, duration: 0.6, ease: E }, t + 2.1);
+        tl.to(".s1-ray", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.08 }, t + 2.4);
+        tl.to("#s1-master", { opacity: 0.35, duration: 0.8, ease: E }, t + 2.5);
+        tl.to("#s1-spot", { opacity: 0.25, duration: 0.8, ease: E }, t + 2.5);
+        // warning
+        tl.to("#s1-ring", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 3.3);
+        tl.fromTo("#s1-warn", { scale: 1, transformOrigin: "720px 690px" }, { scale: 1.06, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 3.9);
+        tl.fromTo("#s1-threat", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.6);
+        rise("#s1-body", t + 3.1, 24);
+      }
+
+      // ---------- Scene 2: self-drawing flowchart ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        const nodes = ["#n1", "#n2", "#n3", "#n4"];
+        const arrows = gsap.utils.toArray(".s2-ar");
+        nodes.forEach((n, i) => {
+          const at = t + 0.7 + i * 0.75;
+          tl.fromTo(n, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, at);
+          if (arrows[i]) tl.to(arrows[i], { strokeDashoffset: 0, duration: 0.45, ease: "power2.out" }, at + 0.4);
+        });
+        tl.fromTo("#n4", { scale: 1 }, { scale: 1.04, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 3.5);
+        rise("#s2-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 3: chateau draw, fireworks, date ticker, prison bars ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.to(".ch", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.1 }, t + 0.5);
+        // fireworks (hard-coded bursts)
+        const fw = document.getElementById("fw");
+        const bursts = [
+          [170, 150, "#a5b4fc"],
+          [790, 130, "#22c55e"],
+          [330, 80, "#ffffff"],
+          [640, 70, "#6366f1"],
+        ];
+        bursts.forEach(([cx, cy, c], b) => {
+          const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          g.setAttribute("class", "burst");
+          for (let k = 0; k < 10; k++) {
+            const a = (k / 10) * Math.PI * 2;
+            const ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            Object.entries({ x1: cx + Math.cos(a) * 18, y1: cy + Math.sin(a) * 18, x2: cx + Math.cos(a) * 62, y2: cy + Math.sin(a) * 62, stroke: c, "stroke-width": 5, "stroke-linecap": "round" }).forEach(([key, v]) => ln.setAttribute(key, v));
+            g.appendChild(ln);
+          }
+          fw.appendChild(g);
+          const at = t + 1.4 + b * 0.3;
+          tl.fromTo(g, { opacity: 0, scale: 0.2, transformOrigin: `${cx}px ${cy}px` }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, at);
+          tl.to(g, { opacity: 0, duration: 0.6, ease: "power2.out" }, at + 0.7);
+        });
+        // date ticker Aug 17 -> Sep 5
+        rise(".date-wrap", t + 1.2, 20, 0.5);
+        rise("#cap-party", t + 1.3, 16, 0.5);
+        const st = { d: 0 };
+        const el = document.getElementById("s3-date");
+        const fmt = (d) => (17 + d <= 31 ? `AUG ${17 + d}` : `SEP ${17 + d - 31}`);
+        tl.fromTo(st, { d: 0 }, { d: 19, duration: 1.4, ease: "power2.inOut", onUpdate: () => (el.textContent = fmt(Math.round(st.d))) }, t + 2.4);
+        tl.to("#cap-party", { opacity: 0, duration: 0.3, ease: "power2.out" }, t + 3.6);
+        tl.fromTo("#cap-arrest", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.7);
+        tl.to("#s3-date", { color: "#ef4444", duration: 0.4, ease: E }, t + 3.7);
+        // prison bars slam down
+        tl.fromTo(".pbar", { y: -640 }, { y: 0, duration: 0.5, ease: E, stagger: 0.06 }, t + 3.8);
+        tl.to("#s3-build", { opacity: 0.4, duration: 0.6, ease: E }, t + 3.9);
+        rise("#s3-body", t + 4.2, 24);
+      }
+
+      // ---------- Scene 4: Jupiter's moons, Medici crest -> court mathematician ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo("#planet", { opacity: 0, scale: 0.5, transformOrigin: "480px 230px" }, { opacity: 1, scale: 1, duration: 0.7, ease: E }, t + 0.5);
+        tl.to(".orb", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.12 }, t + 0.7);
+        // moons orbit (deterministic, driven by one proxy)
+        const moons = gsap.utils.toArray(".moon");
+        const orbits = [
+          [170, 50, 0.4],
+          [240, 70, 2.1],
+          [320, 94, 3.6],
+          [420, 122, 5.0],
+        ];
+        const speed = [1.6, 1.1, 0.8, 0.55];
+        const place = (p) =>
+          moons.forEach((m, i) => {
+            const [rx, ry, a0] = orbits[i];
+            const a = a0 + p * speed[i];
+            m.setAttribute("cx", 480 + Math.cos(a) * rx);
+            m.setAttribute("cy", 230 + Math.sin(a) * ry);
+          });
+        place(0);
+        const orbit = { p: 0 };
+        tl.fromTo(orbit, { p: 0 }, { p: 5, duration: 5.6, ease: "none", onUpdate: () => place(orbit.p) }, t + 0.6);
+        tl.fromTo(".moon", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E, stagger: 0.27 }, t + 1.0);
+        // typed label
+        const typed = "MEDICEAN STARS";
+        const ty = document.getElementById("s4-type");
+        const tp = { n: 0 };
+        tl.fromTo(tp, { n: 0 }, { n: typed.length, duration: 0.9, ease: "power1.inOut", onUpdate: () => (ty.textContent = typed.slice(0, Math.round(tp.n)) || " ") }, t + 1.7);
+        // crest -> arrow -> badge
+        tl.to(".cr", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 2.5);
+        tl.fromTo("#palle circle", { opacity: 0, scale: 0.3, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.35, ease: E, stagger: 0.06 }, t + 2.7);
+        rise("#crest-label", t + 2.8, 12, 0.4);
+        tl.fromTo("#s4-badge", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 3.1);
+        tl.fromTo("#s4-arrow", { opacity: 0 }, { opacity: 1, duration: 0.1, ease: E }, t + 3.6);
+        tl.to("#s4-arr", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t + 3.6);
+        tl.to("#s4-check", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, t + 4.0);
+        rise("#s4-body", t + 4.1, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32): deterministic particle field
+        let seed = 11;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#crown-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.25 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

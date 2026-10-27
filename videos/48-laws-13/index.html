@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .law-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .law-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      .fig-label {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .node {
+        position: absolute;
+        left: 80px;
+        width: 800px;
+        height: 140px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 0 40px;
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .node .n {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.2);
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+      .node.bad {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .node.bad .n {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+      .node.good {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.12);
+        color: var(--success);
+      }
+      .node.good .n {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--success);
+      }
+      .badge {
+        position: absolute;
+        border-radius: 28px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 30px;
+        color: var(--success);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .badge svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+      .big-num {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .cap {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+      .fig {
+        position: absolute;
+        left: 0;
+        width: 960px;
+      }
+      #s1-fig { top: 330px; height: 900px; }
+      #s2-fig { top: 260px; height: 860px; }
+      #s3-fig { top: 220px; height: 560px; }
+      .msg {
+        position: absolute;
+        left: 40px;
+        top: 300px;
+        width: 880px;
+        height: 520px;
+        border-radius: 36px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+      }
+      .msg .to {
+        position: absolute;
+        left: 50px;
+        top: 40px;
+        font-size: 30px;
+        color: var(--muted);
+        letter-spacing: 2px;
+      }
+      .msg .ln {
+        position: absolute;
+        left: 50px;
+        font-size: 48px;
+        font-weight: 700;
+        white-space: pre;
+      }
+      #msg-strike {
+        position: absolute;
+        left: 40px;
+        top: 150px;
+        width: 620px;
+        height: 60px;
+      }
+      #msg-send {
+        position: absolute;
+        right: 40px;
+        bottom: 40px;
+        width: 110px;
+        height: 110px;
+      }
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #crown-icon {
+        margin-top: 56px;
+        width: 220px;
+        height: 150px;
+      }
+      .tag {
+        margin-top: 44px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: appeal to their interest ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zyt4" class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">LAW 13</div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-2gbq" class="law-tag" id="s1-tag"><span data-hf-id="hf-z2nm" class="mono">48 LAWS OF POWER · LAW 13</span></div>
+            <div data-hf-id="hf-98cf" class="headline" id="s1-head" style="top: 100px">
+              <span data-hf-id="hf-utgl" class="l">Appeal to</span>
+              <span data-hf-id="hf-6v3e" class="l a">their interest.</span>
+            </div>
+            <svg data-hf-id="hf-1jt4" id="s1-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 900">
+              <g data-hf-id="hf-qeu2" id="s1-them">
+                <circle data-hf-id="hf-r9e6" class="draw s1-t" pathLength="1" stroke="#ffffff" stroke-width="8" cx="790" cy="380" r="60" />
+                <path data-hf-id="hf-eape" class="draw s1-t" pathLength="1" stroke="#ffffff" stroke-width="8" d="M 680 640 L 680 560 C 680 470, 900 470, 900 560 L 900 640" />
+                <text data-hf-id="hf-9e0p" class="fig-label" x="790" y="700" text-anchor="middle" fill="#a3a3b8">THEM</text>
+              </g>
+              <g data-hf-id="hf-bm3v" id="s1-b1">
+                <path data-hf-id="hf-c7m9" d="M 60 170 L 540 170 C 560 170, 570 180, 570 200 L 570 280 C 570 300, 560 310, 540 310 L 140 310 L 100 350 L 100 310 L 60 310 C 40 310, 30 300, 30 280 L 30 200 C 30 180, 40 170, 60 170 Z" fill="#111118" stroke="#6b6b80" stroke-width="5" />
+                <text data-hf-id="hf-0xxp" class="fig-label" x="300" y="252" text-anchor="middle" fill="#a3a3b8">PLEASE HELP ME</text>
+              </g>
+              <path data-hf-id="hf-o1bl" id="s1-x" class="draw" pathLength="1" stroke="#ef4444" stroke-width="9" d="M 500 120 L 600 220 M 600 120 L 500 220" />
+              <g data-hf-id="hf-2y80" id="s1-b2">
+                <path data-hf-id="hf-yofa" d="M 60 470 L 540 470 C 560 470, 570 480, 570 500 L 570 580 C 570 600, 560 610, 540 610 L 140 610 L 100 650 L 100 610 L 60 610 C 40 610, 30 600, 30 580 L 30 500 C 30 480, 40 470, 60 470 Z" fill="rgba(34,197,94,0.12)" stroke="#22c55e" stroke-width="5" />
+                <text data-hf-id="hf-9z65" class="fig-label" x="300" y="552" text-anchor="middle" fill="#22c55e">HERE'S YOUR GAIN</text>
+              </g>
+              <path data-hf-id="hf-e50r" id="s1-link" class="draw" pathLength="1" stroke="#22c55e" stroke-width="6" d="M 575 540 C 630 540, 640 470, 690 450 M 664 444 L 690 450 L 676 474" />
+            </svg>
+            <div data-hf-id="hf-essb" class="body" id="s1-body" style="top: 1300px">Never ask through <b data-hf-id="hf-fzc7">mercy</b> or <b data-hf-id="hf-aoqw">gratitude</b>. Show people <b data-hf-id="hf-fqtq">what they gain</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: find the overlap ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-bbi4" class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">GAIN</div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-qc4j" class="l">Find the</span>
+              <span data-hf-id="hf-guax" class="l a">overlap.</span>
+            </div>
+            <svg data-hf-id="hf-yz90" id="s2-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 860">
+              <defs data-hf-id="hf-mh0t">
+                <clipPath data-hf-id="hf-6fuu" id="s2-clipA"><circle data-hf-id="hf-n4sj" cx="330" cy="420" r="230" /></clipPath>
+              </defs>
+              <circle data-hf-id="hf-9un8" id="s2-lens" cx="630" cy="420" r="230" fill="#22c55e" fill-opacity="0.35" clip-path="url(#s2-clipA)" />
+              <g data-hf-id="hf-571y" id="s2-A">
+                <circle data-hf-id="hf-wx2u" class="draw s2-c" pathLength="1" stroke="#a5b4fc" stroke-width="8" cx="330" cy="420" r="230" transform="rotate(-90 330 420)" />
+                <text data-hf-id="hf-k5ot" class="fig-label" x="215" y="410" text-anchor="middle" fill="#a5b4fc">YOUR</text>
+                <text data-hf-id="hf-q252" class="fig-label" x="215" y="450" text-anchor="middle" fill="#a5b4fc">NEED</text>
+              </g>
+              <g data-hf-id="hf-z1c5" id="s2-B">
+                <circle data-hf-id="hf-g44j" class="draw s2-c" pathLength="1" stroke="#ffffff" stroke-width="8" cx="630" cy="420" r="230" transform="rotate(-90 630 420)" />
+                <text data-hf-id="hf-elq3" class="fig-label" x="750" y="410" text-anchor="middle" fill="#ffffff">THEIR</text>
+                <text data-hf-id="hf-urcr" class="fig-label" x="750" y="450" text-anchor="middle" fill="#ffffff">INTEREST</text>
+              </g>
+              <text data-hf-id="hf-x87p" id="s2-yes" x="480" y="440" text-anchor="middle" fill="#ffffff" font-size="56" font-weight="900">YES</text>
+            </svg>
+            <div data-hf-id="hf-js5k" class="body" id="s2-body" style="top: 1150px">People act for themselves. Ask from where <b data-hf-id="hf-znj4">your need meets their interest</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: Corcyra vs Corinth ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-sdz7" class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">433 BC</div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-5m6y" class="l">Athens chose</span>
+              <span data-hf-id="hf-vrkr" class="l a">its own gain.</span>
+            </div>
+            <svg data-hf-id="hf-x86s" id="s3-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 560">
+              <path data-hf-id="hf-sz9d" class="draw sc" pathLength="1" stroke="#ffffff" stroke-width="8" d="M 380 540 L 580 540 M 480 540 L 480 150" />
+              <circle data-hf-id="hf-oyuh" class="draw sc" pathLength="1" stroke="#a5b4fc" stroke-width="6" cx="480" cy="140" r="14" />
+              <g data-hf-id="hf-t8li" id="beam">
+                <path data-hf-id="hf-ln0b" class="draw sc" pathLength="1" stroke="#ffffff" stroke-width="8" d="M 180 140 L 780 140" />
+              </g>
+              <g data-hf-id="hf-wfyf" id="pan-l">
+                <path data-hf-id="hf-iwyv" class="draw sc" pathLength="1" stroke="#6b6b80" stroke-width="4" d="M 180 140 L 110 300 M 180 140 L 250 300" />
+                <path data-hf-id="hf-5dib" class="draw sc" pathLength="1" stroke="#a3a3b8" stroke-width="7" d="M 95 300 L 265 300 C 255 340, 105 340, 95 300 Z" />
+                <path data-hf-id="hf-7wwu" id="heart" d="M 180 290 C 150 262, 150 236, 170 236 C 178 236, 180 244, 180 248 C 180 244, 182 236, 190 236 C 210 236, 210 262, 180 290 Z" fill="#a3a3b8" />
+                <text data-hf-id="hf-jwc6" class="fig-label" x="180" y="385" text-anchor="middle" fill="#a3a3b8">GRATITUDE</text>
+                <text data-hf-id="hf-ogtn" class="fig-label" x="180" y="425" text-anchor="middle" fill="#6b6b80">CORINTH</text>
+              </g>
+              <g data-hf-id="hf-onbt" id="pan-r">
+                <path data-hf-id="hf-7jcj" class="draw sc" pathLength="1" stroke="#6b6b80" stroke-width="4" d="M 780 140 L 710 300 M 780 140 L 850 300" />
+                <path data-hf-id="hf-8nrt" class="draw sc" pathLength="1" stroke="#22c55e" stroke-width="7" d="M 695 300 L 865 300 C 855 340, 705 340, 695 300 Z" />
+                <g data-hf-id="hf-er8k" id="ships">
+                  <path data-hf-id="hf-erbz" class="ship" d="M 712 290 L 760 290 L 750 272 L 722 272 Z M 736 272 L 736 246 L 750 266 Z" fill="#22c55e" />
+                  <path data-hf-id="hf-ir3t" class="ship" d="M 790 290 L 840 290 L 830 272 L 800 272 Z M 815 272 L 815 246 L 829 266 Z" fill="#22c55e" />
+                  <path data-hf-id="hf-rt33" class="ship" d="M 750 262 L 800 262 L 790 244 L 760 244 Z M 775 244 L 775 218 L 789 238 Z" fill="#22c55e" />
+                </g>
+                <text data-hf-id="hf-byqw" class="fig-label" x="780" y="385" text-anchor="middle" fill="#22c55e">SELF-INTEREST</text>
+                <text data-hf-id="hf-0wsl" class="fig-label" x="780" y="425" text-anchor="middle" fill="#a3a3b8">CORCYRA</text>
+              </g>
+            </svg>
+            <div data-hf-id="hf-36b2" class="big-num mono" id="s3-ships" style="top: 790px; color: var(--success)">0</div>
+            <div data-hf-id="hf-zmze" class="cap mono" id="s3-cap" style="top: 935px; color: var(--accent-hi)">CORCYRA'S WARSHIPS</div>
+            <div data-hf-id="hf-pwz6" class="body" id="s3-body" style="top: 1010px"><b data-hf-id="hf-prfc">Corinth</b> reminded Athens of past favours. <b data-hf-id="hf-wmga">Corcyra</b> offered its navy, the largest in Greece after Athens' own. <b data-hf-id="hf-kbdw">Athens sided with Corcyra.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: rewrite the ask ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-3s2u" class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">ASK</div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-z3yt" class="l">Rewrite</span>
+              <span data-hf-id="hf-05uu" class="l a">the ask.</span>
+            </div>
+            <div data-hf-id="hf-ptq0" class="msg" id="s4-msg">
+              <div data-hf-id="hf-7uad" class="to mono">TO: THEM</div>
+              <div data-hf-id="hf-s7tz" class="ln" id="msg-old" style="top: 150px; color: var(--dim)">Can you do me a favour?</div>
+              <svg data-hf-id="hf-6na5" id="msg-strike" viewBox="0 0 620 60"><path data-hf-id="hf-3v5f" id="msg-strike-p" class="draw" pathLength="1" stroke="#ef4444" stroke-width="7" d="M 0 32 L 620 28" /></svg>
+              <div data-hf-id="hf-d6k9" class="ln mono" id="msg-new" style="top: 280px; color: var(--success); font-size: 44px"> </div>
+              <svg data-hf-id="hf-oj7t" id="msg-send" viewBox="0 0 110 110">
+                <circle data-hf-id="hf-6ugc" cx="55" cy="55" r="52" fill="#6366f1" />
+                <path data-hf-id="hf-p6ue" class="draw" id="msg-arrow" pathLength="1" stroke="#ffffff" stroke-width="8" d="M 32 55 L 78 55 M 58 35 L 78 55 L 58 75" />
+              </svg>
+            </div>
+            <div data-hf-id="hf-s1oq" class="body" id="s4-body" style="top: 900px">Lead every request with <b data-hf-id="hf-3nvi">their gain</b>, not your need.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-kx2j" class="cta-head" id="s5-head">Show them <span data-hf-id="hf-sdhp" class="a">the upside.</span></div>
+            <div data-hf-id="hf-i8jm" class="cta-sub" id="s5-sub">Follow for more big ideas explained in 30 seconds.</div>
+            <svg data-hf-id="hf-qaeg" id="crown-icon" viewBox="0 0 220 150">
+              <path data-hf-id="hf-umco" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 20 130 L 200 130" />
+              <path data-hf-id="hf-e4hm" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="8" d="M 30 112 L 80 72 L 120 96 L 190 26 M 156 26 L 190 26 L 190 60" />
+            </svg>
+            <div data-hf-id="hf-5mln" class="tag mono" id="s5-tag">LAW 13 OF 48, EXPLAINED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      // Shared: rise-in helper, crossfades, ambient glow breath + ghost drift
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: two ways to ask ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        tl.to(".s1-t", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.3 }, t + 0.6);
+        tl.fromTo("#s1-them text", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.1);
+        tl.fromTo("#s1-b1", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 1.2);
+        tl.to("#s1-x", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out" }, t + 2.0);
+        tl.to("#s1-b1", { opacity: 0.35, duration: 0.5, ease: E }, t + 2.3);
+        tl.fromTo("#s1-b2", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 2.5);
+        tl.fromTo("#s1-link", { opacity: 0 }, { opacity: 1, duration: 0.1, ease: E }, t + 3.1);
+        tl.to("#s1-link", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t + 3.1);
+        tl.to("#s1-them .s1-t", { attr: { stroke: "#22c55e" }, duration: 0.4, ease: E }, t + 3.5);
+        rise("#s1-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 2: Venn overlap ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.to(".s2-c", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.3 }, t + 0.6);
+        tl.fromTo("#s2-A text, #s2-B text", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E, stagger: 0.1 }, t + 1.2);
+        tl.fromTo("#s2-A", { x: -110 }, { x: 0, duration: 1.0, ease: "power3.inOut" }, t + 1.8);
+        tl.fromTo("#s2-B", { x: 110 }, { x: 0, duration: 1.0, ease: "power3.inOut" }, t + 1.8);
+        tl.fromTo("#s2-lens", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: E }, t + 2.8);
+        tl.fromTo("#s2-yes", { opacity: 0, scale: 0.6, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 3.0);
+        tl.fromTo("#s2-lens", { scale: 1, transformOrigin: "50% 50%" }, { scale: 1.04, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3, immediateRender: false }, t + 3.5);
+        rise("#s2-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 3: scale tips toward self-interest ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.to(".sc", { strokeDashoffset: 0, duration: 0.7, ease: "power2.out", stagger: 0.08 }, t + 0.5);
+        tl.fromTo("#heart", { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, t + 1.2);
+        tl.fromTo("#pan-l text, #pan-r text", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E, stagger: 0.1 }, t + 1.3);
+        tl.fromTo(".ship", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.4, ease: E, stagger: 0.3 }, t + 1.9);
+        rise("#s3-ships", t + 1.7, 20, 0.5);
+        rise("#s3-cap", t + 1.8, 16, 0.5);
+        const fleet = { v: 0 };
+        const sEl = document.getElementById("s3-ships");
+        tl.fromTo(fleet, { v: 0 }, { v: 120, duration: 1.4, ease: "power2.out", onUpdate: () => (sEl.textContent = Math.round(fleet.v)) }, t + 2.0);
+        // tip: beam rotates, pans stay level and shift vertically
+        tl.fromTo("#beam", { rotation: 0, svgOrigin: "480 140" }, { rotation: 12, svgOrigin: "480 140", duration: 1.0, ease: "power3.inOut" }, t + 2.8);
+        tl.fromTo("#pan-l", { x: 0, y: 0 }, { x: 7, y: -62, duration: 1.0, ease: "power3.inOut" }, t + 2.8);
+        tl.fromTo("#pan-r", { x: 0, y: 0 }, { x: -7, y: 62, duration: 1.0, ease: "power3.inOut" }, t + 2.8);
+        tl.to("#pan-l", { opacity: 0.45, duration: 0.5, ease: E }, t + 3.6);
+        rise("#s3-body", t + 3.8, 24);
+      }
+
+      // ---------- Scene 4: strike the favour, type the gain ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo("#s4-msg", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: E }, t + 0.5);
+        tl.to("#msg-strike-p", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" }, t + 1.4);
+        tl.to("#msg-old", { opacity: 0.4, duration: 0.4, ease: E }, t + 1.7);
+        const typed = "Here's what's in it for you";
+        const ty = document.getElementById("msg-new");
+        const tp = { n: 0 };
+        tl.fromTo(tp, { n: 0 }, { n: typed.length, duration: 1.3, ease: "power1.inOut", onUpdate: () => (ty.textContent = typed.slice(0, Math.round(tp.n)) || " ") }, t + 2.0);
+        tl.fromTo("#msg-send", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: E }, t + 3.3);
+        tl.to("#msg-arrow", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, t + 3.5);
+        tl.to("#s4-msg", { borderColor: "#22c55e", duration: 0.4, ease: E }, t + 3.6);
+        rise("#s4-body", t + 3.7, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32): deterministic particle field
+        let seed = 53;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#crown-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.25 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

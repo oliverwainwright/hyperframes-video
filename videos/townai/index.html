@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --amber: #f59e0b;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 380px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 80px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 40px;
+        width: 880px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .townie {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #818cf8, #4338ca);
+        border: 5px solid var(--accent-hi);
+        box-shadow: 0 0 60px rgba(99, 102, 241, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .townie svg {
+        width: 62%;
+        height: 62%;
+      }
+
+      /* ---------- Scene 1 ---------- */
+      #s1-lines {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .tool {
+        position: absolute;
+        width: 170px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .tool .ic {
+        width: 116px;
+        height: 116px;
+        border-radius: 28px;
+        background: #14142a;
+        border: 4px solid var(--fg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .tool .ic svg {
+        width: 64px;
+        height: 64px;
+      }
+      .tool .lb {
+        font-size: 30px;
+        font-weight: 700;
+      }
+
+      /* ---------- Scene 2 ---------- */
+      #ctx-ring {
+        position: absolute;
+        left: 340px;
+        top: 250px;
+        width: 280px;
+        height: 280px;
+      }
+      .ctx-label {
+        position: absolute;
+        left: 0;
+        top: 560px;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        gap: 16px;
+        font-size: 40px;
+        font-weight: 700;
+        color: var(--dim);
+      }
+      #ctx-count {
+        display: inline-block;
+        width: 170px;
+        text-align: right;
+        font-size: 72px;
+        color: var(--success);
+        font-variant-numeric: tabular-nums;
+      }
+      .cards {
+        position: absolute;
+        left: 0;
+        top: 720px;
+        width: 960px;
+        display: flex;
+        gap: 30px;
+      }
+      .card {
+        width: 300px;
+        height: 330px;
+        border-radius: 28px;
+        background: var(--panel);
+        border: 4px solid var(--line);
+        padding: 30px 28px;
+      }
+      .card svg {
+        width: 72px;
+        height: 72px;
+      }
+      .card .nm {
+        margin-top: 14px;
+        font-size: 36px;
+        font-weight: 900;
+      }
+      .card .bar {
+        height: 18px;
+        border-radius: 9px;
+        background: var(--accent);
+        margin-top: 20px;
+        transform-origin: left center;
+      }
+      .card .bar.b2 {
+        width: 80%;
+        background: #4f46e5;
+      }
+      .card .bar.b3 {
+        width: 60%;
+        background: #3730a3;
+      }
+
+      /* ---------- Scene 3 ---------- */
+      .inbox {
+        position: absolute;
+        left: 0;
+        top: 290px;
+        width: 960px;
+        border-radius: 30px;
+        background: var(--panel);
+        border: 4px solid var(--line);
+        padding: 20px 34px;
+      }
+      .row {
+        height: 190px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 14px;
+        border-bottom: 3px solid var(--line);
+      }
+      .row:last-child {
+        border-bottom: none;
+      }
+      .row .subj {
+        font-size: 42px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .row .subj svg {
+        width: 44px;
+        height: 44px;
+        flex: none;
+      }
+      .status {
+        align-self: flex-start;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 24px;
+        border-radius: 999px;
+        font-size: 32px;
+        font-weight: 700;
+        border: 3px solid var(--success);
+        color: var(--success);
+        background: rgba(34, 197, 94, 0.14);
+      }
+      .status.warn {
+        border-color: var(--amber);
+        color: var(--amber);
+        background: rgba(245, 158, 11, 0.14);
+      }
+      .status svg {
+        width: 32px;
+        height: 32px;
+      }
+      .approve {
+        position: absolute;
+        left: 0;
+        top: 960px;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+      }
+      .btn {
+        padding: 20px 50px;
+        border-radius: 22px;
+        font-size: 42px;
+        font-weight: 900;
+      }
+      .btn.yes {
+        background: var(--accent);
+        color: var(--fg);
+      }
+      .btn.no {
+        border: 4px solid var(--line);
+        color: var(--dim);
+      }
+
+      /* ---------- Scene 4 ---------- */
+      #s4-lines {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .node-lb {
+        position: absolute;
+        width: 240px;
+        text-align: center;
+        font-size: 36px;
+        font-weight: 900;
+      }
+      .lock {
+        position: absolute;
+        width: 64px;
+        height: 64px;
+      }
+      .task {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 290px;
+        height: 76px;
+        white-space: nowrap;
+        border-radius: 18px;
+        background: var(--fg);
+        color: #14142a;
+        font-size: 32px;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      }
+      .val {
+        position: absolute;
+        left: 0;
+        top: 1050px;
+        width: 960px;
+        text-align: center;
+      }
+      #val-count {
+        display: inline-block;
+        font-size: 150px;
+        font-weight: 700;
+        letter-spacing: -6px;
+        font-variant-numeric: tabular-nums;
+        color: var(--success);
+      }
+      .val .vl {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--dim);
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .shot-wrap {
+        position: absolute;
+        left: 260px;
+        top: 220px;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .tag {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .tag span {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 32px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: hub + tools ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-cp0g" class="l">An assistant</span>
+              <span data-hf-id="hf-y6m1" class="l a">that learns you.</span>
+            </div>
+            <svg data-hf-id="hf-jnwn" id="s1-lines" viewBox="0 0 960 1600" />
+            <div data-hf-id="hf-2jkr" id="s1-tools"></div>
+            <div data-hf-id="hf-k5pn" class="townie" id="s1-hub" style="left: 390px; top: 630px; width: 180px; height: 180px"></div>
+            <div data-hf-id="hf-mbmw" class="body" id="s1-body" style="top: 1210px">Town gives you an AI assistant called a <b data-hf-id="hf-9zoz">Townie</b>. It plugs into the tools you already use.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: context ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-luo1" class="glow" id="s2-glow" style="top: 0"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-a884" class="headline" id="s2-head" style="font-size: 70px">
+              <span data-hf-id="hf-22p2" class="l">It learns your voice,</span>
+              <span data-hf-id="hf-lo3n" class="l a">people &amp; projects.</span>
+            </div>
+            <svg data-hf-id="hf-fkzx" id="ctx-ring" viewBox="0 0 280 280">
+              <circle data-hf-id="hf-f7cc" cx="140" cy="140" r="126" fill="none" stroke="#1c1c2b" stroke-width="16" />
+              <circle data-hf-id="hf-nqiq" id="ctx-arc" cx="140" cy="140" r="126" fill="none" stroke="#22c55e" stroke-width="16" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" transform="rotate(-90 140 140)" />
+            </svg>
+            <div data-hf-id="hf-lnp7" class="townie" id="s2-hub" style="left: 400px; top: 310px; width: 160px; height: 160px"></div>
+            <div data-hf-id="hf-hosj" class="ctx-label" id="s2-ctx"><span data-hf-id="hf-nccs"><span data-hf-id="hf-nqat" id="ctx-count" class="mono">0</span>%</span><span data-hf-id="hf-kwfc">context</span></div>
+            <div data-hf-id="hf-5cwd" class="cards">
+              <div data-hf-id="hf-vn2y" class="card">
+                <svg data-hf-id="hf-taj3" viewBox="0 0 72 72"><path data-hf-id="hf-br99" d="M 8 36 L 8 36 M 18 26 L 18 46 M 28 14 L 28 58 M 38 22 L 38 50 M 48 10 L 48 62 M 58 26 L 58 46 M 66 34 L 66 38" stroke="#a5b4fc" stroke-width="7" stroke-linecap="round" /></svg>
+                <div data-hf-id="hf-wmsr" class="nm">Voice</div>
+                <div data-hf-id="hf-ufsv" class="bar"></div><div data-hf-id="hf-xkut" class="bar b2"></div><div data-hf-id="hf-ull8" class="bar b3"></div>
+              </div>
+              <div data-hf-id="hf-i08u" class="card">
+                <svg data-hf-id="hf-al67" viewBox="0 0 72 72"><circle data-hf-id="hf-f8da" cx="24" cy="24" r="11" fill="#a5b4fc" /><path data-hf-id="hf-00mg" d="M 4 62 C 4 42, 44 42, 44 62 Z" fill="#a5b4fc" /><circle data-hf-id="hf-3drj" cx="50" cy="22" r="9" fill="#22c55e" /><path data-hf-id="hf-6eod" d="M 36 58 C 38 42, 70 42, 70 58 Z" fill="#22c55e" /></svg>
+                <div data-hf-id="hf-d8iy" class="nm">Relationships</div>
+                <div data-hf-id="hf-c51b" class="bar"></div><div data-hf-id="hf-btop" class="bar b2"></div><div data-hf-id="hf-eles" class="bar b3"></div>
+              </div>
+              <div data-hf-id="hf-iejv" class="card">
+                <svg data-hf-id="hf-a6v6" viewBox="0 0 72 72"><path data-hf-id="hf-0xvx" d="M 6 18 L 28 18 L 34 26 L 66 26 L 66 60 L 6 60 Z" fill="none" stroke="#f59e0b" stroke-width="6" stroke-linejoin="round" /></svg>
+                <div data-hf-id="hf-0b05" class="nm">Projects</div>
+                <div data-hf-id="hf-bqqa" class="bar"></div><div data-hf-id="hf-d0ls" class="bar b2"></div><div data-hf-id="hf-dehp" class="bar b3"></div>
+              </div>
+            </div>
+            <div data-hf-id="hf-9ag6" class="body" id="s2-body" style="top: 1110px">That context is <b data-hf-id="hf-j7vt">what makes it useful.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: proactive ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-h9ih" class="l">It doesn't wait</span>
+              <span data-hf-id="hf-ld9u" class="l a">to be asked.</span>
+            </div>
+            <div data-hf-id="hf-ryc7" class="inbox" id="s3-inbox">
+              <div data-hf-id="hf-thy4" class="row">
+                <div data-hf-id="hf-rmhc" class="subj"><svg data-hf-id="hf-b65t" viewBox="0 0 44 44"><rect data-hf-id="hf-66be" x="3" y="8" width="38" height="28" rx="5" fill="none" stroke="#a3a3b8" stroke-width="4" /><path data-hf-id="hf-50fn" d="M 5 11 L 22 25 L 39 11" fill="none" stroke="#a3a3b8" stroke-width="4" /></svg>Re: Q4 proposal</div>
+                <div data-hf-id="hf-zkt4" class="status" id="st1"><svg data-hf-id="hf-161r" viewBox="0 0 32 32"><path data-hf-id="hf-29ux" d="M 6 17 L 13 24 L 26 9" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>Reply drafted</div>
+              </div>
+              <div data-hf-id="hf-lt04" class="row">
+                <div data-hf-id="hf-d1fk" class="subj"><svg data-hf-id="hf-57mt" viewBox="0 0 44 44"><rect data-hf-id="hf-kgay" x="4" y="8" width="36" height="32" rx="5" fill="none" stroke="#a3a3b8" stroke-width="4" /><path data-hf-id="hf-vnt3" d="M 4 17 L 40 17 M 14 4 L 14 12 M 30 4 L 30 12" stroke="#a3a3b8" stroke-width="4" /></svg>Lunch next week?</div>
+                <div data-hf-id="hf-n8iu" class="status" id="st2"><svg data-hf-id="hf-o57j" viewBox="0 0 32 32"><path data-hf-id="hf-orj1" d="M 6 17 L 13 24 L 26 9" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>Meeting booked</div>
+              </div>
+              <div data-hf-id="hf-km31" class="row">
+                <div data-hf-id="hf-k640" class="subj"><svg data-hf-id="hf-6ejw" viewBox="0 0 44 44"><path data-hf-id="hf-qasw" d="M 10 4 L 28 4 L 36 12 L 36 40 L 10 40 Z" fill="none" stroke="#a3a3b8" stroke-width="4" stroke-linejoin="round" /></svg>Vendor contract</div>
+                <div data-hf-id="hf-oeot" class="status warn" id="st3"><svg data-hf-id="hf-joxe" viewBox="0 0 32 32"><path data-hf-id="hf-1py0" d="M 16 5 L 16 19 M 16 25 L 16 26" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" /></svg>Flagged: due Friday</div>
+              </div>
+            </div>
+            <div data-hf-id="hf-8s7v" class="approve" id="s3-approve"><span data-hf-id="hf-8b8v" class="btn yes">Approve</span><span data-hf-id="hf-kucw" class="btn no">Edit</span></div>
+            <div data-hf-id="hf-edjo" class="body" id="s3-body" style="top: 1110px">Decisions still <b data-hf-id="hf-szwg">come back to you.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: Townies team up ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-hdpv" class="l">Assistants that</span>
+              <span data-hf-id="hf-xf4z" class="l a">work as a team.</span>
+            </div>
+            <svg data-hf-id="hf-ayp8" id="s4-lines" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-gka1" class="draw ln" pathLength="1" stroke="#6366f1" stroke-width="6" d="M 280 480 L 680 480" />
+              <path data-hf-id="hf-qnqu" class="draw ln" pathLength="1" stroke="#6366f1" stroke-width="6" d="M 710 545 L 545 755" />
+              <path data-hf-id="hf-xnwp" class="draw ln" pathLength="1" stroke="#3a3a52" stroke-width="5" d="M 250 545 L 415 755" />
+            </svg>
+            <div data-hf-id="hf-r42s" class="townie s4n" style="left: 130px; top: 410px; width: 140px; height: 140px"></div>
+            <div data-hf-id="hf-aozj" class="townie s4n" style="left: 690px; top: 410px; width: 140px; height: 140px"></div>
+            <div data-hf-id="hf-ffv4" class="townie s4n" style="left: 410px; top: 750px; width: 140px; height: 140px; background: radial-gradient(circle at 35% 30%, #4ade80, #15803d); border-color: #86efac"></div>
+            <div data-hf-id="hf-jz95" class="node-lb s4l" style="left: 80px; top: 565px">Sales</div>
+            <div data-hf-id="hf-uqm5" class="node-lb s4l" style="left: 640px; top: 565px">Ops</div>
+            <div data-hf-id="hf-qrkt" class="node-lb s4l" style="left: 360px; top: 905px">You</div>
+            <svg data-hf-id="hf-a2gs" class="lock" id="lock1" viewBox="0 0 64 64" style="left: 448px; top: 420px"><circle data-hf-id="hf-jbvq" cx="32" cy="32" r="30" fill="#0a0a0a" stroke="#a5b4fc" stroke-width="4" /><path data-hf-id="hf-imyq" d="M 23 30 L 23 23 C 23 14, 41 14, 41 23 L 41 30" fill="none" stroke="#a5b4fc" stroke-width="5" /><rect data-hf-id="hf-gq6i" x="18" y="29" width="28" height="20" rx="5" fill="#a5b4fc" /></svg>
+            <svg data-hf-id="hf-gq6w" class="lock" id="lock2" viewBox="0 0 64 64" style="left: 596px; top: 618px"><circle data-hf-id="hf-hh7u" cx="32" cy="32" r="30" fill="#0a0a0a" stroke="#a5b4fc" stroke-width="4" /><path data-hf-id="hf-3pra" d="M 23 30 L 23 23 C 23 14, 41 14, 41 23 L 41 30" fill="none" stroke="#a5b4fc" stroke-width="5" /><rect data-hf-id="hf-cevi" x="18" y="29" width="28" height="20" rx="5" fill="#a5b4fc" /></svg>
+            <div data-hf-id="hf-89gm" class="task" id="task">Task: prep call</div>
+            <div data-hf-id="hf-j6r8" class="val" id="s4-val">
+              <div data-hf-id="hf-yeow"><span data-hf-id="hf-stsb" id="val-count" class="mono">$0.0B</span></div>
+              <div data-hf-id="hf-jy40" class="vl">valuation · $108M Series B · Oct 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-vn3j" class="glow" id="s5-glow" style="top: 180px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-pyrk" class="safe">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-q6pr" class="headline" id="s5-head" style="top: 720px">
+              <span data-hf-id="hf-7hpz" class="l">Your next coworker</span>
+              <span data-hf-id="hf-u1le" class="l a">might be AI.</span>
+            </div>
+            <div data-hf-id="hf-rgzl" class="body" id="s5-sub" style="top: 940px; font-size: 42px">Follow for more AI explained in 30 seconds.</div>
+            <div data-hf-id="hf-0ihq" class="tag" id="s5-tag" style="top: 1090px"><span data-hf-id="hf-s4e5" class="mono">NEW AI, DECODED IN 30s</span></div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4;
+      const E = "power3.out";
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      const pop = (sel, at, from = 0.6, extra = {}) => tl.fromTo(sel, { opacity: 0, scale: from }, { opacity: 1, scale: 1, duration: 0.5, ease: E, ...extra }, at);
+
+      // Townie face (inline SVG) into every .townie
+      const FACE =
+        '<svg viewBox="0 0 100 100"><path d="M 50 6 L 50 18" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="6" r="5" fill="#ffffff"/>' +
+        '<rect x="14" y="18" width="72" height="62" rx="24" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-width="6"/>' +
+        '<circle cx="37" cy="46" r="7" fill="#ffffff"/><circle cx="63" cy="46" r="7" fill="#ffffff"/>' +
+        '<path d="M 36 62 C 44 70, 56 70, 64 62" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/></svg>';
+      document.querySelectorAll(".townie").forEach((n) => (n.innerHTML = FACE));
+
+      // Crossfades + glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: Townie hub wires out to tools (avatar-cloud-network) ----------
+      {
+        const t = S[0];
+        rise("#s1-head", t + 0.1);
+        pop("#s1-hub", t + 0.4, 0.5);
+        const TOOLS = [
+          ["Email", '<rect x="6" y="14" width="52" height="36" rx="6" fill="none" stroke="#ffffff" stroke-width="5"/><path d="M 8 18 L 32 36 L 56 18" fill="none" stroke="#ffffff" stroke-width="5"/>'],
+          ["Calendar", '<rect x="8" y="12" width="48" height="44" rx="6" fill="none" stroke="#ffffff" stroke-width="5"/><path d="M 8 24 L 56 24 M 20 6 L 20 16 M 44 6 L 44 16" stroke="#ffffff" stroke-width="5"/><rect x="18" y="32" width="10" height="10" rx="2" fill="#22c55e"/>'],
+          ["Slack", '<path d="M 24 8 L 18 56 M 46 8 L 40 56 M 10 22 L 56 22 M 8 42 L 54 42" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>'],
+          ["Docs", '<path d="M 14 6 L 40 6 L 52 18 L 52 58 L 14 58 Z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linejoin="round"/><path d="M 22 30 L 44 30 M 22 40 L 44 40 M 22 50 L 36 50" stroke="#a5b4fc" stroke-width="4" stroke-linecap="round"/>'],
+          ["WhatsApp", '<path d="M 32 6 C 16 6, 6 18, 6 31 C 6 37, 8 42, 11 46 L 8 58 L 20 54 C 24 56, 28 57, 32 57 C 48 57, 58 45, 58 31 C 58 17, 48 6, 32 6 Z" fill="none" stroke="#22c55e" stroke-width="5" stroke-linejoin="round"/>'],
+          ["Web", '<circle cx="32" cy="32" r="25" fill="none" stroke="#ffffff" stroke-width="5"/><path d="M 7 32 L 57 32 M 32 7 C 20 20, 20 44, 32 57 M 32 7 C 44 20, 44 44, 32 57" fill="none" stroke="#ffffff" stroke-width="4"/>'],
+        ];
+        const C = { x: 480, y: 720 };
+        const R = 340;
+        const svg = document.getElementById("s1-lines");
+        const host = document.getElementById("s1-tools");
+        TOOLS.forEach(([name, ico], i) => {
+          const a = -Math.PI / 2 + (i / TOOLS.length) * Math.PI * 2;
+          const x = C.x + Math.cos(a) * R;
+          const y = C.y + Math.sin(a) * R;
+          const ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          Object.entries({ x1: C.x, y1: C.y, x2: x, y2: y, stroke: "#6366f1", "stroke-width": 5, pathLength: 1, class: "draw s1-ln" }).forEach(([k, v]) => ln.setAttribute(k, v));
+          svg.appendChild(ln);
+          const d = document.createElement("div");
+          d.className = "tool s1-tool";
+          d.style.left = `${x - 85}px`;
+          d.style.top = `${y - 58}px`;
+          d.innerHTML = `<div class="ic"><svg viewBox="0 0 64 64">${ico}</svg></div><div class="lb">${name}</div>`;
+          host.appendChild(d);
+        });
+        tl.to(".s1-ln", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: 0.08 }, t + 0.9);
+        tl.fromTo(".s1-tool", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: E, stagger: 0.1 }, t + 1.2);
+        rise("#s1-body", t + 2.6, 24);
+      }
+
+      // ---------- Scene 2: context ring + cards ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        pop("#s2-hub", t + 0.5, 0.5);
+        tl.fromTo("#ctx-ring", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 0.5);
+        tl.to("#ctx-arc", { strokeDashoffset: 0, duration: 2.6, ease: "power2.inOut" }, t + 0.9);
+        const st = { v: 0 };
+        const el = document.getElementById("ctx-count");
+        tl.fromTo(st, { v: 0 }, { v: 100, duration: 2.6, ease: "power2.inOut", onUpdate: () => (el.textContent = Math.round(st.v)) }, t + 0.9);
+        rise("#s2-ctx", t + 0.8, 16, 0.5);
+        tl.fromTo(".card", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.5, ease: E, stagger: 0.33 }, t + 1.1);
+        tl.fromTo(".card .bar", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: E, stagger: 0.09 }, t + 1.5);
+        rise("#s2-body", t + 3.7, 20);
+      }
+
+      // ---------- Scene 3: inbox handled one by one ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.fromTo("#s3-inbox", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 0.5);
+        tl.fromTo("#s3-inbox .subj", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.4, ease: E, stagger: 0.12 }, t + 0.7);
+        ["#st1", "#st2", "#st3"].forEach((id, i) => pop(id, t + 1.5 + i * 0.6, 0.6));
+        tl.fromTo("#s3-approve .btn", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: E, stagger: 0.12 }, t + 3.5);
+        tl.fromTo("#s3-approve .yes", { boxShadow: "0 0 0 0 rgba(99,102,241,0.6)" }, { boxShadow: "0 0 0 18px rgba(99,102,241,0)", duration: 0.8, ease: "power2.out", repeat: 1 }, t + 4.1);
+        rise("#s3-body", t + 4.2, 20);
+      }
+
+      // ---------- Scene 4: handoff between Townies + valuation ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo(".s4n", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: E, stagger: 0.3 }, t + 0.5);
+        tl.fromTo(".s4l", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: E, stagger: 0.3 }, t + 0.7);
+        tl.to("#s4-lines .ln", { strokeDashoffset: 0, duration: 0.5, ease: "power2.out", stagger: 0.12 }, t + 1.3);
+        pop("#lock1", t + 1.7, 0.4);
+        pop("#lock2", t + 1.9, 0.4);
+        // task card: Sales → Ops → You (card is 230x76; positions are its top-left)
+        tl.fromTo("#task", { opacity: 0, x: 55, y: 300, scale: 0.7 }, { opacity: 1, x: 55, y: 320, scale: 1, duration: 0.4, ease: E }, t + 2.0);
+        tl.to("#task", { x: 615, y: 320, duration: 0.7, ease: "power2.inOut" }, t + 2.5);
+        tl.to("#task", { x: 335, y: 660, duration: 0.7, ease: "power2.inOut" }, t + 3.3);
+        rise("#s4-val", t + 3.2, 30);
+        const st = { v: 0 };
+        const el = document.getElementById("val-count");
+        tl.fromTo(st, { v: 0 }, { v: 1, duration: 1.4, ease: "power2.out", onUpdate: () => (el.textContent = "$" + st.v.toFixed(1) + "B") }, t + 3.3);
+        tl.fromTo("#val-count", { scale: 0.6 }, { scale: 1, duration: 1.4, ease: "power2.out" }, t + 3.3);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        let seed = 31;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.8);
+        rise("#s5-sub", t + 1.2, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.8);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

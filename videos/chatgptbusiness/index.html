@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 80px;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .abs-svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        height: 1600px;
+      }
+      .card {
+        position: absolute;
+        border-radius: 26px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+      }
+      .pill {
+        position: absolute;
+        padding: 12px 30px;
+        border-radius: 999px;
+        font-size: 32px;
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 1 ---------- */
+      .person {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .person svg {
+        width: 90px;
+        height: 90px;
+      }
+      .bub {
+        position: absolute;
+        right: -26px;
+        top: -10px;
+        width: 64px;
+        height: 48px;
+      }
+      #s1-cloud {
+        position: absolute;
+        left: 320px;
+        top: 720px;
+        width: 320px;
+        height: 190px;
+      }
+      #s1-cloud-label {
+        left: 300px;
+        top: 920px;
+        width: 360px;
+        text-align: center;
+        color: var(--dim);
+        border: 3px dashed var(--muted);
+      }
+
+      /* ---------- Scene 2 ---------- */
+      .ws {
+        left: 80px;
+        top: 290px;
+        width: 800px;
+        height: 420px;
+        overflow: hidden;
+      }
+      .ws-bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 96px;
+        background: #15153a;
+        border-bottom: 3px solid var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        font-size: 38px;
+        font-weight: 800;
+      }
+      .ws-admin {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 20px;
+        border-radius: 999px;
+        background: var(--accent);
+        font-size: 28px;
+        font-weight: 800;
+      }
+      .ws-av {
+        position: absolute;
+        top: 170px;
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 4px solid var(--panel);
+      }
+      #s2-seats {
+        left: 270px;
+        top: 296px;
+        width: 260px;
+        white-space: nowrap;
+        text-align: center;
+        border: 3px solid var(--success);
+        color: var(--success);
+        background: #0f1f16;
+        font-weight: 800;
+        position: absolute;
+      }
+      .rename {
+        position: absolute;
+        left: 0;
+        top: 770px;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 24px;
+        font-size: 40px;
+        font-weight: 600;
+      }
+      .rename .old {
+        position: relative;
+        color: var(--dim);
+      }
+      #s2-strike {
+        position: absolute;
+        left: -6px;
+        top: 50%;
+        width: calc(100% + 12px);
+        height: 5px;
+        border-radius: 3px;
+        background: var(--fg);
+        transform-origin: left center;
+      }
+      .rename .new {
+        color: var(--success);
+        font-weight: 800;
+      }
+
+      /* ---------- Scene 3 ---------- */
+      #s3-doc {
+        position: absolute;
+        left: 30px;
+        top: 320px;
+        width: 140px;
+        height: 170px;
+      }
+      #s3-gate {
+        position: absolute;
+        left: 410px;
+        top: 280px;
+        width: 140px;
+        height: 250px;
+      }
+      .model {
+        left: 640px;
+        top: 320px;
+        width: 320px;
+        height: 170px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 36px;
+        font-weight: 800;
+        text-align: center;
+        line-height: 1.1;
+      }
+      .chk {
+        left: 0;
+        width: 960px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding-left: 32px;
+        font-size: 38px;
+        font-weight: 600;
+        border-color: rgba(34, 197, 94, 0.5);
+        background: #0f1f16;
+      }
+      .chk svg {
+        width: 50px;
+        height: 50px;
+        flex: none;
+      }
+
+      /* ---------- Scene 4 ---------- */
+      .hub {
+        position: absolute;
+        left: 370px;
+        top: 420px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #818cf8 0%, #6366f1 45%, #3730a3 100%);
+        box-shadow: 0 0 90px rgba(99, 102, 241, 0.55);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.15;
+      }
+      .app {
+        width: 300px;
+        height: 130px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding-left: 24px;
+        font-size: 34px;
+        font-weight: 800;
+      }
+      .app svg {
+        width: 60px;
+        height: 60px;
+        flex: none;
+      }
+      .answer {
+        left: 0;
+        top: 930px;
+        width: 960px;
+        height: 170px;
+        padding: 26px 34px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-color: var(--accent);
+      }
+      .answer .q {
+        font-size: 36px;
+        font-weight: 600;
+      }
+      .answer .src {
+        font-size: 30px;
+        color: var(--success);
+        font-weight: 600;
+      }
+
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 360px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 64px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.06;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .l {
+        display: block;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 36px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .tag {
+        margin-top: 60px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: personal accounts everywhere ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-87d9" class="headline" id="s1-head">
+              <span data-hf-id="hf-bk46" class="l">Your team uses ChatGPT.</span>
+              <span data-hf-id="hf-qqez" class="l a">On personal accounts.</span>
+            </div>
+            <svg data-hf-id="hf-5dwg" class="abs-svg" viewBox="0 0 960 1600" id="s1-svg" />
+            <div data-hf-id="hf-r8yn" id="s1-people"></div>
+            <svg data-hf-id="hf-lhk0" id="s1-cloud" viewBox="0 0 320 190">
+              <path data-hf-id="hf-06h6" d="M 70 170 C 20 170, 14 104, 64 96 C 64 40, 140 18, 170 64 C 200 14, 296 34, 284 104 C 316 112, 316 170, 264 170 Z" fill="#15151f" stroke="#6b6b80" stroke-width="6" stroke-dasharray="14 10" />
+              <path data-hf-id="hf-gtoe" d="M 140 86 C 140 64, 182 64, 182 88 C 182 104, 162 104, 162 122 M 162 140 L 162 141" fill="none" stroke="#a3a3b8" stroke-width="9" stroke-linecap="round" />
+            </svg>
+            <div data-hf-id="hf-lyow" class="pill" id="s1-cloud-label">company data?</div>
+            <div data-hf-id="hf-k3zu" class="body" id="s1-body" style="top: 1060px">Work pasted into personal logins: <b data-hf-id="hf-7vgy">no admin view</b>, no shared workspace, no control.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: one workspace ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-4av7" class="l">ChatGPT Business =</span>
+              <span data-hf-id="hf-wu7f" class="l a" style="font-size: 64px; letter-spacing: -1.5px">one workspace for your team</span>
+            </div>
+            <div data-hf-id="hf-cj0o" class="card ws" id="s2-ws">
+              <div data-hf-id="hf-e306" class="ws-bar">
+                <span data-hf-id="hf-lr42">Acme workspace</span>
+                <span data-hf-id="hf-5d8t" class="ws-admin" id="s2-admin">
+                  <svg data-hf-id="hf-5vf2" width="28" height="32" viewBox="0 0 56 64"><path data-hf-id="hf-fkvf" d="M 28 4 L 52 14 L 52 32 C 52 48, 40 58, 28 62 C 16 58, 4 48, 4 32 L 4 14 Z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" /></svg>
+                  Admin
+                </span>
+              </div>
+              <div data-hf-id="hf-7066" class="ws-av s2-av" style="left: 120px; background: #a5b4fc"></div>
+              <div data-hf-id="hf-o2m6" class="ws-av s2-av" style="left: 240px; background: #6366f1"></div>
+              <div data-hf-id="hf-n0zv" class="ws-av s2-av" style="left: 360px; background: #22c55e"></div>
+              <div data-hf-id="hf-qhnm" class="ws-av s2-av" style="left: 480px; background: #818cf8"></div>
+              <div data-hf-id="hf-aqni" class="ws-av s2-av" style="left: 600px; background: #4338ca"></div>
+              <div data-hf-id="hf-zctw" class="pill" id="s2-seats">2+ seats</div>
+            </div>
+            <div data-hf-id="hf-9n3a" class="rename" id="s2-rename">
+              <span data-hf-id="hf-cerg" class="old">ChatGPT Team<span data-hf-id="hf-vr5c" id="s2-strike"></span></span>
+              <svg data-hf-id="hf-omre" width="60" height="30" viewBox="0 0 60 30"><path data-hf-id="hf-bvfl" d="M 4 15 L 52 15 M 40 4 L 54 15 L 40 26" fill="none" stroke="#a3a3b8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span data-hf-id="hf-olaa" class="new" id="s2-new">ChatGPT Business</span>
+            </div>
+            <div data-hf-id="hf-lzwe" class="body" id="s2-body" style="top: 900px">OpenAI's plan for teams: one <b data-hf-id="hf-bn89">shared workspace</b>, managed by admins.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: your data stays yours ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-8mkw" class="l">Your data</span>
+              <span data-hf-id="hf-u1d2" class="l a">stays yours.</span>
+            </div>
+            <svg data-hf-id="hf-mssp" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-sbcr" class="draw" id="s3-path" pathLength="1" stroke="#3a3a52" stroke-width="5" stroke-dasharray="1" d="M 180 405 L 630 405" />
+            </svg>
+            <svg data-hf-id="hf-0hi9" id="s3-doc" viewBox="0 0 140 170">
+              <path data-hf-id="hf-21hb" d="M 10 8 L 92 8 L 130 46 L 130 162 L 10 162 Z" fill="#15151f" stroke="#a5b4fc" stroke-width="6" stroke-linejoin="round" />
+              <path data-hf-id="hf-ganj" d="M 32 76 L 108 76 M 32 100 L 108 100 M 32 124 L 80 124" stroke="#6366f1" stroke-width="7" stroke-linecap="round" />
+            </svg>
+            <svg data-hf-id="hf-vnt9" id="s3-gate" viewBox="0 0 140 250">
+              <rect data-hf-id="hf-5yl8" x="56" y="6" width="28" height="238" rx="14" fill="#0f1f16" stroke="#22c55e" stroke-width="5" />
+              <circle data-hf-id="hf-hu8i" cx="70" cy="125" r="52" fill="#0a0a0a" stroke="#22c55e" stroke-width="6" />
+              <rect data-hf-id="hf-4wvj" x="46" y="120" width="48" height="36" rx="7" fill="#22c55e" />
+              <path data-hf-id="hf-vttt" d="M 54 120 L 54 106 C 54 86, 86 86, 86 106 L 86 120" fill="none" stroke="#22c55e" stroke-width="6" />
+            </svg>
+            <div data-hf-id="hf-znel" class="card model" id="s3-model">
+              <svg data-hf-id="hf-5e7i" width="56" height="56" viewBox="0 0 70 70"><rect data-hf-id="hf-2eae" x="16" y="16" width="38" height="38" rx="8" fill="none" stroke="#6b6b80" stroke-width="5" /><path data-hf-id="hf-isxr" d="M 28 6 L 28 16 M 42 6 L 42 16 M 28 54 L 28 64 M 42 54 L 42 64 M 6 28 L 16 28 M 6 42 L 16 42 M 54 28 L 64 28 M 54 42 L 64 42" stroke="#6b6b80" stroke-width="5" stroke-linecap="round" /></svg>
+              <span data-hf-id="hf-s92u" style="color: var(--dim)">Model training</span>
+            </div>
+            <div data-hf-id="hf-qxct" class="card chk s3-chk" style="top: 600px">
+              <svg data-hf-id="hf-7uh7" viewBox="0 0 50 50"><circle data-hf-id="hf-8k05" cx="25" cy="25" r="22" fill="#22c55e" /><path data-hf-id="hf-8zk4" class="draw s3-ck" pathLength="1" d="M 14 26 L 22 34 L 37 17" stroke="#0a0a0a" stroke-width="5" /></svg>
+              Not used for training by default
+            </div>
+            <div data-hf-id="hf-s6qr" class="card chk s3-chk" style="top: 720px">
+              <svg data-hf-id="hf-mnhn" viewBox="0 0 50 50"><circle data-hf-id="hf-sja1" cx="25" cy="25" r="22" fill="#22c55e" /><path data-hf-id="hf-fx30" class="draw s3-ck" pathLength="1" d="M 14 26 L 22 34 L 37 17" stroke="#0a0a0a" stroke-width="5" /></svg>
+              SSO sign-in (SAML / OIDC)
+            </div>
+            <div data-hf-id="hf-rlsu" class="card chk s3-chk" style="top: 840px">
+              <svg data-hf-id="hf-m96m" viewBox="0 0 50 50"><circle data-hf-id="hf-tq74" cx="25" cy="25" r="22" fill="#22c55e" /><path data-hf-id="hf-eq5x" class="draw s3-ck" pathLength="1" d="M 14 26 L 22 34 L 37 17" stroke="#0a0a0a" stroke-width="5" /></svg>
+              Admin controls for the workspace
+            </div>
+            <div data-hf-id="hf-57ir" class="body" id="s3-body" style="top: 1010px">By default, your team's chats and files <b data-hf-id="hf-vanh">don't train OpenAI's models</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: connected to your work ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-wprj" class="l">Connected to</span>
+              <span data-hf-id="hf-vw38" class="l a">your work.</span>
+            </div>
+            <svg data-hf-id="hf-o18d" class="abs-svg" viewBox="0 0 960 1600">
+              <path data-hf-id="hf-xzn0" class="draw s4-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 300 345 C 360 345, 360 470, 392 480" />
+              <path data-hf-id="hf-5uto" class="draw s4-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 660 345 C 600 345, 600 470, 568 480" />
+              <path data-hf-id="hf-ff72" class="draw s4-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 300 775 C 360 775, 360 650, 392 600" />
+              <path data-hf-id="hf-1vui" class="draw s4-ln" pathLength="1" stroke="#a5b4fc" stroke-width="5" d="M 660 775 C 600 775, 600 650, 568 600" />
+            </svg>
+            <div data-hf-id="hf-t3et" class="card app s4-app" style="left: 0; top: 280px">
+              <svg data-hf-id="hf-piht" viewBox="0 0 60 60"><path data-hf-id="hf-3c8y" d="M 6 14 L 24 14 L 30 22 L 54 22 L 54 50 L 6 50 Z" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" /></svg>
+              Drive
+            </div>
+            <div data-hf-id="hf-55m8" class="card app s4-app" style="left: 660px; top: 280px">
+              <svg data-hf-id="hf-ofsl" viewBox="0 0 60 60"><rect data-hf-id="hf-i10b" x="6" y="6" width="20" height="20" rx="4" fill="#a5b4fc" /><rect data-hf-id="hf-t7w7" x="34" y="6" width="20" height="20" rx="4" fill="#6366f1" /><rect data-hf-id="hf-npr3" x="6" y="34" width="20" height="20" rx="4" fill="#6366f1" /><rect data-hf-id="hf-prvd" x="34" y="34" width="20" height="20" rx="4" fill="#a5b4fc" /></svg>
+              SharePoint
+            </div>
+            <div data-hf-id="hf-133r" class="card app s4-app" style="left: 0; top: 710px">
+              <svg data-hf-id="hf-pmpo" viewBox="0 0 60 60"><path data-hf-id="hf-eqvg" d="M 6 8 L 54 8 L 54 42 L 26 42 L 14 54 L 14 42 L 6 42 Z" fill="none" stroke="#a5b4fc" stroke-width="5" stroke-linejoin="round" /></svg>
+              Slack
+            </div>
+            <div data-hf-id="hf-atfe" class="card app s4-app" style="left: 660px; top: 710px">
+              <svg data-hf-id="hf-p8en" viewBox="0 0 60 60"><circle data-hf-id="hf-2ma3" cx="16" cy="12" r="7" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-idti" cx="16" cy="48" r="7" fill="none" stroke="#a5b4fc" stroke-width="5" /><circle data-hf-id="hf-70sb" cx="44" cy="22" r="7" fill="none" stroke="#a5b4fc" stroke-width="5" /><path data-hf-id="hf-ig62" d="M 16 19 L 16 41 M 44 29 C 44 40, 16 36, 16 41" fill="none" stroke="#6366f1" stroke-width="5" stroke-linecap="round" /></svg>
+              GitHub
+            </div>
+            <div data-hf-id="hf-ddbh" class="hub" id="s4-hub">ChatGPT<br data-hf-id="hf-x5px">Business</div>
+            <div data-hf-id="hf-ntj6" class="card answer" id="s4-answer">
+              <div data-hf-id="hf-s1mr" class="q">"What did we decide on Q4 pricing?"</div>
+              <div data-hf-id="hf-o0ub" class="src" id="s4-src">Answered from your docs · Sources: 3</div>
+            </div>
+            <div data-hf-id="hf-myeo" class="body" id="s4-body" style="top: 1150px">Apps and company knowledge let it <b data-hf-id="hf-4p7f">answer from your own docs</b>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-eatm" class="cta-head" id="s5-head"><span data-hf-id="hf-xmh4" class="l">Same ChatGPT.</span><span data-hf-id="hf-vkor" class="l a">Built for teams.</span></div>
+            <div data-hf-id="hf-zk10" class="cta-sub" id="s5-sub">Follow for more AI &amp; tech explained in 30 seconds.</div>
+            <div data-hf-id="hf-0acp" class="tag mono" id="s5-tag">CHATGPT BUSINESS · FORMERLY TEAM</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+      const NS = "http://www.w3.org/2000/svg";
+
+      const rise = (sel, at, y = 40, d = 0.6) =>
+        tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+
+      // Crossfades + ambient glow breath
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: scattered personal accounts leak to "?" ----------
+      {
+        const t = S[0];
+        const svg = document.getElementById("s1-svg");
+        const people = document.getElementById("s1-people");
+        const P = [
+          [100, 330],
+          [480, 300],
+          [860, 330],
+          [210, 570],
+          [750, 570],
+        ];
+        P.forEach(([x, y], i) => {
+          const ln = document.createElementNS(NS, "path");
+          Object.entries({ d: `M ${x} ${y + 60} L 480 ${780}`, stroke: "#6b6b80", "stroke-width": 4, "stroke-dasharray": "10 10", fill: "none", class: "s1-leak" }).forEach(([k, v]) => ln.setAttribute(k, v));
+          svg.appendChild(ln);
+          const d = document.createElement("div");
+          d.className = "person s1-p";
+          d.style.left = `${x - 75}px`;
+          d.style.top = `${y - 75}px`;
+          d.innerHTML =
+            '<svg viewBox="0 0 90 90"><circle cx="45" cy="30" r="18" fill="#a5b4fc"/><path d="M 12 84 C 12 56, 78 56, 78 84 Z" fill="#a5b4fc"/></svg>' +
+            '<svg class="bub" viewBox="0 0 64 48"><path d="M 4 4 L 60 4 L 60 34 L 24 34 L 12 46 L 12 34 L 4 34 Z" fill="#6366f1"/></svg>';
+          people.appendChild(d);
+        });
+        rise("#s1-head", t + 0.1);
+        tl.fromTo(".s1-p", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out", stagger: 0.27 }, t + 0.5);
+        tl.fromTo(".s1-leak", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: E, stagger: 0.1 }, t + 2.0);
+        tl.fromTo(".s1-leak", { strokeDashoffset: 0 }, { strokeDashoffset: -60, duration: 2.5, ease: "sine.inOut" }, t + 2.0);
+        tl.fromTo("#s1-cloud", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, t + 2.2);
+        tl.fromTo("#s1-cloud", { opacity: 1 }, { opacity: 0.5, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 3.0);
+        rise("#s1-cloud-label", t + 2.6, 16, 0.5);
+        rise("#s1-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 2: people gather into one workspace ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.fromTo("#s2-ws", { opacity: 0, y: 50, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "expo.out" }, t + 0.5);
+        const from = [
+          [-160, -120],
+          [-60, -160],
+          [0, 160],
+          [80, -150],
+          [170, 130],
+        ];
+        document.querySelectorAll(".s2-av").forEach((el, i) => {
+          tl.fromTo(el, { opacity: 0, x: from[i][0], y: from[i][1] }, { opacity: 1, x: 0, y: 0, duration: 0.6, ease: E }, t + 0.9 + i * 0.27);
+        });
+        tl.fromTo("#s2-admin", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, t + 2.4);
+        tl.fromTo("#s2-seats", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, t + 2.7);
+        tl.fromTo("#s2-rename", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.1);
+        tl.fromTo("#s2-strike", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: E }, t + 3.6);
+        tl.fromTo("#s2-new", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.45, ease: E }, t + 3.8);
+        rise("#s2-body", t + 4.1, 24);
+      }
+
+      // ---------- Scene 3: doc blocked at the training gate, checks ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        tl.fromTo("#s3-doc", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 0.5);
+        tl.fromTo("#s3-model", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 0.7);
+        tl.to("#s3-path", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.9);
+        tl.fromTo("#s3-gate", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, t + 1.2);
+        tl.to("#s3-doc", { x: 230, duration: 0.6, ease: "power2.in" }, t + 1.6);
+        tl.to("#s3-doc", { x: 0, duration: 0.6, ease: E }, t + 2.2);
+        tl.fromTo("#s3-gate", { scale: 1 }, { scale: 1.1, duration: 0.15, ease: "sine.inOut", yoyo: true, repeat: 1, transformOrigin: "50% 50%" }, t + 2.2);
+        tl.fromTo(".s3-chk", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.45, ease: E, stagger: 0.3 }, t + 2.6);
+        tl.to(".s3-ck", { strokeDashoffset: 0, duration: 0.35, ease: "power2.out", stagger: 0.3 }, t + 2.8);
+        rise("#s3-body", t + 3.9, 24);
+      }
+
+      // ---------- Scene 4: apps connect, answer from docs ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.fromTo("#s4-hub", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, t + 0.5);
+        tl.fromTo(".s4-app", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: E, stagger: 0.27 }, t + 0.8);
+        tl.to(".s4-ln", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", stagger: 0.27 }, t + 1.2);
+        tl.fromTo("#s4-hub", { scale: 1 }, { scale: 1.07, duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 2.3);
+        tl.fromTo("#s4-answer", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.55, ease: "expo.out" }, t + 2.7);
+        tl.fromTo("#s4-src", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.4, ease: E }, t + 3.2);
+        rise("#s4-body", t + 3.7, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32) — deterministic particle field
+        let seed = 127;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 1.5);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #ffffff;
+        --dim: #a3a3b8;
+        --muted: #6b6b80;
+        --accent: #6366f1;
+        --accent-hi: #a5b4fc;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --panel: #111118;
+        --line: #26263a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Inter", sans-serif;
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .si {
+        position: absolute;
+        inset: 0;
+      }
+      /* Safe zone: top 150, bottom 170, sides 60 → 960 x 1600 box */
+      .safe {
+        position: absolute;
+        left: 60px;
+        top: 150px;
+        width: 960px;
+        height: 1600px;
+      }
+      .glow {
+        position: absolute;
+        width: 1100px;
+        height: 1100px;
+        left: -10px;
+        top: 420px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(99, 102, 241, 0) 65%);
+      }
+      .ghost {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 300px;
+        letter-spacing: -12px;
+        color: rgba(99, 102, 241, 0.1);
+        white-space: nowrap;
+      }
+      .headline {
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 960px;
+        text-align: center;
+        font-weight: 900;
+        font-size: 84px;
+        line-height: 1.04;
+        letter-spacing: -2.5px;
+      }
+      .headline .l {
+        display: block;
+      }
+      .headline .a {
+        color: var(--accent);
+      }
+      .body {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 400;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      .body b {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .draw {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+      .law-tag {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 960px;
+        display: flex;
+        justify-content: center;
+      }
+      .law-tag span {
+        padding: 12px 30px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+      }
+
+      .fig-label {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .node {
+        position: absolute;
+        left: 80px;
+        width: 800px;
+        height: 140px;
+        border-radius: 28px;
+        border: 3px solid var(--line);
+        background: var(--panel);
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 0 40px;
+        font-size: 48px;
+        font-weight: 700;
+      }
+      .node .n {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.2);
+        border: 3px solid var(--accent);
+        color: var(--accent-hi);
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+      }
+      .node.bad {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .node.bad .n {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+      .node.good {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.12);
+        color: var(--success);
+      }
+      .node.good .n {
+        border-color: var(--success);
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--success);
+      }
+      .badge {
+        position: absolute;
+        border-radius: 28px;
+        border: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.14);
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 0 30px;
+        color: var(--success);
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .badge svg {
+        width: 64px;
+        height: 64px;
+        flex: none;
+      }
+      .big-num {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 110px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .cap {
+        position: absolute;
+        left: 0;
+        width: 960px;
+        text-align: center;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: 3px;
+      }
+      .fig {
+        position: absolute;
+        left: 0;
+        width: 960px;
+      }
+      #s1-fig { top: 330px; height: 900px; }
+      #s2-fig { top: 250px; height: 880px; }
+      #s3-fig { top: 220px; height: 560px; }
+      #s4-fig { top: 240px; height: 600px; }
+      /* ---------- Scene 5 ---------- */
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .cta {
+        position: absolute;
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .shot-wrap {
+        position: relative;
+        width: 440px;
+        height: 440px;
+      }
+      #ring {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 440px;
+        height: 440px;
+      }
+      .shot {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid var(--accent);
+        box-shadow: 0 30px 80px rgba(99, 102, 241, 0.4), 0 0 0 10px var(--bg);
+      }
+      .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cta-head {
+        margin-top: 60px;
+        width: 960px;
+        text-align: center;
+        font-size: 80px;
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2.5px;
+      }
+      .cta-head .a {
+        color: var(--accent);
+      }
+      .cta-sub {
+        margin-top: 34px;
+        width: 760px;
+        text-align: center;
+        font-size: 40px;
+        color: var(--dim);
+        line-height: 1.3;
+      }
+      #crown-icon {
+        margin-top: 56px;
+        width: 220px;
+        height: 150px;
+      }
+      .tag {
+        margin-top: 44px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 3px solid var(--accent);
+        background: rgba(99, 102, 241, 0.16);
+        color: var(--accent-hi);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <!-- ================= Scene 1: absence builds respect ================= -->
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in">
+          <div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div>
+          <div data-hf-id="hf-xz9z" class="ghost" id="s1-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">LAW 16</div>
+          <div data-hf-id="hf-zbmn" class="safe">
+            <div data-hf-id="hf-2gbq" class="law-tag" id="s1-tag"><span data-hf-id="hf-09kp" class="mono">48 LAWS OF POWER · LAW 16</span></div>
+            <div data-hf-id="hf-98cf" class="headline" id="s1-head" style="top: 100px">
+              <span data-hf-id="hf-pem2" class="l">Absence</span>
+              <span data-hf-id="hf-sud1" class="l a">builds respect.</span>
+            </div>
+            <svg data-hf-id="hf-1jt4" id="s1-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 900">
+              <defs data-hf-id="hf-mh0t">
+                <radialGradient data-hf-id="hf-3pwm" id="s1-halo-g">
+                  <stop data-hf-id="hf-hmp8" offset="0" stop-color="#a5b4fc" stop-opacity="0.4" />
+                  <stop data-hf-id="hf-2cad" offset="0.6" stop-color="#6366f1" stop-opacity="0.15" />
+                  <stop data-hf-id="hf-1vym" offset="1" stop-color="#6366f1" stop-opacity="0" />
+                </radialGradient>
+              </defs>
+              <circle data-hf-id="hf-9rs1" id="s1-halo" cx="360" cy="520" r="330" fill="url(#s1-halo-g)" />
+              <g data-hf-id="hf-l8wh" id="s1-solid">
+                <circle data-hf-id="hf-tdoz" class="draw s1-f" pathLength="1" stroke="#ffffff" stroke-width="9" cx="360" cy="360" r="78" />
+                <path data-hf-id="hf-3zsh" class="draw s1-f" pathLength="1" stroke="#ffffff" stroke-width="9" d="M 200 760 L 200 640 C 200 480, 520 480, 520 640 L 520 760" />
+              </g>
+              <g data-hf-id="hf-iqo3" id="s1-dashed" fill="none" stroke="#a5b4fc" stroke-width="6" stroke-dasharray="16 14" stroke-linecap="round">
+                <circle data-hf-id="hf-n2cb" cx="360" cy="360" r="78" />
+                <path data-hf-id="hf-1sqz" d="M 200 760 L 200 640 C 200 480, 520 480, 520 640 L 520 760" />
+              </g>
+              <g data-hf-id="hf-b16l" id="s1-chev" fill="none" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+                <path data-hf-id="hf-dgk2" class="chev" stroke="#26263a" d="M 720 690 L 780 640 L 840 690" />
+                <path data-hf-id="hf-r1wu" class="chev" stroke="#26263a" d="M 720 600 L 780 550 L 840 600" />
+                <path data-hf-id="hf-8j32" class="chev" stroke="#26263a" d="M 720 510 L 780 460 L 840 510" />
+                <path data-hf-id="hf-fu66" class="chev" stroke="#26263a" d="M 720 420 L 780 370 L 840 420" />
+                <path data-hf-id="hf-vi7a" class="chev" stroke="#26263a" d="M 720 330 L 780 280 L 840 330" />
+              </g>
+              <text data-hf-id="hf-80n5" id="s1-rlab" class="fig-label" x="780" y="770" text-anchor="middle" fill="#a3a3b8">RESPECT</text>
+              <text data-hf-id="hf-aft5" id="s1-gone" class="fig-label" x="360" y="840" text-anchor="middle" fill="#a5b4fc">MISSED</text>
+            </svg>
+            <div data-hf-id="hf-mdo7" class="body" id="s1-body" style="top: 1300px">The more you are seen, the more common you become. <b data-hf-id="hf-obaq">Step away and your value grows.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 2: scarcity creates value ================= -->
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in">
+          <div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div>
+          <div data-hf-id="hf-8ml7" class="ghost" id="s2-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">RARE</div>
+          <div data-hf-id="hf-nz8f" class="safe">
+            <div data-hf-id="hf-iajg" class="headline" id="s2-head">
+              <span data-hf-id="hf-i2vl" class="l">Scarcity</span>
+              <span data-hf-id="hf-iq9w" class="l a">creates value.</span>
+            </div>
+            <svg data-hf-id="hf-6uqu" id="s2-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 880">
+              <path data-hf-id="hf-o0nb" class="draw s2-ax" pathLength="1" stroke="#26263a" stroke-width="5" d="M 80 90 L 80 760 L 920 760" />
+              <text data-hf-id="hf-kzek" id="s2-ylab" class="fig-label" x="100" y="80" fill="#6b6b80">YOUR VALUE</text>
+              <text data-hf-id="hf-skfy" id="s2-xlab" class="fig-label" x="920" y="815" text-anchor="end" fill="#6b6b80">HOW OFTEN YOU'RE SEEN</text>
+              <path data-hf-id="hf-p1nk" id="s2-curve" class="draw" pathLength="1" stroke="#6366f1" stroke-width="8" d="M 130 140 C 250 520, 500 680, 880 720" />
+              <text data-hf-id="hf-iekx" id="s2-rare" class="fig-label" x="160" y="140" fill="#22c55e">RARE</text>
+              <text data-hf-id="hf-v56r" id="s2-over" class="fig-label" x="880" y="680" text-anchor="end" fill="#ef4444">OVEREXPOSED</text>
+              <circle data-hf-id="hf-yj1p" id="s2-dot" cx="880" cy="720" r="22" fill="#ffffff" stroke="#6366f1" stroke-width="6" />
+              <text data-hf-id="hf-8r30" id="s2-read" x="600" y="330" text-anchor="middle" fill="#ffffff" style="font-size: 64px; font-weight: 800; font-variant-numeric: tabular-nums">VALUE 8</text>
+            </svg>
+            <div data-hf-id="hf-dn0w" class="body" id="s2-body" style="top: 1150px">Anything always available gets taken for granted. <b data-hf-id="hf-xp2r">Rarity makes people want more.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 3: Deioces ================= -->
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in">
+          <div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div>
+          <div data-hf-id="hf-cbxi" class="ghost" id="s3-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">53</div>
+          <div data-hf-id="hf-nkxe" class="safe">
+            <div data-hf-id="hf-w6zb" class="headline" id="s3-head">
+              <span data-hf-id="hf-fd2t" class="l">The king</span>
+              <span data-hf-id="hf-iiuu" class="l a">no one saw.</span>
+            </div>
+            <svg data-hf-id="hf-x86s" id="s3-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 560">
+              <g data-hf-id="hf-51em" id="walls"></g>
+              <path data-hf-id="hf-2nk9" id="s3-crown" d="M 452 300 L 446 262 L 466 280 L 480 252 L 494 280 L 514 262 L 508 300 Z" fill="#6366f1" stroke="#a5b4fc" stroke-width="4" stroke-linejoin="round" />
+              <circle data-hf-id="hf-1h13" id="s3-king" cx="480" cy="322" r="14" fill="#ffffff" />
+            </svg>
+            <div data-hf-id="hf-zx5y" class="big-num mono" id="s3-num" style="top: 800px">0</div>
+            <div data-hf-id="hf-ukyt" class="cap mono" id="s3-cap" style="top: 945px; color: var(--accent-hi)">YEARS ON THE THRONE</div>
+            <div data-hf-id="hf-ozku" class="body" id="s3-body" style="top: 1020px">Once crowned, <b data-hf-id="hf-gx5p">Deioces of the Medes</b> hid behind the seven walls of Ecbatana and spoke only through messengers. <b data-hf-id="hf-jkdq">His people came to revere him.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 4: tulip mania ================= -->
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in">
+          <div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div>
+          <div data-hf-id="hf-3ov2" class="ghost" id="s4-ghost" aria-hidden="true" data-layout-ignore="" style="top: 1560px">1630s</div>
+          <div data-hf-id="hf-n6md" class="safe">
+            <div data-hf-id="hf-shm6" class="headline" id="s4-head">
+              <span data-hf-id="hf-6078" class="l">Rare made</span>
+              <span data-hf-id="hf-ej8e" class="l a">a flower priceless.</span>
+            </div>
+            <svg data-hf-id="hf-wose" id="s4-fig" class="fig" data-layout-allow-overflow="" viewBox="0 0 960 600">
+              <path data-hf-id="hf-6m2i" class="draw tu" pathLength="1" stroke="#22c55e" stroke-width="8" d="M 220 520 L 220 300 M 220 450 C 170 430, 150 380, 160 350 C 200 370, 220 400, 220 450" />
+              <path data-hf-id="hf-qrw1" class="draw tu" pathLength="1" stroke="#ef4444" stroke-width="8" d="M 160 300 C 150 220, 170 170, 190 185 L 220 150 L 250 185 C 270 170, 290 220, 280 300 C 270 340, 170 340, 160 300 Z" />
+              <path data-hf-id="hf-1dwd" class="draw eq" pathLength="1" stroke="#ffffff" stroke-width="12" d="M 420 310 L 540 310" />
+              <path data-hf-id="hf-i5z5" class="draw eq" pathLength="1" stroke="#ffffff" stroke-width="12" d="M 420 360 L 540 360" />
+              <path data-hf-id="hf-o80e" class="draw hs" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 620 520 L 620 330 L 740 220 L 860 330 L 860 520 Z" />
+              <path data-hf-id="hf-3nwj" class="draw hs" pathLength="1" stroke="#6366f1" stroke-width="7" d="M 710 520 L 710 430 L 770 430 L 770 520 M 650 360 L 700 360 L 700 400 L 650 400 Z M 780 360 L 830 360 L 830 400 L 780 400 Z" />
+              <text data-hf-id="hf-vv7o" id="s4-l1" class="fig-label" x="220" y="580" text-anchor="middle" fill="#a3a3b8">1 BULB</text>
+              <text data-hf-id="hf-24qv" id="s4-l2" class="fig-label" x="740" y="580" text-anchor="middle" fill="#a3a3b8">1 HOUSE</text>
+            </svg>
+            <div data-hf-id="hf-2ap3" class="cap mono" id="s4-cap" style="top: 880px; color: var(--success); font-size: 44px">SCARCITY = VALUE</div>
+            <div data-hf-id="hf-lcc7" class="body" id="s4-body" style="top: 970px">In 1630s Holland, rare tulip bulbs became so prized that <b data-hf-id="hf-y3ig">a single bulb could fetch the price of a house.</b></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Scene 5: CTA ================= -->
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in">
+          <div data-hf-id="hf-ihdp" class="glow" id="s5-glow" style="top: 120px"></div>
+          <div data-hf-id="hf-x682" id="particles"></div>
+          <div data-hf-id="hf-apeu" class="cta">
+            <div data-hf-id="hf-p2jk" class="shot-wrap" id="s5-shot">
+              <svg data-hf-id="hf-fvk1" id="ring" viewBox="0 0 440 440">
+                <circle data-hf-id="hf-1vpr" cx="220" cy="220" r="212" fill="none" stroke="#6366f1" stroke-width="4" stroke-dasharray="44 18" stroke-linecap="round" />
+              </svg>
+              <div data-hf-id="hf-2ycw" class="shot"><img data-hf-id="hf-laiq" src="ow-headshot-bw.png" alt=""></div>
+            </div>
+            <div data-hf-id="hf-lr7l" class="cta-head" id="s5-head">Leave them <span data-hf-id="hf-s1ch" class="a">wanting more.</span></div>
+            <div data-hf-id="hf-i8jm" class="cta-sub" id="s5-sub">Follow for more big ideas explained in 30 seconds.</div>
+            <svg data-hf-id="hf-qaeg" id="crown-icon" viewBox="0 0 220 150">
+              <path data-hf-id="hf-y4rn" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 60 14 L 160 14 M 60 136 L 160 136" />
+              <path data-hf-id="hf-th8h" class="draw ic" pathLength="1" stroke="#a5b4fc" stroke-width="8" d="M 72 14 C 72 60, 110 62, 110 75 C 110 88, 72 90, 72 136 M 148 14 C 148 60, 110 62, 110 75 C 110 88, 148 90, 148 136" />
+              <path data-hf-id="hf-iqik" class="draw ic" pathLength="1" stroke="#22c55e" stroke-width="8" d="M 84 128 C 95 110, 125 110, 136 128 Z" />
+            </svg>
+            <div data-hf-id="hf-2tbq" class="tag mono" id="s5-tag">LAW 16 OF 48, EXPLAINED</div>
+          </div>
+        </div>
+      </div>
+
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const S = [0, 5.8, 11.8, 17.8, 23.8]; // scene starts (0.4s overlaps)
+      const XF = 0.4; // crossfade
+      const E = "power3.out";
+
+      // Shared: rise-in helper, crossfades, ambient glow breath + ghost drift
+      const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+      for (let i = 1; i < 5; i++) {
+        tl.to(`#s${i}-in`, { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+        tl.fromTo(`#s${i + 1}-in`, { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+      }
+      for (let i = 1; i <= 5; i++) {
+        const len = i === 5 ? 6.2 : 6.4;
+        tl.fromTo(`#s${i}-glow`, { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+        const g = document.getElementById(`s${i}-ghost`);
+        if (g) tl.fromTo(g, { x: 80 }, { x: -80, duration: len, ease: "none" }, S[i - 1]);
+      }
+
+      // ---------- Scene 1: the figure leaves, respect climbs ----------
+      {
+        const t = S[0];
+        tl.fromTo("#s1-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.1);
+        rise("#s1-head", t + 0.25);
+        tl.to(".s1-f", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.3 }, t + 0.6);
+        tl.fromTo("#s1-chev, #s1-rlab", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: E }, t + 1.1);
+        tl.fromTo("#s1-dashed", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: E }, t + 2.0);
+        tl.to("#s1-solid", { opacity: 0, scale: 0.92, transformOrigin: "50% 100%", duration: 0.8, ease: E }, t + 2.0);
+        tl.fromTo("#s1-halo", { opacity: 0, scale: 0.4, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 1.4, ease: E }, t + 2.3);
+        tl.to(".chev", { attr: { stroke: "#22c55e" }, duration: 0.3, ease: E, stagger: { each: 0.27, from: "start" } }, t + 2.4);
+        tl.fromTo("#s1-gone", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 3.0);
+        tl.to("#s1-rlab", { attr: { fill: "#22c55e" }, duration: 0.4, ease: E }, t + 3.7);
+        rise("#s1-body", t + 3.4, 24);
+      }
+
+      // ---------- Scene 2: slide down the demand curve ----------
+      {
+        const t = S[1];
+        rise("#s2-head", t + 0.25);
+        tl.to(".s2-ax", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, t + 0.5);
+        tl.fromTo("#s2-ylab, #s2-xlab", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E, stagger: 0.3 }, t + 0.8);
+        tl.to("#s2-curve", { strokeDashoffset: 0, duration: 1.0, ease: "power2.inOut" }, t + 1.0);
+        tl.fromTo("#s2-over, #s2-rare", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E, stagger: 0.3 }, t + 1.7);
+        tl.fromTo("#s2-dot, #s2-read", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.9);
+        const P = [[130, 140], [250, 520], [500, 680], [880, 720]];
+        const bez = (u) => {
+          const a = 1 - u;
+          return [0, 1].map((k) => a * a * a * P[0][k] + 3 * a * a * u * P[1][k] + 3 * a * u * u * P[2][k] + u * u * u * P[3][k]);
+        };
+        const dot = document.getElementById("s2-dot");
+        const read = document.getElementById("s2-read");
+        const slide = { u: 1 };
+        const place = () => {
+          const [x, y] = bez(slide.u);
+          dot.setAttribute("cx", x.toFixed(1));
+          dot.setAttribute("cy", y.toFixed(1));
+          read.textContent = `VALUE ${Math.round(8 + (1 - slide.u) * 91)}`;
+        };
+        place();
+        tl.fromTo(slide, { u: 1 }, { u: 0.02, duration: 1.8, ease: "power2.inOut", onUpdate: place }, t + 2.3);
+        tl.to("#s2-dot", { attr: { fill: "#22c55e" }, duration: 0.4, ease: E }, t + 3.8);
+        rise("#s2-body", t + 3.8, 24);
+      }
+
+      // ---------- Scene 3: seven walls around an unseen king ----------
+      {
+        const t = S[2];
+        rise("#s3-head", t + 0.25);
+        const NS = "http://www.w3.org/2000/svg";
+        const walls = document.getElementById("walls");
+        const cols = ["#26263a", "#2f2f4d", "#3a3a66", "#4b4b8a", "#5b5fc7", "#6366f1", "#a5b4fc"];
+        for (let k = 0; k < 7; k++) {
+          const h = 260 - k * 32;
+          const r = document.createElementNS(NS, "rect");
+          Object.entries({ x: 480 - h, y: 290 - h, width: h * 2, height: h * 2, rx: 18, class: "draw wall", pathLength: 1, stroke: cols[k], "stroke-width": 8 }).forEach(([key, v]) => r.setAttribute(key, v));
+          walls.appendChild(r);
+        }
+        tl.fromTo("#s3-crown, #s3-king", { opacity: 0, scale: 0.5, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 0.5);
+        tl.to(".wall", { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: { each: 0.27, from: "end" } }, t + 0.9);
+        tl.to("#s3-crown, #s3-king", { opacity: 0.12, duration: 0.8, ease: E }, t + 2.8);
+        rise("#s3-num", t + 1.4, 20, 0.5);
+        rise("#s3-cap", t + 1.5, 16, 0.5);
+        const reign = { v: 0 };
+        const nEl = document.getElementById("s3-num");
+        tl.fromTo(reign, { v: 0 }, { v: 53, duration: 1.6, ease: "power2.out", onUpdate: () => (nEl.textContent = Math.round(reign.v)) }, t + 1.8);
+        rise("#s3-body", t + 3.4, 24);
+      }
+
+      // ---------- Scene 4: one tulip = one house ----------
+      {
+        const t = S[3];
+        rise("#s4-head", t + 0.25);
+        tl.to(".tu", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.3 }, t + 0.5);
+        tl.fromTo("#s4-l1", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 1.2);
+        tl.to(".eq", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out", stagger: 0.3 }, t + 1.5);
+        tl.to(".hs", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.3 }, t + 2.0);
+        tl.fromTo("#s4-l2", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: E }, t + 2.7);
+        tl.fromTo("#s4-cap", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, t + 3.2);
+        rise("#s4-body", t + 3.6, 24);
+      }
+
+      // ---------- Scene 5: CTA + particles ----------
+      {
+        const t = S[4];
+        // seeded PRNG (mulberry32): deterministic particle field
+        let seed = 97;
+        const rnd = () => {
+          seed |= 0;
+          seed = (seed + 0x6d2b79f5) | 0;
+          let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+          return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+        };
+        const field = document.getElementById("particles");
+        for (let i = 0; i < 12; i++) {
+          const p = document.createElement("div");
+          const size = 10 + rnd() * 22;
+          p.className = "particle";
+          p.style.width = p.style.height = `${size}px`;
+          p.style.left = `${rnd() * 1040}px`;
+          p.style.top = `${700 + rnd() * 1300}px`;
+          p.style.background = rnd() > 0.5 ? "#6366f1" : "#ffffff";
+          field.appendChild(p);
+          const o = 0.08 + rnd() * 0.18;
+          tl.fromTo(p, { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+        }
+        tl.fromTo("#s5-shot", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+        tl.fromTo("#ring", { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+        rise("#s5-head", t + 0.7);
+        rise("#s5-sub", t + 1.1, 24);
+        tl.to("#crown-icon .ic", { strokeDashoffset: 0, duration: 0.8, ease: "power2.out", stagger: 0.25 }, t + 1.5);
+        tl.fromTo("#s5-tag", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, t + 2.4);
+      }
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
