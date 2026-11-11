@@ -1,7 +1,7 @@
 {
   "version": 1,
   "historyId": "4a9437ed-6f6f-4de7-b350-5f3e67d24553",
-  "currentRevision": "5808ba5a-ec4e-4fcd-ab96-fe64d1dc1fb8",
+  "currentRevision": "bc72feeb-ade0-469b-9091-c443e5a25e9d",
   "pendingChanges": false,
   "files": {
     "AGENTS.md": {
@@ -3019,6 +3019,494 @@
     "videos/aeo/captions.json": {
       "hash": "5d9c488be9bb4518578719e89250128363381fd1ddc9369c13d5a3902f279314",
       "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/5d/5d9c488be9bb4518578719e89250128363381fd1ddc9369c13d5a3902f279314"
+    },
+    "tools/art-of-war/lessons.json": {
+      "hash": "0efe3667a0f037fa65d4cf1deb3d709025f1469c49228e0e43ba2569cb27195e",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/0e/0efe3667a0f037fa65d4cf1deb3d709025f1469c49228e0e43ba2569cb27195e"
+    },
+    "tools/art-of-war/gen.mjs": {
+      "hash": "d54674fede9de4db623960617c4c651acc90a30b748d1f8a30499f76416d9c58",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/d5/d54674fede9de4db623960617c4c651acc90a30b748d1f8a30499f76416d9c58"
+    },
+    "videos/art-of-war-1/index.html": {
+      "hash": "de2298ac7da88cf4cc87b90a16995b13d07532c9748a8aaa1aefe74c70a47d9e",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/de/de2298ac7da88cf4cc87b90a16995b13d07532c9748a8aaa1aefe74c70a47d9e"
+    },
+    "videos/art-of-war-1/meta.json": {
+      "hash": "e8d39d8e1f19ad0de9559c6542551a35899cd1927b360c942dfc1388fd25516a",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/e8/e8d39d8e1f19ad0de9559c6542551a35899cd1927b360c942dfc1388fd25516a"
+    },
+    "videos/art-of-war-1/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-1/package.json": {
+      "hash": "37e39f6c59bf349a3d5c40222177b84e57acb63ec5b7c7e2ef4fbc667789632f",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/37/37e39f6c59bf349a3d5c40222177b84e57acb63ec5b7c7e2ef4fbc667789632f"
+    },
+    "videos/art-of-war-1/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-1/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-1/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-1/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-1/BRIEF.md": {
+      "hash": "bd795cbcb942f4bc32f926f33a59b0c5ddc4d07799e0e04a4f1423da9f5a13dc",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/bd/bd795cbcb942f4bc32f926f33a59b0c5ddc4d07799e0e04a4f1423da9f5a13dc"
+    },
+    "videos/art-of-war-1/SCRIPT.md": {
+      "hash": "c485875143dd28959bf91ce82ab9012aba0f9fd210a7a128208c46662d606bda",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/c4/c485875143dd28959bf91ce82ab9012aba0f9fd210a7a128208c46662d606bda"
+    },
+    "videos/art-of-war-1/captions.json": {
+      "hash": "fbe776fd9d5fbc2d45b3c7220f2cde167eb640b89eb29cc9f0465dcc6a3c5f2b",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/fb/fbe776fd9d5fbc2d45b3c7220f2cde167eb640b89eb29cc9f0465dcc6a3c5f2b"
+    },
+    "videos/art-of-war-2/index.html": {
+      "hash": "4be459123ac0f0c318f4f0a33f4c404b08a19382c7cc906ff801047ff9fb48a8",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/4b/4be459123ac0f0c318f4f0a33f4c404b08a19382c7cc906ff801047ff9fb48a8"
+    },
+    "videos/art-of-war-2/meta.json": {
+      "hash": "12a88d97dbf23131d3bd125a7979e4ea2cea50a9c141fc31026a7c84a4eedde5",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/12/12a88d97dbf23131d3bd125a7979e4ea2cea50a9c141fc31026a7c84a4eedde5"
+    },
+    "videos/art-of-war-2/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-2/package.json": {
+      "hash": "a8aadc113995b1a22769e99e7483ccdcd14c83a761a1242b1a3ef9315fec1fb7",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a8/a8aadc113995b1a22769e99e7483ccdcd14c83a761a1242b1a3ef9315fec1fb7"
+    },
+    "videos/art-of-war-2/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-2/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-2/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-2/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-2/BRIEF.md": {
+      "hash": "6da65542de742e390ab0d04927cbd80e0107dccc00d157ecaa686107d26cf2a7",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/6d/6da65542de742e390ab0d04927cbd80e0107dccc00d157ecaa686107d26cf2a7"
+    },
+    "videos/art-of-war-2/SCRIPT.md": {
+      "hash": "4198fb1691854f2d43716d1535739b8c8c21ece5bd1626be1514bf622d59b8da",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/41/4198fb1691854f2d43716d1535739b8c8c21ece5bd1626be1514bf622d59b8da"
+    },
+    "videos/art-of-war-2/captions.json": {
+      "hash": "7c64a5b6f3567350b9fad1cf476f06f8110ebee9cc782bc641574523c8558d30",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7c/7c64a5b6f3567350b9fad1cf476f06f8110ebee9cc782bc641574523c8558d30"
+    },
+    "videos/art-of-war-3/index.html": {
+      "hash": "0b7a0075a46e8e78e4687305572f5646caa3954ac08ff0e031ff3161709d1003",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/0b/0b7a0075a46e8e78e4687305572f5646caa3954ac08ff0e031ff3161709d1003"
+    },
+    "videos/art-of-war-3/meta.json": {
+      "hash": "dd8cd1b9bc45627b62e0a7f020ca352006f825b363e11477e26ea2140103120c",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/dd/dd8cd1b9bc45627b62e0a7f020ca352006f825b363e11477e26ea2140103120c"
+    },
+    "videos/art-of-war-3/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-3/package.json": {
+      "hash": "c15d98bd8cc9557a156f647114550ba41b44ff265a0f6f1aa9df35c54ba0338d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/c1/c15d98bd8cc9557a156f647114550ba41b44ff265a0f6f1aa9df35c54ba0338d"
+    },
+    "videos/art-of-war-3/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-3/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-3/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-3/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-3/BRIEF.md": {
+      "hash": "878e0d0533ac6d71e2e152f0eb38cd1dab2c19c096df6298d5dd097f530a7e89",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/87/878e0d0533ac6d71e2e152f0eb38cd1dab2c19c096df6298d5dd097f530a7e89"
+    },
+    "videos/art-of-war-3/SCRIPT.md": {
+      "hash": "8356e7ed12275f2d596055a51fd09d68328d37e583d83947234d297ee13814ff",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/83/8356e7ed12275f2d596055a51fd09d68328d37e583d83947234d297ee13814ff"
+    },
+    "videos/art-of-war-3/captions.json": {
+      "hash": "d4e90223f846ddce21cbc4662a99a179af24c63fa83f8c148a227be4dfd79a29",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/d4/d4e90223f846ddce21cbc4662a99a179af24c63fa83f8c148a227be4dfd79a29"
+    },
+    "videos/art-of-war-4/index.html": {
+      "hash": "85bd3086b512c89d22c47fed8a283ef631e0d49463aab0543b5bca1fb32ee451",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/85/85bd3086b512c89d22c47fed8a283ef631e0d49463aab0543b5bca1fb32ee451"
+    },
+    "videos/art-of-war-4/meta.json": {
+      "hash": "7bd8fc73894a89bb4d31e3017534d0e5fd998f0dafb659e188ac5d9d1f8dc0db",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7b/7bd8fc73894a89bb4d31e3017534d0e5fd998f0dafb659e188ac5d9d1f8dc0db"
+    },
+    "videos/art-of-war-4/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-4/package.json": {
+      "hash": "1f59c6cce05a051b335061a121b264a8d4f2e69f5a76ede8af5d68048dd58134",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/1f/1f59c6cce05a051b335061a121b264a8d4f2e69f5a76ede8af5d68048dd58134"
+    },
+    "videos/art-of-war-4/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-4/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-4/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-4/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-4/BRIEF.md": {
+      "hash": "8f2db4e8a88f4bc25017262c6aef77b86552ae8a6172ff7563f1d71d5fc57191",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/8f/8f2db4e8a88f4bc25017262c6aef77b86552ae8a6172ff7563f1d71d5fc57191"
+    },
+    "videos/art-of-war-4/SCRIPT.md": {
+      "hash": "773cd16eb800b20a15f08d4ba8ae82774ea9a34a6f0a68fd93a492de6964d6f5",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/77/773cd16eb800b20a15f08d4ba8ae82774ea9a34a6f0a68fd93a492de6964d6f5"
+    },
+    "videos/art-of-war-4/captions.json": {
+      "hash": "94fef899844bc0b9ef40a3cf7303e9f5505333c2274fb98abcae06866bbed9c5",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/94/94fef899844bc0b9ef40a3cf7303e9f5505333c2274fb98abcae06866bbed9c5"
+    },
+    "videos/art-of-war-5/index.html": {
+      "hash": "3c934e82a47882ecc7e1d469dc810bc464fde3b92279d60f403bc4cab701f4d1",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/3c/3c934e82a47882ecc7e1d469dc810bc464fde3b92279d60f403bc4cab701f4d1"
+    },
+    "videos/art-of-war-5/meta.json": {
+      "hash": "54d8a5e2a72a506960a73cccd49687d75872ea197d14eecd4805fece67987900",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/54/54d8a5e2a72a506960a73cccd49687d75872ea197d14eecd4805fece67987900"
+    },
+    "videos/art-of-war-5/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-5/package.json": {
+      "hash": "9f37f731e5232176d6b1cdb8a6f783a4abb05fa5bdbf962cede15631a523ce31",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/9f/9f37f731e5232176d6b1cdb8a6f783a4abb05fa5bdbf962cede15631a523ce31"
+    },
+    "videos/art-of-war-5/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-5/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-5/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-5/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-5/BRIEF.md": {
+      "hash": "303c209379b59d2c87744c7f5e59ef06dabf374bc33cef57f00279970ca8bd1f",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/30/303c209379b59d2c87744c7f5e59ef06dabf374bc33cef57f00279970ca8bd1f"
+    },
+    "videos/art-of-war-5/SCRIPT.md": {
+      "hash": "54e9125fa083d7c53fa9080caa4baba3ef85b01616aa338a067564a2e1b49d19",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/54/54e9125fa083d7c53fa9080caa4baba3ef85b01616aa338a067564a2e1b49d19"
+    },
+    "videos/art-of-war-5/captions.json": {
+      "hash": "ab27aeca00a1279868d3e8952bc4d6fa026b209bd4b6d14fe52d77dcafef167a",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ab/ab27aeca00a1279868d3e8952bc4d6fa026b209bd4b6d14fe52d77dcafef167a"
+    },
+    "videos/art-of-war-6/index.html": {
+      "hash": "fca1312105830435b46fb16eba76cc543825ccf38467baf6f75301c00a7497e5",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/fc/fca1312105830435b46fb16eba76cc543825ccf38467baf6f75301c00a7497e5"
+    },
+    "videos/art-of-war-6/meta.json": {
+      "hash": "ba13eeb546b19832afad3aa8196aed32ce5cd89a4e548f7dfe3b0019f8370c1b",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ba/ba13eeb546b19832afad3aa8196aed32ce5cd89a4e548f7dfe3b0019f8370c1b"
+    },
+    "videos/art-of-war-6/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-6/package.json": {
+      "hash": "58d529ebe414a83394a5d689079986f8c0b87c11187bd8f4faa8540228190585",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/58/58d529ebe414a83394a5d689079986f8c0b87c11187bd8f4faa8540228190585"
+    },
+    "videos/art-of-war-6/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-6/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-6/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-6/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-6/BRIEF.md": {
+      "hash": "2df350814184adcf54a962dd95ada9bcc45e56b1035dd1a2743b8ce3903619e3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/2d/2df350814184adcf54a962dd95ada9bcc45e56b1035dd1a2743b8ce3903619e3"
+    },
+    "videos/art-of-war-6/SCRIPT.md": {
+      "hash": "ff7791c6da09127e93700d622b840ef5e89510957d6760bc34561b9987dff5aa",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ff/ff7791c6da09127e93700d622b840ef5e89510957d6760bc34561b9987dff5aa"
+    },
+    "videos/art-of-war-6/captions.json": {
+      "hash": "35db5fd99f0e4e8a759e8a8f2bbc9c41848682d49f49d507ebc4bcf837ea6b52",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/35/35db5fd99f0e4e8a759e8a8f2bbc9c41848682d49f49d507ebc4bcf837ea6b52"
+    },
+    "videos/art-of-war-7/index.html": {
+      "hash": "76b37eb83e96ec67d110636b467e821ee823cbbce9c89a2e9dad127dbbdaf32f",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/76/76b37eb83e96ec67d110636b467e821ee823cbbce9c89a2e9dad127dbbdaf32f"
+    },
+    "videos/art-of-war-7/meta.json": {
+      "hash": "71271901a7edd177b40de9185f1c05b2ec312d28c9b7389cffc9e1f60b6f8b08",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/71/71271901a7edd177b40de9185f1c05b2ec312d28c9b7389cffc9e1f60b6f8b08"
+    },
+    "videos/art-of-war-7/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-7/package.json": {
+      "hash": "e50783a70f828015b9df2cec1057ace3b5d97da7ca2c1365654480ce7a552f5c",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/e5/e50783a70f828015b9df2cec1057ace3b5d97da7ca2c1365654480ce7a552f5c"
+    },
+    "videos/art-of-war-7/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-7/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-7/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-7/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-7/SCRIPT.md": {
+      "hash": "d3382751913cd87e5a6b8f85a10d230140a8a1d02e004ad229ce30032beef544",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/d3/d3382751913cd87e5a6b8f85a10d230140a8a1d02e004ad229ce30032beef544"
+    },
+    "videos/art-of-war-7/BRIEF.md": {
+      "hash": "dd06d5822c28cf48b86abd360a8bf0cb418db46d61d73d6a4ab7bd74ab81ef37",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/dd/dd06d5822c28cf48b86abd360a8bf0cb418db46d61d73d6a4ab7bd74ab81ef37"
+    },
+    "videos/art-of-war-7/captions.json": {
+      "hash": "864a3959c7f7dc2146bcbb94d71bafa325ebe565fe4ce0a418bc8e4aeaec595c",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/86/864a3959c7f7dc2146bcbb94d71bafa325ebe565fe4ce0a418bc8e4aeaec595c"
+    },
+    "videos/art-of-war-8/index.html": {
+      "hash": "4fb1e3d8967dc31beeb77c3d12e2f88a63c295468d4028463d5516aa10f8a554",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/4f/4fb1e3d8967dc31beeb77c3d12e2f88a63c295468d4028463d5516aa10f8a554"
+    },
+    "videos/art-of-war-8/meta.json": {
+      "hash": "4364fb27053fbc6f5b39dc756555adc063a6425837de72fd75ece713c7108bbe",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/43/4364fb27053fbc6f5b39dc756555adc063a6425837de72fd75ece713c7108bbe"
+    },
+    "videos/art-of-war-8/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-8/package.json": {
+      "hash": "1f21e61351a03dc5e4f5e0b36db085d029bacc91c2a7869e866d2f864f439ab7",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/1f/1f21e61351a03dc5e4f5e0b36db085d029bacc91c2a7869e866d2f864f439ab7"
+    },
+    "videos/art-of-war-8/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-8/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-8/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-8/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-8/BRIEF.md": {
+      "hash": "ecd1d66e51bdbf0407528736f1d1b4ee8d5b0d2b7650119750e8d88c50516855",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ec/ecd1d66e51bdbf0407528736f1d1b4ee8d5b0d2b7650119750e8d88c50516855"
+    },
+    "videos/art-of-war-8/SCRIPT.md": {
+      "hash": "2c6954be1f0e2670265789df78057cf22646b0d74b63dac70522b3b027ee8c67",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/2c/2c6954be1f0e2670265789df78057cf22646b0d74b63dac70522b3b027ee8c67"
+    },
+    "videos/art-of-war-8/captions.json": {
+      "hash": "03113a71c9cc120e9baf2c24732daf4d72aebdafcffef76a009419d1d56d2814",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/03/03113a71c9cc120e9baf2c24732daf4d72aebdafcffef76a009419d1d56d2814"
+    },
+    "videos/art-of-war-9/index.html": {
+      "hash": "f4ad4aca18c86fc9bc2844fe06aace41847108ee6773b89fdbcf0c60faf8d8f5",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f4/f4ad4aca18c86fc9bc2844fe06aace41847108ee6773b89fdbcf0c60faf8d8f5"
+    },
+    "videos/art-of-war-9/meta.json": {
+      "hash": "f5d225f9c1a0beb518ef91b180e17d39ab815a31fc1d4ec90fab2f4d2334c504",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f5/f5d225f9c1a0beb518ef91b180e17d39ab815a31fc1d4ec90fab2f4d2334c504"
+    },
+    "videos/art-of-war-9/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-9/package.json": {
+      "hash": "a2e0275b0962853f9c6b6541915ee7be7b91317d1fbb11f414a2c33ede60466f",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a2/a2e0275b0962853f9c6b6541915ee7be7b91317d1fbb11f414a2c33ede60466f"
+    },
+    "videos/art-of-war-9/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-9/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-9/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-9/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-9/SCRIPT.md": {
+      "hash": "0caad882d221cb87de854b3732a749bec5d75593cb1b05e4262ac080c62f8aa6",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/0c/0caad882d221cb87de854b3732a749bec5d75593cb1b05e4262ac080c62f8aa6"
+    },
+    "videos/art-of-war-9/BRIEF.md": {
+      "hash": "a90077ee5cc5a606f82743060d2a03a3bcf5fe96c2914b8d5b1fc1b0b70e2213",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a9/a90077ee5cc5a606f82743060d2a03a3bcf5fe96c2914b8d5b1fc1b0b70e2213"
+    },
+    "videos/art-of-war-9/captions.json": {
+      "hash": "3e404283b0fcb0c81f772b4c237ae7170351068dc38b69e8df66225ba0c6f2fa",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/3e/3e404283b0fcb0c81f772b4c237ae7170351068dc38b69e8df66225ba0c6f2fa"
+    },
+    "videos/art-of-war-10/index.html": {
+      "hash": "c2b18e0ce8f7dcd696c23bf2b3370a27ce85ac6caebbd8e872023e79542861af",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/c2/c2b18e0ce8f7dcd696c23bf2b3370a27ce85ac6caebbd8e872023e79542861af"
+    },
+    "videos/art-of-war-10/meta.json": {
+      "hash": "6986a928e97532eb975d40efb2c3bd855a4a771434c3dcb54fd36ae88b82dd1c",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/69/6986a928e97532eb975d40efb2c3bd855a4a771434c3dcb54fd36ae88b82dd1c"
+    },
+    "videos/art-of-war-10/hyperframes.json": {
+      "hash": "ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+    },
+    "videos/art-of-war-10/package.json": {
+      "hash": "7ef37959d4243db86b0080b857f9044ece84336f8824597c29c82fcd432d05f4",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7e/7ef37959d4243db86b0080b857f9044ece84336f8824597c29c82fcd432d05f4"
+    },
+    "videos/art-of-war-10/AGENTS.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-10/CLAUDE.md": {
+      "hash": "6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+    },
+    "videos/art-of-war-10/ow-headshot-bw.png": {
+      "hash": "a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+    },
+    "videos/art-of-war-10/technological-progress.mp3": {
+      "hash": "398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+    },
+    "videos/art-of-war-10/BRIEF.md": {
+      "hash": "f5e85562d2a7fb44df72ae01301ded5061eb50e3b8f94079c1a1ca26e9cb8c07",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f5/f5e85562d2a7fb44df72ae01301ded5061eb50e3b8f94079c1a1ca26e9cb8c07"
+    },
+    "videos/art-of-war-10/SCRIPT.md": {
+      "hash": "e99f0765d50d7545bb87034cf522599ddb81bebbe561fc3f3ef684d1df91a901",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/e9/e99f0765d50d7545bb87034cf522599ddb81bebbe561fc3f3ef684d1df91a901"
+    },
+    "videos/art-of-war-10/captions.json": {
+      "hash": "ff98e4c747cddbd4e66a2de03e9863984e1e0f102b043118c32152e1f3c17f7d",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ff/ff98e4c747cddbd4e66a2de03e9863984e1e0f102b043118c32152e1f3c17f7d"
+    },
+    "out/art-of-war-2.mp4": {
+      "hash": "5578901bcc16a742fcfd6de414e52ea929a873e296b4aa29fcb544bfa86cd626",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/55/5578901bcc16a742fcfd6de414e52ea929a873e296b4aa29fcb544bfa86cd626"
+    },
+    "out/art-of-war-1.mp4": {
+      "hash": "7a6bbf5b8ec523040f0aea11668173ad18a66ce27df161db571be065cc9652a0",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7a/7a6bbf5b8ec523040f0aea11668173ad18a66ce27df161db571be065cc9652a0"
+    },
+    "out/art-of-war-4.mp4": {
+      "hash": "7c6dfbdbe9713d79c6684472f67cf7158a564af82267ba3d50349fb8ab9e2922",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7c/7c6dfbdbe9713d79c6684472f67cf7158a564af82267ba3d50349fb8ab9e2922"
+    },
+    "out/art-of-war-3.mp4": {
+      "hash": "f4a91601acc81f67036cdb35a617cb9f38ebd3396bfb7b4da887d961cb03547e",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f4/f4a91601acc81f67036cdb35a617cb9f38ebd3396bfb7b4da887d961cb03547e"
+    },
+    "out/art-of-war-6.mp4": {
+      "hash": "12ae5cc5f73a43539e818b845ffda6276f81375e9287673a42e37acb939fba7e",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/12/12ae5cc5f73a43539e818b845ffda6276f81375e9287673a42e37acb939fba7e"
+    },
+    "out/art-of-war-5.mp4": {
+      "hash": "84f9d03a8a9cc7843b240d7935689d213470500c30a851e2c1f2335caa2aba9c",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/84/84f9d03a8a9cc7843b240d7935689d213470500c30a851e2c1f2335caa2aba9c"
+    },
+    "out/art-of-war-7.mp4": {
+      "hash": "b4c76745390a57c10a5576f2596d021454babef029a9c73e8d975ca68dff8abb",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/b4/b4c76745390a57c10a5576f2596d021454babef029a9c73e8d975ca68dff8abb"
+    },
+    "out/art-of-war-8.mp4": {
+      "hash": "de5c215a3d69bcc0d34c0bcc1cfd17487077d6d9b6f94107fd888121a785fc71",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/de/de5c215a3d69bcc0d34c0bcc1cfd17487077d6d9b6f94107fd888121a785fc71"
+    },
+    "out/art-of-war-9.mp4": {
+      "hash": "ef44b240341456f0c4e9840c392e21fd6bc84c98c55f1fa7cf38ec0dedada745",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ef/ef44b240341456f0c4e9840c392e21fd6bc84c98c55f1fa7cf38ec0dedada745"
+    },
+    "out/art-of-war-10.mp4": {
+      "hash": "a080621f898cbd52125d4cca6f8ff3c3c6802f2303ee1b6905469323ba4d93c7",
+      "content": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a0/a080621f898cbd52125d4cca6f8ff3c3c6802f2303ee1b6905469323ba4d93c7"
     }
   },
   "revisions": {
@@ -6171,6 +6659,766 @@
         "videos/aeo/captions.json": {
           "before": null,
           "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/5d/5d9c488be9bb4518578719e89250128363381fd1ddc9369c13d5a3902f279314"
+        }
+      }
+    },
+    "eb350429-d688-451b-832f-db71eb31f3eb": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793144917826,
+      "endedAt": 1793144919829,
+      "files": {
+        "tools/art-of-war/lessons.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/0e/0efe3667a0f037fa65d4cf1deb3d709025f1469c49228e0e43ba2569cb27195e"
+        }
+      }
+    },
+    "6ff24d39-cfab-4b75-a917-95311157e2dc": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145031432,
+      "endedAt": 1793145033433,
+      "files": {
+        "tools/art-of-war/gen.mjs": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/cd/cdc22ebb5ff3e0cd32d37f9c15451451117633af119701017136cbcc86e5646d"
+        }
+      }
+    },
+    "a53ae7f0-750a-4be6-aeb5-521bb3067fdf": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145045904,
+      "endedAt": 1793145047904,
+      "files": {
+        "tools/art-of-war/gen.mjs": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/cd/cdc22ebb5ff3e0cd32d37f9c15451451117633af119701017136cbcc86e5646d",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ab/ab6156294a7162c953ab2a000b1b298f529ec91ba41c472ed99a58f7f59153b0"
+        }
+      }
+    },
+    "e27d2081-12b6-4205-8a8b-4196c33ab5f7": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145050189,
+      "endedAt": 1793145052220,
+      "files": {
+        "videos/art-of-war-1/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-1/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-1/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-1/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a6/a6242f7bf0be6c08906a91dc6ff199e95967d7e158f4eb79b5166f1e90be3d59"
+        },
+        "videos/art-of-war-1/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/e8/e8d39d8e1f19ad0de9559c6542551a35899cd1927b360c942dfc1388fd25516a"
+        },
+        "videos/art-of-war-1/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/37/37e39f6c59bf349a3d5c40222177b84e57acb63ec5b7c7e2ef4fbc667789632f"
+        }
+      }
+    },
+    "2d830b1b-6340-4ed7-a556-23bc31e18ec5": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145059054,
+      "endedAt": 1793145061533,
+      "files": {
+        "videos/art-of-war-1/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/bd/bd795cbcb942f4bc32f926f33a59b0c5ddc4d07799e0e04a4f1423da9f5a13dc"
+        },
+        "videos/art-of-war-1/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/fb/fbe776fd9d5fbc2d45b3c7220f2cde167eb640b89eb29cc9f0465dcc6a3c5f2b"
+        },
+        "videos/art-of-war-1/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a6/a6242f7bf0be6c08906a91dc6ff199e95967d7e158f4eb79b5166f1e90be3d59",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/6c/6cd77353c3e40b44b285a756fd90fe8fe24ce05969421b6b903c0adf5f29d098"
+        },
+        "videos/art-of-war-1/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-1/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/c4/c485875143dd28959bf91ce82ab9012aba0f9fd210a7a128208c46662d606bda"
+        },
+        "videos/art-of-war-1/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "d505ed12-87c6-47fd-9d9f-2c1d51b933ae": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145100339,
+      "endedAt": 1793145102896,
+      "files": {
+        "videos/art-of-war-2/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-2/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/6d/6da65542de742e390ab0d04927cbd80e0107dccc00d157ecaa686107d26cf2a7"
+        },
+        "videos/art-of-war-2/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7c/7c64a5b6f3567350b9fad1cf476f06f8110ebee9cc782bc641574523c8558d30"
+        },
+        "videos/art-of-war-2/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-2/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-2/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/5b/5b936943fd6360d7b3d440737dd08f14e2442f355d333888ae807d5c34fe73a6"
+        },
+        "videos/art-of-war-2/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/12/12a88d97dbf23131d3bd125a7979e4ea2cea50a9c141fc31026a7c84a4eedde5"
+        },
+        "videos/art-of-war-2/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-2/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a8/a8aadc113995b1a22769e99e7483ccdcd14c83a761a1242b1a3ef9315fec1fb7"
+        },
+        "videos/art-of-war-2/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/41/4198fb1691854f2d43716d1535739b8c8c21ece5bd1626be1514bf622d59b8da"
+        },
+        "videos/art-of-war-2/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "786b1bd9-9636-4b38-91fb-fe3e8fa791f1": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145124076,
+      "endedAt": 1793145126593,
+      "files": {
+        "videos/art-of-war-3/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-3/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/87/878e0d0533ac6d71e2e152f0eb38cd1dab2c19c096df6298d5dd097f530a7e89"
+        },
+        "videos/art-of-war-3/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/d4/d4e90223f846ddce21cbc4662a99a179af24c63fa83f8c148a227be4dfd79a29"
+        },
+        "videos/art-of-war-3/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-3/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-3/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/29/29e545256b6eb13a7e62b42e694ecad86df450bff7ac1371a7b1baf746e157b7"
+        },
+        "videos/art-of-war-3/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/dd/dd8cd1b9bc45627b62e0a7f020ca352006f825b363e11477e26ea2140103120c"
+        },
+        "videos/art-of-war-3/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-3/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/c1/c15d98bd8cc9557a156f647114550ba41b44ff265a0f6f1aa9df35c54ba0338d"
+        },
+        "videos/art-of-war-3/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/83/8356e7ed12275f2d596055a51fd09d68328d37e583d83947234d297ee13814ff"
+        },
+        "videos/art-of-war-3/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "03ef242c-5e0f-457f-8cc5-7747981f798f": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145146673,
+      "endedAt": 1793145149251,
+      "files": {
+        "videos/art-of-war-4/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-4/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/8f/8f2db4e8a88f4bc25017262c6aef77b86552ae8a6172ff7563f1d71d5fc57191"
+        },
+        "videos/art-of-war-4/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/94/94fef899844bc0b9ef40a3cf7303e9f5505333c2274fb98abcae06866bbed9c5"
+        },
+        "videos/art-of-war-4/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-4/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-4/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/9c/9ce15bb340cc93455f10a2090d0eccbd2fe7c46c465696d1397d125e116b26f6"
+        },
+        "videos/art-of-war-4/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7b/7bd8fc73894a89bb4d31e3017534d0e5fd998f0dafb659e188ac5d9d1f8dc0db"
+        },
+        "videos/art-of-war-4/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-4/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/1f/1f59c6cce05a051b335061a121b264a8d4f2e69f5a76ede8af5d68048dd58134"
+        },
+        "videos/art-of-war-4/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/77/773cd16eb800b20a15f08d4ba8ae82774ea9a34a6f0a68fd93a492de6964d6f5"
+        },
+        "videos/art-of-war-4/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "f1769608-f29c-42b0-b7e3-906de0d51155": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145173875,
+      "endedAt": 1793145176330,
+      "files": {
+        "videos/art-of-war-5/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-5/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/30/303c209379b59d2c87744c7f5e59ef06dabf374bc33cef57f00279970ca8bd1f"
+        },
+        "videos/art-of-war-5/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ab/ab27aeca00a1279868d3e8952bc4d6fa026b209bd4b6d14fe52d77dcafef167a"
+        },
+        "videos/art-of-war-5/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-5/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-5/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/61/612f4a84b05976a8f0cb4e570d172c8bd0ac7b9e668b22463a9b555f87b189c4"
+        },
+        "videos/art-of-war-5/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/54/54d8a5e2a72a506960a73cccd49687d75872ea197d14eecd4805fece67987900"
+        },
+        "videos/art-of-war-5/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-5/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/9f/9f37f731e5232176d6b1cdb8a6f783a4abb05fa5bdbf962cede15631a523ce31"
+        },
+        "videos/art-of-war-5/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/54/54e9125fa083d7c53fa9080caa4baba3ef85b01616aa338a067564a2e1b49d19"
+        },
+        "videos/art-of-war-5/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "4fc3609f-9f9a-47f4-9a8c-71d1d8b2d209": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145198876,
+      "endedAt": 1793145201355,
+      "files": {
+        "videos/art-of-war-6/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-6/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/2d/2df350814184adcf54a962dd95ada9bcc45e56b1035dd1a2743b8ce3903619e3"
+        },
+        "videos/art-of-war-6/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/35/35db5fd99f0e4e8a759e8a8f2bbc9c41848682d49f49d507ebc4bcf837ea6b52"
+        },
+        "videos/art-of-war-6/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-6/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-6/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/b3/b3d905dbee938d9ee940a9edfdae9a3db4a9003f432a7e609933e50088ef7d23"
+        },
+        "videos/art-of-war-6/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ba/ba13eeb546b19832afad3aa8196aed32ce5cd89a4e548f7dfe3b0019f8370c1b"
+        },
+        "videos/art-of-war-6/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-6/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/58/58d529ebe414a83394a5d689079986f8c0b87c11187bd8f4faa8540228190585"
+        },
+        "videos/art-of-war-6/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ff/ff7791c6da09127e93700d622b840ef5e89510957d6760bc34561b9987dff5aa"
+        },
+        "videos/art-of-war-6/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "4897f6eb-d229-44c4-bde8-a92fe2109eee": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145221769,
+      "endedAt": 1793145224171,
+      "files": {
+        "videos/art-of-war-7/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-7/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/dd/dd06d5822c28cf48b86abd360a8bf0cb418db46d61d73d6a4ab7bd74ab81ef37"
+        },
+        "videos/art-of-war-7/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/86/864a3959c7f7dc2146bcbb94d71bafa325ebe565fe4ce0a418bc8e4aeaec595c"
+        },
+        "videos/art-of-war-7/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-7/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-7/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/71/718e281d8a9a87b4263233c5d8a83177f5196c30198181a4ddc99feb2c45d64b"
+        },
+        "videos/art-of-war-7/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/71/71271901a7edd177b40de9185f1c05b2ec312d28c9b7389cffc9e1f60b6f8b08"
+        },
+        "videos/art-of-war-7/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-7/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/e5/e50783a70f828015b9df2cec1057ace3b5d97da7ca2c1365654480ce7a552f5c"
+        },
+        "videos/art-of-war-7/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/d3/d3382751913cd87e5a6b8f85a10d230140a8a1d02e004ad229ce30032beef544"
+        },
+        "videos/art-of-war-7/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "131337ed-e42e-4ffe-b154-545ff624f6bc": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145245333,
+      "endedAt": 1793145247764,
+      "files": {
+        "videos/art-of-war-8/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-8/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ec/ecd1d66e51bdbf0407528736f1d1b4ee8d5b0d2b7650119750e8d88c50516855"
+        },
+        "videos/art-of-war-8/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/03/03113a71c9cc120e9baf2c24732daf4d72aebdafcffef76a009419d1d56d2814"
+        },
+        "videos/art-of-war-8/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-8/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-8/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/69/69c5b1362bd299ac23998615bc26fca2a18d1a78ffd79843e149d6fd9c724d96"
+        },
+        "videos/art-of-war-8/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/43/4364fb27053fbc6f5b39dc756555adc063a6425837de72fd75ece713c7108bbe"
+        },
+        "videos/art-of-war-8/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-8/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/1f/1f21e61351a03dc5e4f5e0b36db085d029bacc91c2a7869e866d2f864f439ab7"
+        },
+        "videos/art-of-war-8/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/2c/2c6954be1f0e2670265789df78057cf22646b0d74b63dac70522b3b027ee8c67"
+        },
+        "videos/art-of-war-8/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "1fc29854-61e6-4c23-94be-519eeebf2da9": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145267691,
+      "endedAt": 1793145270126,
+      "files": {
+        "videos/art-of-war-9/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-9/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a9/a90077ee5cc5a606f82743060d2a03a3bcf5fe96c2914b8d5b1fc1b0b70e2213"
+        },
+        "videos/art-of-war-9/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/3e/3e404283b0fcb0c81f772b4c237ae7170351068dc38b69e8df66225ba0c6f2fa"
+        },
+        "videos/art-of-war-9/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-9/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-9/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f9/f929bdf043ba2a8306c052e2c0967e2e61051df035ffc05718a2593aceb0051e"
+        },
+        "videos/art-of-war-9/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f5/f5d225f9c1a0beb518ef91b180e17d39ab815a31fc1d4ec90fab2f4d2334c504"
+        },
+        "videos/art-of-war-9/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-9/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a2/a2e0275b0962853f9c6b6541915ee7be7b91317d1fbb11f414a2c33ede60466f"
+        },
+        "videos/art-of-war-9/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/0c/0caad882d221cb87de854b3732a749bec5d75593cb1b05e4262ac080c62f8aa6"
+        },
+        "videos/art-of-war-9/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "b3dc8b88-39c9-4758-9e01-5e3e83980dfa": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145289816,
+      "endedAt": 1793145292268,
+      "files": {
+        "videos/art-of-war-10/AGENTS.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-10/BRIEF.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f5/f5e85562d2a7fb44df72ae01301ded5061eb50e3b8f94079c1a1ca26e9cb8c07"
+        },
+        "videos/art-of-war-10/captions.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ff/ff98e4c747cddbd4e66a2de03e9863984e1e0f102b043118c32152e1f3c17f7d"
+        },
+        "videos/art-of-war-10/CLAUDE.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/63/6361e5d1b78020e6a17a9c31685104d78cb538a080907ca21fd6f88ec21b7fd3"
+        },
+        "videos/art-of-war-10/hyperframes.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ad/ad5dadeef78a520800a9e5cdd27a92ff5ac37f11b6a07f611b6b52b9f8c79a17"
+        },
+        "videos/art-of-war-10/index.html": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a4/a42c8e2f08bd4b85af30183d9e613eb15e3ce0ec10d69ab0f28f19ca1ec2011b"
+        },
+        "videos/art-of-war-10/meta.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/69/6986a928e97532eb975d40efb2c3bd855a4a771434c3dcb54fd36ae88b82dd1c"
+        },
+        "videos/art-of-war-10/ow-headshot-bw.png": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a5/a5ea27e1b1ae73e8b0083a92ba68ba61a0ddcdcec114485954195707a0d24e60"
+        },
+        "videos/art-of-war-10/package.json": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7e/7ef37959d4243db86b0080b857f9044ece84336f8824597c29c82fcd432d05f4"
+        },
+        "videos/art-of-war-10/SCRIPT.md": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/e9/e99f0765d50d7545bb87034cf522599ddb81bebbe561fc3f3ef684d1df91a901"
+        },
+        "videos/art-of-war-10/technological-progress.mp3": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/39/398fd717c6063c793b1e16bf892feda9bb188c77e81e897fe41bb019f551688d"
+        }
+      }
+    },
+    "5bb67730-3ade-4110-84ad-486d36e128be": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145354398,
+      "endedAt": 1793145358599,
+      "files": {
+        "tools/art-of-war/gen.mjs": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ab/ab6156294a7162c953ab2a000b1b298f529ec91ba41c472ed99a58f7f59153b0",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/d5/d54674fede9de4db623960617c4c651acc90a30b748d1f8a30499f76416d9c58"
+        },
+        "videos/art-of-war-1/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/6c/6cd77353c3e40b44b285a756fd90fe8fe24ce05969421b6b903c0adf5f29d098",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/de/de2298ac7da88cf4cc87b90a16995b13d07532c9748a8aaa1aefe74c70a47d9e"
+        },
+        "videos/art-of-war-10/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a4/a42c8e2f08bd4b85af30183d9e613eb15e3ce0ec10d69ab0f28f19ca1ec2011b",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/c2/c2b18e0ce8f7dcd696c23bf2b3370a27ce85ac6caebbd8e872023e79542861af"
+        },
+        "videos/art-of-war-2/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/5b/5b936943fd6360d7b3d440737dd08f14e2442f355d333888ae807d5c34fe73a6",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/4b/4be459123ac0f0c318f4f0a33f4c404b08a19382c7cc906ff801047ff9fb48a8"
+        },
+        "videos/art-of-war-3/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/29/29e545256b6eb13a7e62b42e694ecad86df450bff7ac1371a7b1baf746e157b7",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/0b/0b7a0075a46e8e78e4687305572f5646caa3954ac08ff0e031ff3161709d1003"
+        },
+        "videos/art-of-war-4/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/9c/9ce15bb340cc93455f10a2090d0eccbd2fe7c46c465696d1397d125e116b26f6",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/85/85bd3086b512c89d22c47fed8a283ef631e0d49463aab0543b5bca1fb32ee451"
+        },
+        "videos/art-of-war-5/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/61/612f4a84b05976a8f0cb4e570d172c8bd0ac7b9e668b22463a9b555f87b189c4",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/3c/3c934e82a47882ecc7e1d469dc810bc464fde3b92279d60f403bc4cab701f4d1"
+        },
+        "videos/art-of-war-6/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/b3/b3d905dbee938d9ee940a9edfdae9a3db4a9003f432a7e609933e50088ef7d23",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/fc/fca1312105830435b46fb16eba76cc543825ccf38467baf6f75301c00a7497e5"
+        },
+        "videos/art-of-war-7/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/71/718e281d8a9a87b4263233c5d8a83177f5196c30198181a4ddc99feb2c45d64b",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/76/76b37eb83e96ec67d110636b467e821ee823cbbce9c89a2e9dad127dbbdaf32f"
+        },
+        "videos/art-of-war-8/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/69/69c5b1362bd299ac23998615bc26fca2a18d1a78ffd79843e149d6fd9c724d96",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/4f/4fb1e3d8967dc31beeb77c3d12e2f88a63c295468d4028463d5516aa10f8a554"
+        },
+        "videos/art-of-war-9/index.html": {
+          "before": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f9/f929bdf043ba2a8306c052e2c0967e2e61051df035ffc05718a2593aceb0051e",
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f4/f4ad4aca18c86fc9bc2844fe06aace41847108ee6773b89fdbcf0c60faf8d8f5"
+        }
+      }
+    },
+    "6e3391b3-07d0-442c-9761-cbb7b29c0765": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145481354,
+      "endedAt": 1793145483457,
+      "files": {
+        "out/art-of-war-1.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7a/7a6bbf5b8ec523040f0aea11668173ad18a66ce27df161db571be065cc9652a0"
+        },
+        "out/art-of-war-2.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/55/5578901bcc16a742fcfd6de414e52ea929a873e296b4aa29fcb544bfa86cd626"
+        }
+      }
+    },
+    "2966a831-465a-4bd8-b04e-033da9b3b1ad": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145551195,
+      "endedAt": 1793145553261,
+      "files": {
+        "out/art-of-war-3.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/f4/f4a91601acc81f67036cdb35a617cb9f38ebd3396bfb7b4da887d961cb03547e"
+        },
+        "out/art-of-war-4.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/7c/7c6dfbdbe9713d79c6684472f67cf7158a564af82267ba3d50349fb8ab9e2922"
+        }
+      }
+    },
+    "dabb2eb5-4a93-4b59-a0a6-524d2d10b44c": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145624541,
+      "endedAt": 1793145626695,
+      "files": {
+        "out/art-of-war-5.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/84/84f9d03a8a9cc7843b240d7935689d213470500c30a851e2c1f2335caa2aba9c"
+        },
+        "out/art-of-war-6.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/12/12ae5cc5f73a43539e818b845ffda6276f81375e9287673a42e37acb939fba7e"
+        }
+      }
+    },
+    "3ee7d7dd-2023-4fe1-86e1-c82d3c05958b": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145695001,
+      "endedAt": 1793145697061,
+      "files": {
+        "out/art-of-war-7.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/b4/b4c76745390a57c10a5576f2596d021454babef029a9c73e8d975ca68dff8abb"
+        },
+        "out/art-of-war-8.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/de/de5c215a3d69bcc0d34c0bcc1cfd17487077d6d9b6f94107fd888121a785fc71"
+        }
+      }
+    },
+    "bc72feeb-ade0-469b-9091-c443e5a25e9d": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793145762933,
+      "endedAt": 1793145765258,
+      "files": {
+        "out/art-of-war-10.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/a0/a080621f898cbd52125d4cca6f8ff3c3c6802f2303ee1b6905469323ba4d93c7"
+        },
+        "out/art-of-war-9.mp4": {
+          "before": null,
+          "after": "/home/ow/.cache/hyperframes/history/4a9437ed-6f6f-4de7-b350-5f3e67d24553/blobs/ef/ef44b240341456f0c4e9840c392e21fd6bc84c98c55f1fa7cf38ec0dedada745"
         }
       }
     }

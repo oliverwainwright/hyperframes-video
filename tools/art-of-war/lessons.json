@@ -1,0 +1,112 @@
+[
+  {
+    "n": 1,
+    "title": ["Know your audience", "and your edge."],
+    "quote": "Know the enemy and know yourself; in a hundred battles you will never be in peril.",
+    "attr": "Sun Tzu, The Art of War",
+    "meaning": "Before you post, know who it's for and what only you can say.",
+    "s2": { "head": ["Where they overlap", "is your niche."], "kind": "venn", "a": "Their problems", "b": "Your edge", "c": "Your niche", "body": "Their problems plus your unique angle = content only you can make." },
+    "s3": { "head": ["Answer three", "questions first."], "kind": "cards3", "items": ["Who is this for?", "What do they struggle with?", "What can I say that others can't?"], "body": "Write the answers down before you write a single script." },
+    "do": ["List your audience's top 5 problems", "Name your unfair advantage", "Only make content at the overlap"],
+    "hook": "Art of War for creators, Lesson 1: Know your audience and know yourself. Your niche lives where their problems meet your edge. 30s ↓"
+  },
+  {
+    "n": 2,
+    "title": ["Win in planning,", "not in posting."],
+    "quote": "Every battle is won before it is fought.",
+    "attr": "attributed to Sun Tzu",
+    "meaning": "Most of a video's success is decided before you hit record.",
+    "s2": { "head": ["Plan the battle", "before you fight it."], "kind": "flow", "steps": ["Research", "Hook", "Script", "Post"], "body": "Research, hook and script decide the outcome. Posting is the last step." },
+    "s3": { "head": ["A weak idea can't", "be edited strong."], "kind": "versus", "bad": "Fix it in the edit", "good": "Plan the hook first", "body": "A strong hook planned up front beats hours of editing." },
+    "do": ["Research before you script", "Write 3 hooks, keep the best", "Plan the week on a calendar"],
+    "hook": "Art of War for creators, Lesson 2: Every battle is won before it's fought. Your video wins in planning, not in the edit. 30s ↓"
+  },
+  {
+    "n": 3,
+    "title": ["Ride the", "news cycle."],
+    "quote": "In the midst of chaos, there is also opportunity.",
+    "attr": "attributed to Sun Tzu",
+    "meaning": "Launches, updates and trends are openings, if you move fast.",
+    "s2": { "head": ["Attention peaks", "fast, then fades."], "kind": "spike", "peak": "Launch week", "late": "A month later", "body": "Interest in something new spikes at launch, then drops off." },
+    "s3": { "head": ["Timing", "beats polish."], "kind": "versus", "bad": "Perfect video, a month late", "good": "Good video, launch week", "body": "Be early with something useful, not late with something perfect." },
+    "do": ["Follow 5 sources in your niche", "Keep an explainer template ready", "Post within days of big news"],
+    "hook": "Art of War for creators, Lesson 3: In chaos there is opportunity. A good video in launch week beats a perfect one a month late. 30s ↓"
+  },
+  {
+    "n": 4,
+    "title": ["Underpromise,", "overdeliver."],
+    "quote": "Appear weak when you are strong.",
+    "attr": "Sun Tzu (popular paraphrase)",
+    "meaning": "Let your content outperform its title, not the other way around.",
+    "s2": { "head": ["The payoff should", "beat the promise."], "kind": "bars2", "a": "Title promise", "aw": "Modest", "av": 0.42, "b": "Actual payoff", "bw": "Big", "bv": 1.0, "body": "A plain title with a big payoff earns trust and rewatches." },
+    "s3": { "head": ["Trust compounds.", "Clickbait doesn't."], "kind": "versus", "bad": "Clickbait that under-delivers", "good": "Plain title, big payoff", "body": "Viewers remember who wasted their time." },
+    "do": ["Cut the hype words from titles", "Add one tip they didn't expect", "Deliver the payoff early"],
+    "hook": "Art of War for creators, Lesson 4: Appear weak when you are strong. Underpromise in the title, overdeliver in the video. 30s ↓"
+  },
+  {
+    "n": 5,
+    "title": ["Attack where they're", "unprepared."],
+    "quote": "Attack him where he is unprepared, appear where you are not expected.",
+    "attr": "Sun Tzu, The Art of War",
+    "meaning": "Find the gaps the big creators leave open.",
+    "s2": { "head": ["Crowded topics", "leave gaps."], "kind": "gapgrid", "crowded": "Crowded topics", "gap": "Open gaps", "body": "Everyone covers the obvious. The gaps are where you win." },
+    "s3": { "head": ["Where the", "gaps hide."], "kind": "cards3", "items": ["Questions nobody answers well", "Formats competitors ignore", "Audiences others overlook"], "body": "Search your niche's questions and look for weak answers." },
+    "do": ["Read the comments on top videos", "List questions with weak answers", "Make the best answer online"],
+    "hook": "Art of War for creators, Lesson 5: Attack where they're unprepared. The gaps big creators leave are your best topics. 30s ↓"
+  },
+  {
+    "n": 6,
+    "title": ["Speed is", "a strategy."],
+    "quote": "Speed is the essence of war.",
+    "attr": "Sun Tzu, The Art of War",
+    "meaning": "Ship, learn, improve. Momentum beats perfection.",
+    "s2": { "head": ["Every post", "is a lesson."], "kind": "loop", "steps": ["Ship", "Learn", "Improve"], "body": "Each upload gives you data to make the next one better." },
+    "s3": { "head": ["Perfectionism lets", "the moment pass."], "kind": "versus", "bad": "Wait until it's perfect", "good": "Post, then iterate", "body": "The video you post today teaches more than the one you keep polishing." },
+    "do": ["Set a schedule you can keep", "Cap your editing time per video", "Review results weekly, then adjust"],
+    "hook": "Art of War for creators, Lesson 6: Speed is the essence of war. Ship, learn, improve: momentum beats perfection. 30s ↓"
+  },
+  {
+    "n": 7,
+    "title": ["Win without", "fighting."],
+    "quote": "The supreme art of war is to subdue the enemy without fighting.",
+    "attr": "Sun Tzu, The Art of War",
+    "meaning": "Don't compete head-on. Own a space so clearly you're the obvious choice.",
+    "s2": { "head": ["Narrow until you're", "the only one."], "kind": "target", "rings": ["Everyone", "AI creators", "AI in 30s"], "body": "The narrower the category, the fewer rivals you face." },
+    "s3": { "head": ["Positioning", "is a moat."], "kind": "versus", "bad": "Fight giants for broad keywords", "good": "Own one narrow category", "body": "Become the default answer for one specific thing." },
+    "do": ["Describe your channel in 5 words", "Pick one category to own", "Say no to off-topic posts"],
+    "hook": "Art of War for creators, Lesson 7: Win without fighting. Don't battle giants for broad keywords. Own one narrow category. 30s ↓"
+  },
+  {
+    "n": 8,
+    "title": ["Repurpose", "everything."],
+    "quote": "Opportunities multiply as they are seized.",
+    "attr": "attributed to Sun Tzu",
+    "meaning": "One idea, done once, can become five pieces of content.",
+    "s2": { "head": ["One script,", "five platforms."], "kind": "hub", "center": "1 script", "outs": ["Short", "Reel", "Thread", "LinkedIn", "Newsletter"], "body": "Each format reaches a different audience with the same work." },
+    "s3": { "head": ["Each piece opens", "the next."], "kind": "count", "from": 1, "to": 5, "label": "posts from one idea", "body": "Every version is another chance for the right person to find you." },
+    "do": ["Write once, in a master script", "Adapt the hook for each platform", "Batch-schedule every version"],
+    "hook": "Art of War for creators, Lesson 8: Opportunities multiply as they are seized. One script can become five posts. 30s ↓"
+  },
+  {
+    "n": 9,
+    "title": ["Your analytics", "are intelligence."],
+    "quote": "If you know neither the enemy nor yourself, you will succumb in every battle.",
+    "attr": "Sun Tzu, The Art of War",
+    "meaning": "Your data tells you what's working, if you read it honestly.",
+    "s2": { "head": ["Find where", "viewers leave."], "kind": "curve", "marker": "Viewers leave here", "body": "A retention curve shows the exact second you lose people." },
+    "s3": { "head": ["Your intelligence", "report."], "kind": "cards3", "items": ["Retention curves", "Top-performing posts", "Comments and questions"], "body": "Double down on what works. Cut what doesn't, even ideas you love." },
+    "do": ["Check retention on every video", "Remake your top post in a new format", "Turn comment questions into videos"],
+    "hook": "Art of War for creators, Lesson 9: If you don't know yourself, you lose every battle. Your analytics are your intelligence report. 30s ↓"
+  },
+  {
+    "n": 10,
+    "title": ["Build systems", "before you scale."],
+    "quote": "Victorious warriors win first and then go to war, while defeated warriors go to war first and then seek to win.",
+    "attr": "Sun Tzu, The Art of War",
+    "meaning": "Templates and workflows mean every video starts from a winning position.",
+    "s2": { "head": ["A system does", "the heavy lifting."], "kind": "flow", "steps": ["Template", "Workflow", "Schedule", "Post"], "body": "Reusable templates and a set schedule remove the daily guesswork." },
+    "s3": { "head": ["Systems beat", "willpower."], "kind": "versus", "bad": "Start from scratch every time", "good": "Start from a system", "body": "Consistency comes from a process, not motivation." },
+    "do": ["Turn your best video into a template", "Write your workflow down, step by step", "Batch and schedule a week at a time"],
+    "hook": "Art of War for creators, Lesson 10: Victorious warriors win first, then go to war. Build systems before you scale. 30s ↓"
+  }
+]

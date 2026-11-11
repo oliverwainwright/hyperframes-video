@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+  :root { --bg:#0a0a0a; --fg:#ffffff; --dim:#a3a3b8; --accent:#6366f1; --accent-hi:#a5b4fc; --success:#22c55e; --amber:#f59e0b; --red:#ef4444; --panel:#111118; --line:#26263a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:var(--bg); }
+  #root { position:relative; width:100%; height:100%; background:var(--bg); color:var(--fg); font-family:"Inter", sans-serif; }
+  .mono { font-family:"JetBrains Mono", monospace; }
+  .scene { position:absolute; inset:0; width:100%; height:100%; }
+  .si { position:absolute; inset:0; }
+  /* Safe zone: top 150, bottom 170, sides 60 -> 960 x 1600 */
+  .safe { position:absolute; left:60px; top:150px; width:960px; height:1600px; }
+  .glow { position:absolute; width:1100px; height:1100px; left:-10px; top:380px; border-radius:50%; background:radial-gradient(circle, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0) 65%); }
+  .ab { position:absolute; }
+  .eyebrow { position:absolute; left:0; top:0; width:960px; display:flex; justify-content:center; }
+  .eyebrow span { padding:8px 24px; border-radius:999px; border:3px solid var(--accent); background:rgba(99,102,241,0.16); color:var(--accent-hi); font-size:30px; font-weight:700; letter-spacing:3px; }
+  .headline { position:absolute; left:0; top:70px; width:960px; text-align:center; font-weight:900; font-size:76px; line-height:1.04; letter-spacing:-2.5px; }
+  .headline .l { display:block; white-space:nowrap; }
+  .headline .a { color:var(--accent); }
+  .body { position:absolute; left:40px; width:880px; text-align:center; font-size:40px; color:var(--dim); line-height:1.3; }
+  .draw { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; }
+  .pill { position:absolute; display:flex; align-items:center; justify-content:center; text-align:center; border-radius:999px; font-weight:700; }
+  .box { position:absolute; display:flex; align-items:center; border-radius:26px; background:var(--panel); border:4px solid var(--line); }
+  .panel { position:absolute; border-radius:30px; background:var(--panel); border:4px solid var(--line); }
+  .badge { flex:none; display:flex; align-items:center; justify-content:center; border-radius:50%; background:var(--accent); font-weight:900; }
+  .quote-card { position:absolute; left:0; top:300px; width:960px; height:560px; }
+  .qwrap { position:absolute; left:80px; top:110px; width:800px; height:400px; display:flex; flex-direction:column; justify-content:center; gap:34px; }
+  .quote-text { width:800px; font-size:50px; font-weight:700; line-height:1.24; letter-spacing:-0.5px; }
+  .quote-text span { display:inline-block; }
+  .attr { width:800px; font-size:32px; font-weight:700; color:var(--accent-hi); }
+  .seal { position:absolute; width:124px; height:124px; border-radius:16px; background:var(--red); color:#fff; display:flex; align-items:center; justify-content:center; font-family:"Noto Sans JP", sans-serif; font-size:50px; font-weight:900; line-height:1; text-align:center; box-shadow:0 10px 30px rgba(239,68,68,0.35); }
+  .particle { position:absolute; border-radius:50%; }
+  .shot-wrap { position:absolute; left:260px; top:180px; width:440px; height:440px; }
+  .shot { position:absolute; left:30px; top:30px; width:380px; height:380px; border-radius:50%; overflow:hidden; border:5px solid var(--accent); box-shadow:0 30px 80px rgba(99,102,241,0.4), 0 0 0 10px var(--bg); }
+  .shot img { width:100%; height:100%; object-fit:cover; display:block; }
+  .num { font-variant-numeric:tabular-nums; }
+</style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <div id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div class="si" id="s1-in">
+          <div class="glow" id="s1-glow"></div>
+          <div class="safe" id="s1-safe"></div>
+        </div>
+      </div>
+      <div id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div class="si" id="s2-in">
+          <div class="glow" id="s2-glow"></div>
+          <div class="safe" id="s2-safe"></div>
+        </div>
+      </div>
+      <div id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div class="si" id="s3-in">
+          <div class="glow" id="s3-glow"></div>
+          <div class="safe" id="s3-safe"></div>
+        </div>
+      </div>
+      <div id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div class="si" id="s4-in">
+          <div class="glow" id="s4-glow"></div>
+          <div class="safe" id="s4-safe"></div>
+        </div>
+      </div>
+      <div id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div class="si" id="s5-in">
+          <div class="glow" id="s5-glow"></div>
+          <div id="particles"></div>
+          <div class="safe" id="s5-safe"></div>
+        </div>
+      </div>
+      <audio id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+    <script>
+const D = {"n":5,"title":["Attack where they're","unprepared."],"quote":"Attack him where he is unprepared, appear where you are not expected.","attr":"Sun Tzu, The Art of War","meaning":"Find the gaps the big creators leave open.","s2":{"head":["Crowded topics","leave gaps."],"kind":"gapgrid","crowded":"Crowded topics","gap":"Open gaps","body":"Everyone covers the obvious. The gaps are where you win."},"s3":{"head":["Where the","gaps hide."],"kind":"cards3","items":["Questions nobody answers well","Formats competitors ignore","Audiences others overlook"],"body":"Search your niche's questions and look for weak answers."},"do":["Read the comments on top videos","List questions with weak answers","Make the best answer online"],"hook":"Art of War for creators, Lesson 5: Attack where they're unprepared. The gaps big creators leave are your best topics. 30s ↓"};
+
+const tl = gsap.timeline({ paused: true });
+const S = [0, 5.8, 11.8, 17.8, 23.8];
+const XF = 0.4;
+const E = "power3.out";
+const SVGNS = "http://www.w3.org/2000/svg";
+const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+const pop = (sel, at, from = 0.6) => tl.fromTo(sel, { opacity: 0, scale: from }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, at);
+const drawIn = (sel, at, d = 0.6, stagger = 0) => tl.to(sel, { strokeDashoffset: 0, duration: d, ease: "power2.out", stagger }, at);
+
+let uid = 0;
+const el = (parent, tag, cls, css = {}, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  n.id = "e" + ++uid;
+  Object.assign(n.style, css);
+  if (text != null) n.textContent = text;
+  parent.appendChild(n);
+  return n;
+};
+const svgEl = (parent, tag, attrs) => {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (!n.id) n.id = "e" + ++uid;
+  parent.appendChild(n);
+  return n;
+};
+const svgBox = (parent, x, y, w, h) => {
+  const s = svgEl(parent, "svg", { viewBox: "0 0 " + w + " " + h, width: w, height: h });
+  Object.assign(s.style, { position: "absolute", left: x + "px", top: y + "px", overflow: "visible" });
+  return s;
+};
+const px = (v) => v + "px";
+const $ = (n) => "#" + n.id;
+const ICON_X = '<svg viewBox="0 0 60 60" width="60" height="60"><circle cx="30" cy="30" r="27" fill="rgba(239,68,68,0.18)" stroke="#ef4444" stroke-width="4"/><path d="M 20 20 L 40 40 M 40 20 L 20 40" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/></svg>';
+const ICON_OK = '<svg viewBox="0 0 60 60" width="60" height="60"><circle cx="30" cy="30" r="27" fill="#22c55e"/><path d="M 17 31 L 26 40 L 44 21" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+const eyebrow = (safe, text, t) => {
+  const e = el(safe, "div", "eyebrow");
+  const s = el(e, "span", "mono", {}, text);
+  rise($(e), t + 0.2, 16, 0.4);
+};
+const headline = (safe, lines, t, size) => {
+  const h = el(safe, "div", "headline", size ? { fontSize: px(size) } : {});
+  el(h, "span", "l", {}, lines[0]);
+  el(h, "span", "l a", {}, lines[1]);
+  rise($(h), t + 0.3);
+};
+const bodyText = (safe, text, top, t) => {
+  const b = el(safe, "div", "body", { top: px(top) }, text);
+  rise($(b), t, 20);
+};
+
+// Crossfades + glow breath
+for (let i = 1; i < 5; i++) {
+  tl.to("#s" + i + "-in", { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+  tl.fromTo("#s" + (i + 1) + "-in", { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+}
+for (let i = 1; i <= 5; i++) {
+  const len = i === 5 ? 6.2 : 6.4;
+  tl.fromTo("#s" + i + "-glow", { scale: 0.92 }, { scale: 1.08, duration: len / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+}
+const safe = (i) => document.getElementById("s" + i + "-safe");
+
+// ---------------- Visual kinds (drawn into the 960 x ~780 area from y=300) ----------------
+const KINDS = {
+  venn(sf, d, t) {
+    const s = svgBox(sf, 0, 300, 960, 760);
+    const c1 = svgEl(s, "circle", { cx: 330, cy: 380, r: 260, fill: "rgba(165,180,252,0.10)", stroke: "#a5b4fc", "stroke-width": 8, pathLength: 1, class: "draw" });
+    const c2 = svgEl(s, "circle", { cx: 630, cy: 380, r: 260, fill: "rgba(245,158,11,0.10)", stroke: "#f59e0b", "stroke-width": 8, pathLength: 1, class: "draw" });
+    drawIn($(c1), t + 0.7, 0.8);
+    drawIn($(c2), t + 1.0, 0.8);
+    const a = el(sf, "div", "ab", { left: "90px", top: "640px", width: "210px", textAlign: "center", fontSize: "38px", fontWeight: 900, color: "#a5b4fc", lineHeight: 1.1 }, d.a);
+    const b = el(sf, "div", "ab", { left: "660px", top: "640px", width: "210px", textAlign: "center", fontSize: "38px", fontWeight: 900, color: "#f59e0b", lineHeight: 1.1 }, d.b);
+    rise($(a), t + 1.4, 16, 0.5);
+    rise($(b), t + 1.7, 16, 0.5);
+    const c = el(sf, "div", "pill", { left: "360px", top: "640px", width: "240px", height: "84px", background: "#22c55e", color: "#0a0a0a", fontSize: "34px", fontWeight: 900 }, d.c);
+    pop($(c), t + 2.3, 0.4);
+  },
+  cards3(sf, d, t) {
+    d.items.forEach((txt, i) => {
+      const bx = el(sf, "div", "box", { left: "0px", top: px(320 + i * 220), width: "960px", height: "180px", gap: "30px", padding: "0 40px" });
+      const bg = el(bx, "div", "badge", { width: "92px", height: "92px", fontSize: "44px" }, String(i + 1));
+      el(bx, "div", "", { fontSize: "42px", fontWeight: 700, lineHeight: 1.2 }, txt);
+      tl.fromTo($(bx), { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 0.8 + i * 0.35);
+    });
+  },
+  flow(sf, d, t) {
+    const s = svgBox(sf, 0, 300, 960, 760);
+    d.steps.forEach((txt, i) => {
+      const y = 330 + i * 190;
+      const bx = el(sf, "div", "box", { left: "160px", top: px(y), width: "640px", height: "130px", gap: "28px", padding: "0 34px", borderColor: i === d.steps.length - 1 ? "#22c55e" : "#26263a" });
+      el(bx, "div", "badge", { width: "76px", height: "76px", fontSize: "38px", background: i === d.steps.length - 1 ? "#22c55e" : "#6366f1", color: i === d.steps.length - 1 ? "#0a0a0a" : "#fff" }, String(i + 1));
+      el(bx, "div", "", { fontSize: "46px", fontWeight: 900 }, txt);
+      tl.fromTo($(bx), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, t + 0.8 + i * 0.4);
+      if (i < d.steps.length - 1) {
+        const y1 = y + 130 - 300 + 8, y2 = y + 190 - 300 - 8;
+        const ln = svgEl(s, "path", { d: "M 480 " + y1 + " L 480 " + y2 + " M 466 " + (y2 - 14) + " L 480 " + y2 + " L 494 " + (y2 - 14), stroke: "#6366f1", "stroke-width": 6, pathLength: 1, class: "draw" });
+        drawIn($(ln), t + 1.05 + i * 0.4, 0.3);
+      }
+    });
+  },
+  versus(sf, d, t) {
+    const card = (top, txt, good) => {
+      const bx = el(sf, "div", "box", { left: "60px", top: px(top), width: "840px", height: "220px", gap: "30px", padding: "0 44px", borderColor: good ? "#22c55e" : "#ef4444", background: good ? "rgba(34,197,94,0.10)" : "rgba(239,68,68,0.08)" });
+      const ic = el(bx, "div", "", { flex: "none", width: "60px", height: "60px" });
+      ic.innerHTML = good ? ICON_OK : ICON_X;
+      const tx = el(bx, "div", "", { fontSize: txt.length > 24 ? "36px" : "46px", whiteSpace: "nowrap", fontWeight: 900, lineHeight: 1.15, color: good ? "#ffffff" : "#c9c9d6" }, txt);
+      return [bx, tx];
+    };
+    const [bad] = card(330, d.bad, false);
+    const [good] = card(700, d.good, true);
+    tl.fromTo($(bad), { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 0.8);
+    const s = svgBox(sf, 60, 330, 840, 220);
+    const strike = svgEl(s, "path", { d: "M 140 110 L 790 110", stroke: "#ef4444", "stroke-width": 8, pathLength: 1, class: "draw" });
+    drawIn($(strike), t + 1.5, 0.45);
+    tl.to($(bad), { opacity: 0.55, duration: 0.3, ease: "power2.out" }, t + 1.9);
+    const vs = el(sf, "div", "pill", { left: "420px", top: "580px", width: "120px", height: "90px", background: "#14142a", border: "4px solid #26263a", fontSize: "36px", fontWeight: 900, color: "#a3a3b8" }, "VS");
+    pop($(vs), t + 2.0, 0.5);
+    tl.fromTo($(good), { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 2.3);
+    tl.fromTo($(good), { boxShadow: "0 0 0px rgba(34,197,94,0)" }, { boxShadow: "0 0 60px rgba(34,197,94,0.45)", duration: 0.6, ease: "power2.out" }, t + 2.8);
+  },
+  spike(sf, d, t) {
+    const p = el(sf, "div", "panel", { left: "0px", top: "320px", width: "960px", height: "600px" });
+    rise($(p), t + 0.6, 30, 0.5);
+    el(p, "div", "ab", { left: "36px", top: "26px", fontSize: "30px", fontWeight: 700, color: "#a3a3b8", letterSpacing: "2px" }, "ATTENTION");
+    const s = svgBox(p, 0, 0, 952, 592);
+    svgEl(s, "path", { d: "M 40 500 L 912 500", stroke: "#26263a", "stroke-width": 3, fill: "none" });
+    const ln = svgEl(s, "path", { d: "M 40 480 C 130 476, 190 330, 250 130 C 310 330, 390 430, 520 462 C 650 478, 800 480, 912 478", stroke: "#a5b4fc", "stroke-width": 9, pathLength: 1, class: "draw" });
+    drawIn($(ln), t + 0.9, 1.6);
+    const dot = svgEl(s, "circle", { cx: 250, cy: 130, r: 16, fill: "#22c55e" });
+    tl.fromTo($(dot), { opacity: 0, scale: 0, svgOrigin: "250 130" }, { opacity: 1, scale: 1, svgOrigin: "250 130", duration: 0.35, ease: E }, t + 1.6);
+    const pk = el(p, "div", "pill", { left: "300px", top: "100px", width: "280px", height: "76px", background: "rgba(34,197,94,0.18)", border: "4px solid #22c55e", color: "#22c55e", fontSize: "34px" }, d.peak);
+    pop($(pk), t + 1.8, 0.6);
+    const lt = el(p, "div", "pill", { left: "600px", top: "360px", width: "300px", height: "76px", background: "#14142a", border: "4px solid #3a3a52", color: "#a3a3b8", fontSize: "34px" }, d.late);
+    pop($(lt), t + 2.6, 0.6);
+  },
+  bars2(sf, d, t) {
+    const base = 1000, maxH = 520;
+    [[d.a, d.aw, d.av, 160, "#3a3a52", "#a3a3b8"], [d.b, d.bw, d.bv, 560, "#22c55e", "#22c55e"]].forEach(([lab, word, v, x, col, tcol], i) => {
+      const h = Math.round(maxH * v);
+      const bar = el(sf, "div", "ab", { left: px(x), top: px(base - h), width: "240px", height: px(h), background: col, borderRadius: "16px 16px 6px 6px", transformOrigin: "bottom center" });
+      tl.fromTo($(bar), { scaleY: 0 }, { scaleY: 1, duration: 0.7, ease: E }, t + 0.9 + i * 0.6);
+      const w = el(sf, "div", "ab", { left: px(x - 30), top: px(base - h - 70), width: "300px", textAlign: "center", fontSize: "44px", fontWeight: 900, color: tcol }, word);
+      rise($(w), t + 1.4 + i * 0.6, 16, 0.4);
+      const l = el(sf, "div", "ab", { left: px(x - 30), top: px(base + 18), width: "300px", textAlign: "center", fontSize: "36px", fontWeight: 700 }, lab);
+      rise($(l), t + 0.9 + i * 0.6, 12, 0.4);
+    });
+  },
+  gapgrid(sf, d, t) {
+    const gaps = [9, 19, 26];
+    const cells = [];
+    for (let i = 0; i < 35; i++) {
+      const c = i % 7, r = Math.floor(i / 7);
+      const g = gaps.includes(i);
+      const n = el(sf, "div", "ab", { left: px(70 + c * 120), top: px(330 + r * 120), width: "100px", height: "100px", borderRadius: "18px", background: g ? "transparent" : "#2a2a40", border: g ? "4px dashed #4a4a66" : "4px solid #33334d" });
+      cells.push(n);
+      if (g) n.dataset.gap = "1";
+    }
+    tl.fromTo(cells.map($), { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: E, stagger: { each: 0.018, from: "center" } }, t + 0.7);
+    cells.filter((c) => c.dataset.gap).forEach((c, k) => {
+      tl.to($(c), { backgroundColor: "rgba(34,197,94,0.28)", borderColor: "#22c55e", borderStyle: "solid", boxShadow: "0 0 40px rgba(34,197,94,0.55)", duration: 0.4, ease: E }, t + 2.0 + k * 0.3);
+    });
+    const leg = el(sf, "div", "ab", { left: "0px", top: "950px", width: "960px", display: "flex", justifyContent: "center", gap: "50px", fontSize: "34px", fontWeight: 700 });
+    const item = (col, border, txt) => {
+      const it = el(leg, "div", "", { display: "flex", alignItems: "center", gap: "16px" });
+      el(it, "div", "", { width: "40px", height: "40px", borderRadius: "10px", background: col, border: "4px solid " + border });
+      el(it, "div", "", {}, txt);
+    };
+    item("#2a2a40", "#33334d", d.crowded);
+    item("rgba(34,197,94,0.28)", "#22c55e", d.gap);
+    rise($(leg), t + 2.8, 16, 0.5);
+  },
+  loop(sf, d, t) {
+    const C = { x: 480, y: 650 }, R = 270;
+    const s = svgBox(sf, 0, 0, 960, 1100);
+    const ring = svgEl(s, "circle", { cx: C.x, cy: C.y, r: R, stroke: "#3a3a52", "stroke-width": 8, pathLength: 1, class: "draw", transform: "rotate(-90 " + C.x + " " + C.y + ")" });
+    drawIn($(ring), t + 0.7, 1.0);
+    const dot = svgEl(s, "circle", { cx: C.x, cy: C.y - R, r: 18, fill: "#ffffff" });
+    tl.fromTo($(dot), { opacity: 0 }, { opacity: 1, duration: 0.2 }, t + 1.7);
+    tl.fromTo($(dot), { rotation: 0, svgOrigin: C.x + " " + C.y }, { rotation: 720, svgOrigin: C.x + " " + C.y, duration: 3.6, ease: "power1.inOut" }, t + 1.7);
+    const cols = ["#6366f1", "#f59e0b", "#22c55e"];
+    d.steps.forEach((txt, i) => {
+      const a = -Math.PI / 2 + (i / 3) * Math.PI * 2;
+      const x = C.x + Math.cos(a) * R, y = C.y + Math.sin(a) * R;
+      const n = el(sf, "div", "pill", { left: px(x - 130), top: px(y - 50), width: "260px", height: "100px", background: "#14142a", border: "5px solid " + cols[i], fontSize: "44px", fontWeight: 900 }, txt);
+      pop($(n), t + 1.0 + i * 0.35, 0.5);
+    });
+    const c = el(sf, "div", "ab", { left: "330px", top: "620px", width: "300px", textAlign: "center", fontSize: "40px", fontWeight: 700, color: "#a3a3b8" }, "repeat");
+    rise($(c), t + 2.2, 12, 0.4);
+  },
+  target(sf, d, t) {
+    const C = { x: 480, y: 660 };
+    const s = svgBox(sf, 0, 0, 960, 1100);
+    const radii = [320, 215, 110];
+    const strokes = ["#3a3a52", "#6366f1", "#22c55e"];
+    const fills = ["rgba(58,58,82,0.15)", "rgba(99,102,241,0.14)", "rgba(34,197,94,0.22)"];
+    radii.forEach((r, i) => {
+      const c = svgEl(s, "circle", { cx: C.x, cy: C.y, r, fill: fills[i], stroke: strokes[i], "stroke-width": 8 });
+      tl.fromTo($(c), { opacity: 0, scale: 1.25, svgOrigin: C.x + " " + C.y }, { opacity: 1, scale: 1, svgOrigin: C.x + " " + C.y, duration: 0.6, ease: E }, t + 0.8 + i * 0.6);
+    });
+    const tops = [C.y - 320 + 22, C.y - 215 + 22];
+    [0, 1].forEach((i) => {
+      const l = el(sf, "div", "pill", { left: "330px", top: px(tops[i]), width: "300px", height: "66px", background: "#14142a", border: "3px solid " + strokes[i], color: i === 0 ? "#a3a3b8" : "#a5b4fc", fontSize: "32px" }, d.rings[i]);
+      pop($(l), t + 1.0 + i * 0.6, 0.6);
+    });
+    const inner = el(sf, "div", "ab", { left: "380px", top: px(C.y - 30), width: "200px", textAlign: "center", fontSize: "38px", fontWeight: 900, color: "#ffffff", lineHeight: 1.0 }, d.rings[2]);
+    pop($(inner), t + 2.2, 0.5);
+  },
+  hub(sf, d, t) {
+    const C = { x: 480, y: 660 }, R = 330;
+    const s = svgBox(sf, 0, 0, 960, 1100);
+    d.outs.forEach((txt, i) => {
+      const a = -Math.PI / 2 + (i / d.outs.length) * Math.PI * 2;
+      const x = C.x + Math.cos(a) * R, y = C.y + Math.sin(a) * R;
+      const ln = svgEl(s, "line", { x1: C.x, y1: C.y, x2: x, y2: y, stroke: "#6366f1", "stroke-width": 5, pathLength: 1, class: "draw" });
+      drawIn($(ln), t + 1.0 + i * 0.12, 0.5);
+      const chip = el(sf, "div", "pill", { left: px(x - 120), top: px(y - 42), width: "240px", height: "84px", background: "#14142a", border: "4px solid #ffffff", fontSize: "36px" }, txt);
+      pop($(chip), t + 1.3 + i * 0.12, 0.4);
+    });
+    const c = el(sf, "div", "pill", { left: px(C.x - 110), top: px(C.y - 110), width: "220px", height: "220px", background: "radial-gradient(circle at 35% 30%, #818cf8, #4338ca)", border: "5px solid #a5b4fc", fontSize: "44px", fontWeight: 900, boxShadow: "0 0 60px rgba(99,102,241,0.55)" }, d.center);
+    pop($(c), t + 0.7, 0.5);
+  },
+  count(sf, d, t) {
+    const num = el(sf, "div", "ab mono num", { left: "0px", top: "330px", width: "960px", textAlign: "center", fontSize: "300px", fontWeight: 700, color: "#22c55e", lineHeight: 1 }, String(d.from));
+    rise($(num), t + 0.6, 30, 0.5);
+    const lab = el(sf, "div", "ab", { left: "0px", top: "650px", width: "960px", textAlign: "center", fontSize: "48px", fontWeight: 900 }, d.label);
+    rise($(lab), t + 0.8, 16, 0.5);
+    const st = { v: d.from };
+    tl.fromTo(st, { v: d.from }, { v: d.to, duration: 1.6, ease: "power2.out", onUpdate: () => (num.textContent = String(Math.round(st.v))) }, t + 1.1);
+    const row = el(sf, "div", "ab", { left: "0px", top: "800px", width: "960px", display: "flex", justifyContent: "center", gap: "26px" });
+    for (let i = 0; i < d.to; i++) {
+      const doc = el(row, "div", "", { width: "120px", height: "150px" });
+      doc.innerHTML = '<svg viewBox="0 0 120 150" width="120" height="150"><path d="M 10 8 L 80 8 L 110 38 L 110 142 L 10 142 Z" fill="#14142a" stroke="' + (i === 0 ? "#a5b4fc" : "#22c55e") + '" stroke-width="6" stroke-linejoin="round"/><path d="M 30 62 L 90 62 M 30 84 L 90 84 M 30 106 L 70 106" stroke="#4a4a66" stroke-width="7" stroke-linecap="round"/></svg>';
+      tl.fromTo($(doc), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: E }, t + 1.1 + i * 0.32);
+    }
+  },
+  curve(sf, d, t) {
+    const p = el(sf, "div", "panel", { left: "0px", top: "320px", width: "960px", height: "600px" });
+    rise($(p), t + 0.6, 30, 0.5);
+    el(p, "div", "ab", { left: "36px", top: "26px", fontSize: "30px", fontWeight: 700, color: "#a3a3b8", letterSpacing: "2px" }, "% STILL WATCHING");
+    el(p, "div", "ab mono", { left: "40px", top: "530px", fontSize: "28px", color: "#a3a3b8" }, "0s");
+    el(p, "div", "ab mono", { left: "860px", top: "530px", fontSize: "28px", color: "#a3a3b8" }, "30s");
+    const s = svgBox(p, 0, 0, 952, 592);
+    svgEl(s, "path", { d: "M 40 510 L 912 510", stroke: "#26263a", "stroke-width": 3, fill: "none" });
+    const ln = svgEl(s, "path", { d: "M 40 100 C 160 110, 260 130, 330 150 C 370 160, 380 330, 430 350 C 560 380, 760 400, 912 410", stroke: "#a5b4fc", "stroke-width": 9, pathLength: 1, class: "draw" });
+    drawIn($(ln), t + 0.9, 1.6);
+    const dot = svgEl(s, "circle", { cx: 385, cy: 255, r: 18, fill: "#ef4444" });
+    tl.fromTo($(dot), { opacity: 0, scale: 0, svgOrigin: "385 255" }, { opacity: 1, scale: 1, svgOrigin: "385 255", duration: 0.35, ease: E }, t + 2.0);
+    const m = el(p, "div", "pill", { left: "440px", top: "180px", width: "400px", height: "80px", background: "rgba(239,68,68,0.16)", border: "4px solid #ef4444", color: "#ef4444", fontSize: "34px" }, d.marker);
+    pop($(m), t + 2.2, 0.6);
+  },
+};
+
+// ---------------- Scene 1: the quote ----------------
+{
+  const t = S[0], sf = safe(1);
+  eyebrow(sf, "THE ART OF WAR · LESSON " + D.n + "/10", t);
+  headline(sf, D.title, t);
+  const card = el(sf, "div", "quote-card");
+  const s = svgBox(card, 0, 0, 960, 560);
+  const border = svgEl(s, "rect", { x: 4, y: 4, width: 952, height: 552, rx: 34, fill: "#111118", stroke: "#3a3a52", "stroke-width": 6, pathLength: 1, class: "draw" });
+  tl.fromTo($(border), { fillOpacity: 0 }, { fillOpacity: 1, duration: 0.5, ease: "power2.out" }, t + 0.5);
+  drawIn($(border), t + 0.5, 0.8);
+  const qm = svgEl(s, "path", { d: "M 70 110 C 70 70, 90 50, 120 44 M 140 110 C 140 70, 160 50, 190 44", stroke: "#6366f1", "stroke-width": 14, pathLength: 1, class: "draw" });
+  drawIn($(qm), t + 0.8, 0.4);
+  const qw = el(card, "div", "qwrap");
+  const qt = el(qw, "div", "quote-text", D.quote.length > 90 ? { fontSize: "44px" } : {});
+  const words = D.quote.split(" ");
+  words.forEach((w, i) => el(qt, "span", "", {}, w + (i < words.length - 1 ? " " : "")));
+  const per = Math.min(0.06, 1.3 / words.length);
+  tl.fromTo("#" + qt.id + " span", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: E, stagger: per }, t + 1.0);
+  const qEnd = t + 1.0 + per * words.length + 0.3;
+  const at = el(qw, "div", "attr", {}, "— " + D.attr);
+  rise($(at), qEnd, 12, 0.4);
+  const seal = el(sf, "div", "seal", { left: "800px", top: "790px" }, "兵法");
+  tl.fromTo($(seal), { opacity: 0, scale: 2, rotation: -8 }, { opacity: 1, scale: 1, rotation: -8, duration: 0.3, ease: "power4.in" }, qEnd + 0.2);
+  bodyText(sf, D.meaning, 930, qEnd + 0.5);
+}
+
+// ---------------- Scenes 2 + 3: the idea / for creators ----------------
+[[2, D.s2, "THE IDEA"], [3, D.s3, "FOR CREATORS"]].forEach(([i, d, eb]) => {
+  const t = S[i - 1], sf = safe(i);
+  eyebrow(sf, eb, t);
+  headline(sf, d.head, t);
+  KINDS[d.kind](sf, d, t);
+  bodyText(sf, d.body, 1120, t + 3.6);
+});
+
+// ---------------- Scene 4: do this ----------------
+{
+  const t = S[3], sf = safe(4);
+  eyebrow(sf, "DO THIS", t);
+  headline(sf, ["Your move", "this week."], t);
+  D.do.forEach((txt, i) => {
+    const bx = el(sf, "div", "box", { left: "0px", top: px(330 + i * 220), width: "960px", height: "180px", gap: "30px", padding: "0 40px" });
+    const ic = el(bx, "div", "", { flex: "none", width: "76px", height: "76px" });
+    const s = svgEl(ic, "svg", { viewBox: "0 0 76 76", width: 76, height: 76 });
+    const ring = svgEl(s, "circle", { cx: 38, cy: 38, r: 33, stroke: "#22c55e", "stroke-width": 6, pathLength: 1, class: "draw" });
+    const tick = svgEl(s, "path", { d: "M 22 39 L 33 50 L 54 27", stroke: "#22c55e", "stroke-width": 7, pathLength: 1, class: "draw" });
+    el(bx, "div", "", { fontSize: "42px", fontWeight: 700, lineHeight: 1.2 }, txt);
+    tl.fromTo($(bx), { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, t + 0.8 + i * 0.6);
+    drawIn($(ring), t + 1.1 + i * 0.6, 0.35);
+    drawIn($(tick), t + 1.4 + i * 0.6, 0.25);
+  });
+  const foot = el(sf, "div", "body", { top: "1030px" }, "Small moves, every week, win the long game.");
+  rise($(foot), t + 3.4, 20);
+}
+
+// ---------------- Scene 5: CTA ----------------
+{
+  const t = S[4], sf = safe(5);
+  let seed = 100 + D.n;
+  const rnd = () => {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+  const field = document.getElementById("particles");
+  for (let i = 0; i < 12; i++) {
+    const size = 10 + rnd() * 22;
+    const p = el(field, "div", "particle", { width: px(size), height: px(size), left: px(rnd() * 1040), top: px(700 + rnd() * 1300), background: rnd() > 0.5 ? "#6366f1" : "#ffffff" });
+    const o = 0.08 + rnd() * 0.18;
+    tl.fromTo($(p), { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: 6.2, ease: "none" }, t);
+  }
+  const wrap = el(sf, "div", "shot-wrap");
+  const ring = svgEl(wrap, "svg", { viewBox: "0 0 440 440", width: 440, height: 440 });
+  Object.assign(ring.style, { position: "absolute", left: "0px", top: "0px" });
+  svgEl(ring, "circle", { cx: 220, cy: 220, r: 212, fill: "none", stroke: "#6366f1", "stroke-width": 4, "stroke-dasharray": "44 18", "stroke-linecap": "round" });
+  const shot = el(wrap, "div", "shot");
+  const img = document.createElement("img");
+  img.src = "ow-headshot-bw.png";
+  img.alt = "";
+  shot.appendChild(img);
+  tl.fromTo($(wrap), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+  tl.fromTo($(ring), { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+  const h = el(sf, "div", "headline", { top: "680px", fontSize: "80px" });
+  el(h, "span", "l", {}, "The Art of War");
+  el(h, "span", "l a", {}, "for creators.");
+  rise($(h), t + 0.8);
+  const sub = el(sf, "div", "body", { top: "900px", fontSize: "42px" }, "Lesson " + D.n + " of 10. Follow for the full series.");
+  rise($(sub), t + 1.2, 24);
+  const row = el(sf, "div", "ab", { left: "0px", top: "1040px", width: "960px", display: "flex", justifyContent: "center", gap: "14px" });
+  for (let i = 1; i <= 10; i++) {
+    el(row, "div", "", { width: "56px", height: "16px", borderRadius: "8px", background: i === D.n ? "#22c55e" : i < D.n ? "#6366f1" : "#2a2a40" });
+  }
+  rise($(row), t + 1.6, 12, 0.4);
+  const seal = el(sf, "div", "seal", { left: "418px", top: "1110px" }, "兵法");
+  tl.fromTo($(seal), { opacity: 0, scale: 2, rotation: -8 }, { opacity: 1, scale: 1, rotation: -8, duration: 0.3, ease: "power4.in" }, t + 2.0);
+}
+
+window.__timelines["main"] = tl;
+tl.seek(0);
+
+    </script>
+  </body>
+</html>
