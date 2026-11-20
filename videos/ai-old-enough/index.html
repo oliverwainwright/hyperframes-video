@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+  :root { --bg:#0a0a0a; --fg:#ffffff; --dim:#a3a3b8; --accent:#6366f1; --accent-hi:#a5b4fc; --success:#22c55e; --amber:#f59e0b; --red:#ef4444; --panel:#111118; --line:#26263a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:var(--bg); }
+  #root { position:relative; width:100%; height:100%; background:var(--bg); color:var(--fg); font-family:"Inter", sans-serif; }
+  .mono { font-family:"JetBrains Mono", monospace; }
+  .scene { position:absolute; inset:0; width:100%; height:100%; }
+  .si { position:absolute; inset:0; }
+  /* Safe zone: top 150, bottom 170, sides 60 -> 960 x 1600 */
+  .safe { position:absolute; left:60px; top:150px; width:960px; height:1600px; }
+  .glow { position:absolute; width:1100px; height:1100px; left:-10px; top:380px; border-radius:50%; background:radial-gradient(circle, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0) 65%); }
+  .ab { position:absolute; }
+  .eyebrow { position:absolute; left:0; top:0; width:960px; display:flex; justify-content:center; }
+  .eyebrow span { padding:8px 24px; border-radius:999px; border:3px solid var(--accent); background:rgba(99,102,241,0.16); color:var(--accent-hi); font-size:30px; font-weight:700; letter-spacing:3px; }
+  .headline { position:absolute; left:0; top:70px; width:960px; text-align:center; font-weight:900; font-size:80px; line-height:1.04; letter-spacing:-2.5px; }
+  .headline .l { display:block; white-space:nowrap; }
+  .headline .a { color:var(--accent); }
+  .body { position:absolute; left:40px; width:880px; text-align:center; font-size:42px; color:var(--dim); line-height:1.3; }
+  .body b { color:#fff; font-weight:800; }
+  .draw { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; }
+  .pill { position:absolute; display:flex; align-items:center; justify-content:center; text-align:center; border-radius:999px; font-weight:700; }
+  .box { position:absolute; display:flex; align-items:center; border-radius:26px; background:var(--panel); border:4px solid var(--line); }
+  .particle { position:absolute; border-radius:50%; }
+  .shot-wrap { position:absolute; left:260px; top:160px; width:440px; height:440px; }
+  .shot { position:absolute; left:30px; top:30px; width:380px; height:380px; border-radius:50%; overflow:hidden; border:5px solid var(--accent); box-shadow:0 30px 80px rgba(99,102,241,0.4), 0 0 0 10px var(--bg); }
+  .shot img { width:100%; height:100%; object-fit:cover; display:block; }
+  .tag { position:absolute; display:flex; align-items:center; justify-content:center; border-radius:20px; font-family:"JetBrains Mono", monospace; font-weight:700; letter-spacing:6px; }
+</style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <div id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div class="si" id="s1-in"><div class="glow" id="s1-glow"></div><div class="safe" id="s1-safe"></div></div>
+      </div>
+      <div id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div class="si" id="s2-in"><div class="glow" id="s2-glow"></div><div class="safe" id="s2-safe"></div></div>
+      </div>
+      <div id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div class="si" id="s3-in"><div class="glow" id="s3-glow"></div><div class="safe" id="s3-safe"></div></div>
+      </div>
+      <div id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div class="si" id="s4-in"><div class="glow" id="s4-glow"></div><div class="safe" id="s4-safe"></div></div>
+      </div>
+      <div id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div class="si" id="s5-in"><div class="glow" id="s5-glow"></div><div id="particles"></div><div class="safe" id="s5-safe"></div></div>
+      </div>
+      <audio id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+    <script>
+const tl = gsap.timeline({ paused: true });
+const S = [0, 5.8, 11.8, 17.8, 23.8];
+const LEN = [6.2, 6.4, 6.4, 6.4, 6.2];
+const XF = 0.4;
+const E = "power3.out";
+const SVGNS = "http://www.w3.org/2000/svg";
+const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+const pop = (sel, at, from = 0.6) => tl.fromTo(sel, { opacity: 0, scale: from }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, at);
+const drawIn = (sel, at, d = 0.6) => tl.to(sel, { strokeDashoffset: 0, duration: d, ease: "power2.out" }, at);
+
+let uid = 0;
+const el = (parent, tag, cls, css = {}, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  n.id = "e" + ++uid;
+  Object.assign(n.style, css);
+  if (text != null) n.textContent = text;
+  parent.appendChild(n);
+  return n;
+};
+const svgEl = (parent, tag, attrs) => {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (!n.id) n.id = "e" + ++uid;
+  parent.appendChild(n);
+  return n;
+};
+const svgBox = (parent, x, y, w, h) => {
+  const s = svgEl(parent, "svg", { viewBox: "0 0 " + w + " " + h, width: w, height: h });
+  Object.assign(s.style, { position: "absolute", left: x + "px", top: y + "px", overflow: "visible" });
+  return s;
+};
+const px = (v) => v + "px";
+const $ = (n) => "#" + n.id;
+const safe = (i) => document.getElementById("s" + i + "-safe");
+
+const eyebrow = (sf, text, t, now) => {
+  const e = el(sf, "div", "eyebrow");
+  el(e, "span", "mono", {}, text);
+  if (!now) rise($(e), t + 0.2, 16, 0.4);
+};
+const headline = (sf, lines, t, css = {}, now) => {
+  const h = el(sf, "div", "headline", css);
+  el(h, "span", "l", {}, lines[0]);
+  el(h, "span", "l a", {}, lines[1]);
+  if (now) tl.fromTo($(h), { scale: 1.06 }, { scale: 1, duration: 1.2, ease: E }, t);
+  else rise($(h), t + 0.3);
+  return h;
+};
+const bodyText = (sf, html, top, t) => {
+  const b = el(sf, "div", "body", { top: px(top) });
+  b.innerHTML = html;
+  rise($(b), t, 20);
+};
+
+for (let i = 1; i < 5; i++) {
+  tl.to("#s" + i + "-in", { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+  tl.fromTo("#s" + (i + 1) + "-in", { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+}
+for (let i = 1; i <= 5; i++) {
+  tl.fromTo("#s" + i + "-glow", { scale: 0.92 }, { scale: 1.08, duration: LEN[i - 1] / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+}
+
+// ---------------- Scene 1: hook ----------------
+{
+  const t = S[0], sf = safe(1);
+  eyebrow(sf, "THE UNRETIRED EARNER", t, true);
+  headline(sf, ["Too old", "for AI?"], t, { fontSize: "96px" }, true);
+  const old = el(sf, "div", "tag", { left: "200px", top: "430px", width: "560px", height: "170px", border: "7px solid #6b6b80", color: "#8a8aa0", fontSize: "76px", background: "#111118" }, "TOO OLD");
+  pop($(old), t + 0.4, 0.8);
+  const s = svgBox(sf, 200, 430, 560, 170);
+  const strike = svgEl(s, "path", { d: "M 20 150 L 540 20", stroke: "#ef4444", "stroke-width": 14, pathLength: 1, class: "draw" });
+  drawIn($(strike), t + 1.3, 0.4);
+  tl.to($(old), { opacity: 0.35, duration: 0.4, ease: "power2.out" }, t + 1.7);
+  const right = el(sf, "div", "tag", { left: "170px", top: "650px", width: "620px", height: "180px", border: "7px solid #22c55e", color: "#22c55e", fontSize: "76px", background: "rgba(34,197,94,0.12)", boxShadow: "0 0 80px rgba(34,197,94,0.4)" }, "JUST RIGHT");
+  tl.fromTo($(right), { opacity: 0, y: -120, rotation: -4 }, { opacity: 1, y: 0, rotation: -2, duration: 0.6, ease: "expo.out" }, t + 2.0);
+  bodyText(sf, "You might be the only one<br><b>old enough to use it right.</b>", 920, t + 2.9);
+}
+
+// ---------------- Scene 2: race car, no license ----------------
+{
+  const t = S[1], sf = safe(2);
+  eyebrow(sf, "THE YOUNG + AI PROBLEM", t);
+  headline(sf, ["A race car.", "No license."], t);
+  const C = { x: 480, y: 640 }, R = 230;
+  const s = svgBox(sf, 0, 0, 960, 900);
+  const arcPath = (a0, a1, r) => {
+    const p = (a) => [C.x + Math.cos(a) * r, C.y + Math.sin(a) * r];
+    const [x0, y0] = p(a0), [x1, y1] = p(a1);
+    return "M " + x0 + " " + y0 + " A " + r + " " + r + " 0 0 1 " + x1 + " " + y1;
+  };
+  const a0 = Math.PI, a1 = 2 * Math.PI;
+  const dial = svgEl(s, "path", { d: arcPath(a0, a1 - 0.6, R), stroke: "#3a3a52", "stroke-width": 26, pathLength: 1, class: "draw" });
+  const red = svgEl(s, "path", { d: arcPath(a1 - 0.6, a1, R), stroke: "#ef4444", "stroke-width": 26, pathLength: 1, class: "draw" });
+  drawIn($(dial), t + 0.6, 0.7);
+  drawIn($(red), t + 1.2, 0.3);
+  const needle = svgEl(s, "line", { x1: C.x, y1: C.y, x2: C.x - R + 50, y2: C.y, stroke: "#ffffff", "stroke-width": 10, "stroke-linecap": "round" });
+  svgEl(s, "circle", { cx: C.x, cy: C.y, r: 22, fill: "#ffffff" });
+  tl.fromTo($(needle), { rotation: 0, svgOrigin: C.x + " " + C.y }, { rotation: 168, svgOrigin: C.x + " " + C.y, duration: 1.4, ease: "power3.out" }, t + 1.3);
+  const sp = el(sf, "div", "pill", { left: "330px", top: "690px", width: "300px", height: "76px", background: "rgba(34,197,94,0.14)", border: "4px solid #22c55e", color: "#22c55e", fontSize: "36px" }, "SPEED ✓");
+  pop($(sp), t + 2.4, 0.6);
+  const jd = el(sf, "div", "pill", { left: "300px", top: "790px", width: "360px", height: "76px", background: "rgba(239,68,68,0.12)", border: "4px solid #ef4444", color: "#ef4444", fontSize: "36px" }, "JUDGMENT ?");
+  pop($(jd), t + 2.9, 0.6);
+  bodyText(sf, "A 25-year-old with ChatGPT has speed.<br><b>Not judgment.</b>", 960, t + 3.5);
+}
+
+// ---------------- Scene 3: judgment can't be downloaded ----------------
+{
+  const t = S[2], sf = safe(3);
+  headline(sf, ["Judgment can't", "be downloaded."], t, { top: "0px", fontSize: "78px" });
+  const ai = el(sf, "div", "pill", { left: "380px", top: "230px", width: "200px", height: "110px", borderRadius: "26px", background: "radial-gradient(circle at 35% 30%, #818cf8, #4338ca)", border: "5px solid #a5b4fc", fontSize: "56px", fontWeight: 900, boxShadow: "0 0 60px rgba(99,102,241,0.55)" }, "AI");
+  pop($(ai), t + 0.5, 0.5);
+  const cards = [];
+  const good = 2;
+  for (let i = 0; i < 4; i++) {
+    const x = 20 + i * 235;
+    const c = el(sf, "div", "box", { left: px(x), top: "440px", width: "210px", height: "270px", flexDirection: "column", justifyContent: "flex-start", padding: "26px 22px", gap: "16px", alignItems: "stretch" });
+    el(c, "div", "mono", { fontSize: "28px", fontWeight: 700, color: "#a3a3b8" }, "DRAFT " + (i + 1));
+    [150, 160, 120, 140].forEach((w) => el(c, "div", "", { width: px(w), height: "14px", borderRadius: "7px", background: "#33334d" }));
+    tl.fromTo($(c), { opacity: 0, x: 480 - x - 105, y: -180, scale: 0.4 }, { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.55, ease: E }, t + 0.9 + i * 0.15);
+    cards.push(c);
+  }
+  // the 40 YEARS filter sweep
+  const bar = el(sf, "div", "pill", { left: "0px", top: "750px", width: "960px", height: "84px", borderRadius: "20px", background: "rgba(245,158,11,0.14)", border: "4px solid #f59e0b", color: "#f59e0b", fontSize: "36px", letterSpacing: "4px" }, "40 YEARS OF JUDGMENT");
+  tl.fromTo($(bar), { opacity: 0, scaleX: 0, transformOrigin: "0% 50%" }, { opacity: 1, scaleX: 1, transformOrigin: "0% 50%", duration: 0.7, ease: E }, t + 1.9);
+  cards.forEach((c, i) => {
+    const at = t + 2.6 + i * 0.18;
+    const mark = el(c, "div", "", { position: "absolute", left: "65px", top: "175px", width: "80px", height: "80px" });
+    mark.innerHTML = i === good
+      ? '<svg viewBox="0 0 60 60" width="80" height="80"><circle cx="30" cy="30" r="27" fill="#22c55e"/><path d="M 17 31 L 26 40 L 44 21" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : '<svg viewBox="0 0 60 60" width="80" height="80"><circle cx="30" cy="30" r="27" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="4"/><path d="M 20 20 L 40 40 M 40 20 L 20 40" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/></svg>';
+    pop($(mark), at, 0.4);
+    if (i === good) tl.to($(c), { scale: 1.12, borderColor: "#22c55e", boxShadow: "0 0 60px rgba(34,197,94,0.45)", duration: 0.5, ease: E }, at + 0.5);
+    else tl.to($(c), { opacity: 0.3, duration: 0.4, ease: "power2.out" }, at + 0.5);
+  });
+  bodyText(sf, "AI writes the drafts.<br><b>You know which one is good.</b>", 900, t + 3.6);
+}
+
+// ---------------- Scene 4: leverage machine ----------------
+{
+  const t = S[3], sf = safe(4);
+  eyebrow(sf, "HOW IT WORKS FOR YOU", t);
+  headline(sf, ["Your leverage", "machine."], t);
+  const s = svgBox(sf, 0, 0, 960, 1100);
+  const exp = el(sf, "div", "box", { left: "180px", top: "320px", width: "600px", height: "120px", justifyContent: "center", borderColor: "#f59e0b", fontSize: "44px", fontWeight: 900 }, "Your experience");
+  rise($(exp), t + 0.7, 30, 0.5);
+  const a1 = svgEl(s, "path", { d: "M 480 450 L 480 510 M 464 494 L 480 512 L 496 494", stroke: "#6366f1", "stroke-width": 6, pathLength: 1, class: "draw" });
+  drawIn($(a1), t + 1.1, 0.3);
+  const ai = el(sf, "div", "pill", { left: "380px", top: "525px", width: "200px", height: "110px", borderRadius: "26px", background: "radial-gradient(circle at 35% 30%, #818cf8, #4338ca)", border: "5px solid #a5b4fc", fontSize: "56px", fontWeight: 900, boxShadow: "0 0 60px rgba(99,102,241,0.55)" }, "AI");
+  pop($(ai), t + 1.3, 0.5);
+  const outs = ["Drafts", "Offers", "Client work"];
+  outs.forEach((txt, i) => {
+    const x = 20 + i * 320 + 140;
+    const ln = svgEl(s, "path", { d: "M 480 640 C 480 690, " + x + " 680, " + x + " 730", stroke: "#6366f1", "stroke-width": 6, pathLength: 1, class: "draw" });
+    drawIn($(ln), t + 1.8 + i * 0.12, 0.4);
+    const chip = el(sf, "div", "pill", { left: px(x - 140), top: "740px", width: "280px", height: "96px", background: "rgba(34,197,94,0.14)", border: "4px solid #22c55e", color: "#ffffff", fontSize: "38px", borderRadius: "22px" }, txt);
+    pop($(chip), t + 2.1 + i * 0.15, 0.5);
+  });
+  const days = el(sf, "div", "ab", { left: "0px", top: "900px", width: "960px", textAlign: "center", fontSize: "110px", fontWeight: 900, color: "#6b6b80", lineHeight: 1.1 }, "Days.");
+  rise($(days), t + 2.9, 20, 0.4);
+  tl.to($(days), { opacity: 0, y: -30, duration: 0.3, ease: "power2.in" }, t + 3.8);
+  const mins = el(sf, "div", "ab", { left: "0px", top: "900px", width: "960px", textAlign: "center", fontSize: "110px", fontWeight: 900, color: "#22c55e", lineHeight: 1.1 }, "Minutes.");
+  tl.fromTo($(mins), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, t + 4.1);
+}
+
+// ---------------- Scene 5: CTA ----------------
+{
+  const t = S[4], sf = safe(5);
+  let seed = 5555;
+  const rnd = () => {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+  const field = document.getElementById("particles");
+  for (let i = 0; i < 12; i++) {
+    const size = 10 + rnd() * 22;
+    const p = el(field, "div", "particle", { width: px(size), height: px(size), left: px(rnd() * 1040), top: px(700 + rnd() * 1300), background: rnd() > 0.5 ? "#6366f1" : "#ffffff" });
+    const o = 0.08 + rnd() * 0.18;
+    tl.fromTo($(p), { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: LEN[4], ease: "none" }, t);
+  }
+  const wrap = el(sf, "div", "shot-wrap");
+  const ring = svgEl(wrap, "svg", { viewBox: "0 0 440 440", width: 440, height: 440 });
+  Object.assign(ring.style, { position: "absolute", left: "0px", top: "0px" });
+  svgEl(ring, "circle", { cx: 220, cy: 220, r: 212, fill: "none", stroke: "#6366f1", "stroke-width": 4, "stroke-dasharray": "44 18", "stroke-linecap": "round" });
+  const shot = el(wrap, "div", "shot");
+  const img = document.createElement("img");
+  img.src = "ow-headshot-bw.png";
+  img.alt = "";
+  shot.appendChild(img);
+  tl.fromTo($(wrap), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+  tl.fromTo($(ring), { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+  headline(sf, ["You don't need the engine", "to drive the car."], t + 0.5, { top: "660px", fontSize: "64px", letterSpacing: "-1.5px" });
+  bodyText(sf, "Follow <b>The UnRetired Earner.</b><br>AI, made simple.", 850, t + 1.6);
+}
+
+window.__timelines["main"] = tl;
+tl.seek(0);
+    </script>
+  </body>
+</html>

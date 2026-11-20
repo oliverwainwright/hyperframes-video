@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+  :root { --bg:#0a0a0a; --fg:#ffffff; --dim:#a3a3b8; --accent:#6366f1; --accent-hi:#a5b4fc; --success:#22c55e; --amber:#f59e0b; --red:#ef4444; --panel:#111118; --line:#26263a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:var(--bg); }
+  #root { position:relative; width:100%; height:100%; background:var(--bg); color:var(--fg); font-family:"Inter", sans-serif; }
+  .mono { font-family:"JetBrains Mono", monospace; }
+  .scene { position:absolute; inset:0; width:100%; height:100%; }
+  .si { position:absolute; inset:0; }
+  /* Safe zone: top 150, bottom 170, sides 60 -> 960 x 1600 */
+  .safe { position:absolute; left:60px; top:150px; width:960px; height:1600px; }
+  .glow { position:absolute; width:1100px; height:1100px; left:-10px; top:380px; border-radius:50%; background:radial-gradient(circle, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0) 65%); }
+  .ab { position:absolute; }
+  .eyebrow { position:absolute; left:0; top:0; width:960px; display:flex; justify-content:center; }
+  .eyebrow span { padding:8px 24px; border-radius:999px; border:3px solid var(--accent); background:rgba(99,102,241,0.16); color:var(--accent-hi); font-size:30px; font-weight:700; letter-spacing:3px; }
+  .headline { position:absolute; left:0; top:70px; width:960px; text-align:center; font-weight:900; font-size:80px; line-height:1.04; letter-spacing:-2.5px; }
+  .headline .l { display:block; white-space:nowrap; }
+  .headline .a { color:var(--accent); }
+  .body { position:absolute; left:40px; width:880px; text-align:center; font-size:42px; color:var(--dim); line-height:1.3; }
+  .body b { color:#fff; font-weight:800; }
+  .draw { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; }
+  .pill { position:absolute; display:flex; align-items:center; justify-content:center; text-align:center; border-radius:999px; font-weight:700; }
+  .box { position:absolute; display:flex; align-items:center; border-radius:26px; background:var(--panel); border:4px solid var(--line); }
+  .particle { position:absolute; border-radius:50%; }
+  .shot-wrap { position:absolute; left:260px; top:160px; width:440px; height:440px; }
+  .shot { position:absolute; left:30px; top:30px; width:380px; height:380px; border-radius:50%; overflow:hidden; border:5px solid var(--accent); box-shadow:0 30px 80px rgba(99,102,241,0.4), 0 0 0 10px var(--bg); }
+  .shot img { width:100%; height:100%; object-fit:cover; display:block; }
+  .num { font-variant-numeric:tabular-nums; }
+  .stamp { position:absolute; padding:10px 26px; border:7px solid #8a8aa0; border-radius:14px; color:#8a8aa0; font-family:"JetBrains Mono", monospace; font-weight:700; font-size:54px; letter-spacing:6px; }
+</style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <div data-hf-id="hf-u0u2" id="s1" class="scene clip" data-start="0" data-duration="6" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in"><div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div><div data-hf-id="hf-oqr1" class="safe" id="s1-safe"></div></div>
+      </div>
+      <div data-hf-id="hf-15m9" id="s2" class="scene clip" data-start="5.6" data-duration="6.8" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in"><div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div><div data-hf-id="hf-y250" class="safe" id="s2-safe"></div></div>
+      </div>
+      <div data-hf-id="hf-zmmd" id="s3" class="scene clip" data-start="12" data-duration="7.3" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in"><div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div><div data-hf-id="hf-b4nv" class="safe" id="s3-safe"></div></div>
+      </div>
+      <div data-hf-id="hf-wqpn" id="s4" class="scene clip" data-start="18.9" data-duration="5.8" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in"><div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div><div data-hf-id="hf-k4oa" class="safe" id="s4-safe"></div></div>
+      </div>
+      <div data-hf-id="hf-jy65" id="s5" class="scene clip" data-start="24.3" data-duration="5.7" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in"><div data-hf-id="hf-ltbp" class="glow" id="s5-glow"></div><div data-hf-id="hf-x682" id="particles"></div><div data-hf-id="hf-dl5d" class="safe" id="s5-safe"></div></div>
+      </div>
+      <audio data-hf-id="hf-4u5e" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+    <script>
+const tl = gsap.timeline({ paused: true });
+const S = [0, 5.6, 12, 18.9, 24.3];
+const LEN = [6, 6.8, 7.3, 5.8, 5.7];
+const XF = 0.4;
+const E = "power3.out";
+const SVGNS = "http://www.w3.org/2000/svg";
+const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+const pop = (sel, at, from = 0.6) => tl.fromTo(sel, { opacity: 0, scale: from }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, at);
+const drawIn = (sel, at, d = 0.6, stagger = 0) => tl.to(sel, { strokeDashoffset: 0, duration: d, ease: "power2.out", stagger }, at);
+
+let uid = 0;
+const el = (parent, tag, cls, css = {}, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  n.id = "e" + ++uid;
+  Object.assign(n.style, css);
+  if (text != null) n.textContent = text;
+  parent.appendChild(n);
+  return n;
+};
+const svgEl = (parent, tag, attrs) => {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (!n.id) n.id = "e" + ++uid;
+  parent.appendChild(n);
+  return n;
+};
+const svgBox = (parent, x, y, w, h) => {
+  const s = svgEl(parent, "svg", { viewBox: "0 0 " + w + " " + h, width: w, height: h });
+  Object.assign(s.style, { position: "absolute", left: x + "px", top: y + "px", overflow: "visible" });
+  return s;
+};
+const px = (v) => v + "px";
+const $ = (n) => "#" + n.id;
+const fmt = (v) => Math.round(v).toLocaleString("en-US");
+const safe = (i) => document.getElementById("s" + i + "-safe");
+
+const eyebrow = (sf, text, t, now) => {
+  const e = el(sf, "div", "eyebrow");
+  el(e, "span", "mono", {}, text);
+  if (!now) rise($(e), t + 0.2, 16, 0.4);
+};
+const headline = (sf, lines, t, css = {}, now) => {
+  const h = el(sf, "div", "headline", css);
+  el(h, "span", "l", {}, lines[0]);
+  el(h, "span", "l a", {}, lines[1]);
+  if (now) tl.fromTo($(h), { scale: 1.06 }, { scale: 1, duration: 1.2, ease: E }, t);
+  else rise($(h), t + 0.3);
+  return h;
+};
+const bodyText = (sf, html, top, t) => {
+  const b = el(sf, "div", "body", { top: px(top) });
+  b.innerHTML = html;
+  rise($(b), t, 20);
+};
+
+// Crossfades + glow breath
+for (let i = 1; i < 5; i++) {
+  tl.to("#s" + i + "-in", { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+  tl.fromTo("#s" + (i + 1) + "-in", { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+}
+for (let i = 1; i <= 5; i++) {
+  tl.fromTo("#s" + i + "-glow", { scale: 0.92 }, { scale: 1.08, duration: LEN[i - 1] / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+}
+
+// Shared: an "AI advice" feed card
+const aiCard = (parent, x, y, w, title) => {
+  const c = el(parent, "div", "box", { left: px(x), top: px(y), width: px(w), height: "150px", gap: "26px", padding: "0 32px" });
+  el(c, "div", "pill mono", { position: "relative", flex: "none", width: "92px", height: "56px", background: "rgba(99,102,241,0.18)", border: "3px solid #6366f1", color: "#a5b4fc", fontSize: "30px" }, "AI");
+  const col = el(c, "div", "", { display: "flex", flexDirection: "column", gap: "14px" });
+  el(col, "div", "", { fontSize: "36px", fontWeight: 800, lineHeight: 1.1, whiteSpace: "nowrap" }, title);
+  el(col, "div", "", { width: "420px", height: "12px", borderRadius: "6px", background: "#26263a" });
+  return c;
+};
+
+// ---------------- Scene 1: hook (on screen from frame 0) ----------------
+{
+  const t = S[0], sf = safe(1);
+  eyebrow(sf, "THE UNRETIRED EARNER", t, true);
+  headline(sf, ["Flooded with", "AI advice."], t, {}, true);
+  const win = el(sf, "div", "ab", { left: "40px", top: "300px", width: "880px", height: "600px", overflow: "hidden", maskImage: "linear-gradient(to bottom, transparent 0, #000 60px, #000 480px, transparent 600px)", webkitMaskImage: "linear-gradient(to bottom, transparent 0, #000 60px, #000 480px, transparent 600px)" });
+  const feed = el(win, "div", "ab", { left: "0px", top: "0px", width: "880px", height: "1400px" });
+  win.setAttribute("data-layout-allow-overflow", ""); feed.setAttribute("data-layout-allow-overflow", "");
+  ["7 steps to open a restaurant", "The ultimate hiring playbook", "10 rules for running a team", "Fix any business in 30 days", "7 steps to open a restaurant", "The ultimate hiring playbook", "10 rules for running a team", "Fix any business in 30 days"]
+    .forEach((txt, i) => aiCard(feed, 0, i * 175, 880, txt));
+  tl.fromTo($(feed), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: E }, t + 0.1);
+  tl.to($(feed), { y: -700, duration: 5.0, ease: "power1.inOut" }, t + 0.6);
+  bodyText(sf, "Written by a machine that's<br><b>never done the thing.</b>", 960, t + 2.2);
+}
+
+// ---------------- Scene 2: never stood in the kitchen ----------------
+{
+  const t = S[1], sf = safe(2);
+  eyebrow(sf, "THE UNRETIRED EARNER", t);
+  headline(sf, ["Never stood", "in the kitchen."], t);
+  const card = aiCard(sf, 40, 320, 880, "7 steps to open a restaurant");
+  [card, ...card.querySelectorAll("*")].forEach((n) => { n.setAttribute("data-layout-allow-overlap", ""); n.setAttribute("data-layout-allow-occlusion", ""); });
+  rise($(card), t + 0.6, 30, 0.5);
+  const st = el(sf, "div", "stamp", { left: "250px", top: "340px", fontSize: "60px", borderColor: "#ef4444", color: "#ef4444", background: "#140b0d" }, "NEVER DONE IT");
+  st.setAttribute("data-layout-allow-overlap", ""); st.setAttribute("data-layout-allow-occlusion", "");
+  tl.fromTo($(st), { opacity: 0, scale: 2.2, rotation: -8 }, { opacity: 1, scale: 1, rotation: -8, duration: 0.3, ease: "power4.in" }, t + 1.4);
+  tl.to($(card), { opacity: 0.35, duration: 0.3, ease: "power2.out" }, t + 1.7);
+  // clock: Friday 9:00 PM
+  const ck = svgBox(sf, 140, 560, 260, 260);
+  const face = svgEl(ck, "circle", { cx: 130, cy: 130, r: 110, fill: "#111118", stroke: "#a5b4fc", "stroke-width": 8, pathLength: 1, class: "draw" });
+  drawIn($(face), t + 2.0, 0.6);
+  const hands = svgEl(ck, "path", { d: "M 130 130 L 130 50 M 130 130 L 70 130", stroke: "#ffffff", "stroke-width": 10, pathLength: 1, class: "draw" });
+  drawIn($(hands), t + 2.5, 0.4);
+  const ckl = el(sf, "div", "ab mono", { left: "90px", top: "840px", width: "360px", textAlign: "center", fontSize: "32px", fontWeight: 700, color: "#a5b4fc", letterSpacing: "2px" }, "FRIDAY 9:00 PM");
+  rise($(ckl), t + 2.6, 12, 0.4);
+  // walk-in cooler + warning
+  const co = svgBox(sf, 560, 560, 260, 260);
+  const body = svgEl(co, "rect", { x: 30, y: 10, width: 200, height: 240, rx: 14, fill: "#111118", stroke: "#a3a3b8", "stroke-width": 8, pathLength: 1, class: "draw" });
+  drawIn($(body), t + 2.3, 0.6);
+  const det = svgEl(co, "path", { d: "M 190 100 L 190 160 M 90 80 L 90 140 M 64 110 L 116 110 M 72 90 L 108 130 M 108 90 L 72 130", stroke: "#a3a3b8", "stroke-width": 7, pathLength: 1, class: "draw" });
+  drawIn($(det), t + 2.7, 0.5);
+  const warn = el(sf, "div", "pill", { left: "760px", top: "540px", width: "110px", height: "110px", background: "#ef4444", color: "#ffffff", fontSize: "70px", fontWeight: 900 }, "!");
+  pop($(warn), t + 3.2, 0.4);
+  tl.to($(warn), { scale: 1.12, duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 3 }, t + 3.7);
+  const col = el(sf, "div", "ab mono", { left: "530px", top: "840px", width: "320px", textAlign: "center", fontSize: "32px", fontWeight: 700, color: "#ef4444", letterSpacing: "2px" }, "COOLER DOWN");
+  rise($(col), t + 3.3, 12, 0.4);
+  const you = el(sf, "div", "ab", { left: "0px", top: "1000px", width: "960px", textAlign: "center", fontSize: "96px", fontWeight: 900, color: "#22c55e", letterSpacing: "-2px" }, "You have.");
+  pop($(you), t + 4.4, 0.8);
+}
+
+// ---------------- Scene 3: people look for scars ----------------
+{
+  const t = S[2], sf = safe(3);
+  eyebrow(sf, "WHAT A PROMPT CAN'T FAKE", t);
+  headline(sf, ["People look", "for scars."], t);
+  const items = [
+    ["The mistake you made in 1998", (s) => [
+      svgEl(s, "path", { d: "M 50 10 L 92 86 L 8 86 Z", stroke: "#f59e0b", "stroke-width": 6, pathLength: 1, class: "draw" }),
+      svgEl(s, "path", { d: "M 50 38 L 50 60 M 50 72 L 50 74", stroke: "#f59e0b", "stroke-width": 7, pathLength: 1, class: "draw" }),
+    ]],
+    ["How you fixed it at 2am", (s) => [
+      svgEl(s, "path", { d: "M 70 12 A 22 22 0 1 0 88 38 L 76 40 L 66 30 Z", stroke: "#22c55e", "stroke-width": 6, pathLength: 1, class: "draw" }),
+      svgEl(s, "path", { d: "M 58 46 L 16 88", stroke: "#22c55e", "stroke-width": 10, pathLength: 1, class: "draw" }),
+    ]],
+    ["The call you knew to make", (s) => [
+      svgEl(s, "path", { d: "M 22 10 L 40 10 L 48 32 L 36 42 Q 46 62 60 66 L 70 54 L 92 62 L 92 80 Q 90 92 76 90 Q 18 82 12 24 Q 12 10 22 10 Z", stroke: "#a5b4fc", "stroke-width": 6, pathLength: 1, class: "draw" }),
+    ]],
+  ];
+  items.forEach(([txt, icon], i) => {
+    const at = t + 0.7 + i * 1.3;
+    const bx = el(sf, "div", "box", { left: "0px", top: px(330 + i * 200), width: "960px", height: "164px", gap: "34px", padding: "0 44px" });
+    const ic = el(bx, "div", "", { flex: "none", width: "100px", height: "100px", position: "relative" });
+    const s = svgBox(ic, 0, 0, 100, 100);
+    const paths = icon(s);
+    el(bx, "div", "", { fontSize: "44px", fontWeight: 800, lineHeight: 1.15 }, txt);
+    tl.fromTo($(bx), { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, at);
+    paths.forEach((p, k) => drawIn($(p), at + 0.2 + k * 0.25, 0.5));
+  });
+  bodyText(sf, "Free advice is everywhere.<br><b>Proof of work isn't.</b>", 1000, t + 4.8);
+}
+
+// ---------------- Scene 4: who pays + math ----------------
+{
+  const t = S[3], sf = safe(4);
+  eyebrow(sf, "WHO'S PAYING", t);
+  headline(sf, ["Gray hair is", "proof of work."], t, { fontSize: "76px" });
+  const rows = [["Ran a restaurant", "Café owners", "Year-one review"], ["Sales leader", "Startup founder", "Hiring call"], ["Plant manager", "New supervisor", "Night-shift audit"]];
+  const hdr = el(sf, "div", "ab mono", { left: "0px", top: "290px", width: "960px", display: "flex", fontSize: "28px", fontWeight: 700, color: "#a3a3b8", letterSpacing: "2px" });
+  ["SKILL", "WHO PAYS", "OFFER"].forEach((h) => el(hdr, "div", "", { width: "320px", textAlign: "center" }, h));
+  rise($(hdr), t + 0.4, 12, 0.4);
+  const s = svgBox(sf, 0, 340, 960, 420);
+  rows.forEach((r, i) => {
+    const y = 350 + i * 130, at = t + 0.6 + i * 0.35;
+    const cols = [["#14142a", "#3a3a52", "#ffffff"], ["#14142a", "#6366f1", "#a5b4fc"], ["rgba(34,197,94,0.14)", "#22c55e", "#22c55e"]];
+    r.forEach((txt, k) => {
+      const c = el(sf, "div", "pill", { left: px(k * 330), top: px(y), width: "290px", height: "96px", background: cols[k][0], border: "4px solid " + cols[k][1], color: cols[k][2], fontSize: "28px", borderRadius: "22px" }, txt);
+      tl.fromTo($(c), { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.4, ease: E }, at + k * 0.15);
+      if (k < 2) {
+        const ax = 290 + k * 330 + 6, yy = y - 340 + 48;
+        const a = svgEl(s, "path", { d: "M " + ax + " " + yy + " L " + (ax + 26) + " " + yy + " M " + (ax + 16) + " " + (yy - 10) + " L " + (ax + 26) + " " + yy + " L " + (ax + 16) + " " + (yy + 10), stroke: "#6366f1", "stroke-width": 5, pathLength: 1, class: "draw" });
+        drawIn($(a), at + 0.15 + k * 0.15, 0.25);
+      }
+    });
+  });
+  const f = el(sf, "div", "ab", { left: "0px", top: "790px", width: "960px", textAlign: "center", fontSize: "44px", fontWeight: 700, color: "#ffffff" }, "3 calls/week × $300 × 48 weeks");
+  rise($(f), t + 2.0, 16, 0.5);
+  const n = el(sf, "div", "ab num", { left: "0px", top: "870px", width: "960px", textAlign: "center", fontSize: "150px", fontWeight: 900, color: "#22c55e", lineHeight: 1.1 }, "$0");
+  rise($(n), t + 2.4, 20, 0.4);
+  const c = { v: 0 };
+  tl.fromTo(c, { v: 0 }, { v: 43200, duration: 1.5, ease: "power2.out", onUpdate: () => (n.textContent = "$" + fmt(c.v)) }, t + 2.5);
+  const y = el(sf, "div", "ab", { left: "0px", top: "1055px", width: "960px", textAlign: "center", fontSize: "36px", fontWeight: 700, color: "#a3a3b8" }, "a year. Example math, not a promise.");
+  rise($(y), t + 3.4, 12, 0.4);
+}
+// ---------------- Scene 5: CTA ----------------
+{
+  const t = S[4], sf = safe(5);
+  let seed = 4242;
+  const rnd = () => {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+  const field = document.getElementById("particles");
+  for (let i = 0; i < 12; i++) {
+    const size = 10 + rnd() * 22;
+    const p = el(field, "div", "particle", { width: px(size), height: px(size), left: px(rnd() * 1040), top: px(700 + rnd() * 1300), background: rnd() > 0.5 ? "#6366f1" : "#ffffff" });
+    const o = 0.08 + rnd() * 0.18;
+    tl.fromTo($(p), { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: LEN[4], ease: "none" }, t);
+  }
+  const wrap = el(sf, "div", "shot-wrap");
+  const ring = svgEl(wrap, "svg", { viewBox: "0 0 440 440", width: 440, height: 440 });
+  Object.assign(ring.style, { position: "absolute", left: "0px", top: "0px" });
+  svgEl(ring, "circle", { cx: 220, cy: 220, r: 212, fill: "none", stroke: "#6366f1", "stroke-width": 4, "stroke-dasharray": "44 18", "stroke-linecap": "round" });
+  const shot = el(wrap, "div", "shot");
+  const img = document.createElement("img");
+  img.src = "ow-headshot-bw.png";
+  img.alt = "";
+  shot.appendChild(img);
+  tl.fromTo($(wrap), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+  tl.fromTo($(ring), { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.4, ease: "none" }, t + 0.3);
+  headline(sf, ["What have you done", "for decades?"], t + 0.5, { top: "660px", fontSize: "80px" });
+  bodyText(sf, "Comment below.<br><b>I'll tell you who's paying for it.</b>", 880, t + 1.6);
+  const tagl = el(sf, "div", "ab mono", { left: "0px", top: "1060px", width: "960px", textAlign: "center", fontSize: "30px", fontWeight: 700, color: "#a5b4fc", letterSpacing: "3px" }, "THE UNRETIRED EARNER");
+  rise($(tagl), t + 2.4, 12, 0.4);
+}
+
+window.__timelines["main"] = tl;
+tl.seek(0);
+    </script>
+  </body>
+</html>

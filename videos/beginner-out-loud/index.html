@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+  :root { --bg:#0a0a0a; --fg:#ffffff; --dim:#a3a3b8; --accent:#6366f1; --accent-hi:#a5b4fc; --success:#22c55e; --amber:#f59e0b; --red:#ef4444; --panel:#111118; --line:#26263a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { margin:0; width:1080px; height:1920px; overflow:hidden; background:var(--bg); }
+  #root { position:relative; width:100%; height:100%; background:var(--bg); color:var(--fg); font-family:"Inter", sans-serif; }
+  .mono { font-family:"JetBrains Mono", monospace; }
+  .scene { position:absolute; inset:0; width:100%; height:100%; }
+  .si { position:absolute; inset:0; }
+  /* Safe zone: top 150, bottom 170, sides 60 -> 960 x 1600 */
+  .safe { position:absolute; left:60px; top:150px; width:960px; height:1600px; }
+  .glow { position:absolute; width:1100px; height:1100px; left:-10px; top:380px; border-radius:50%; background:radial-gradient(circle, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0) 65%); }
+  .ab { position:absolute; }
+  .eyebrow { position:absolute; left:0; top:0; width:960px; display:flex; justify-content:center; }
+  .eyebrow span { padding:8px 24px; border-radius:999px; border:3px solid var(--accent); background:rgba(99,102,241,0.16); color:var(--accent-hi); font-size:30px; font-weight:700; letter-spacing:3px; }
+  .headline { position:absolute; left:0; top:70px; width:960px; text-align:center; font-weight:900; font-size:80px; line-height:1.04; letter-spacing:-2.5px; }
+  .headline .l { display:block; white-space:nowrap; }
+  .headline .a { color:var(--accent); }
+  .body { position:absolute; left:40px; width:880px; text-align:center; font-size:42px; color:var(--dim); line-height:1.3; }
+  .body b { color:#fff; font-weight:800; }
+  .draw { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; }
+  .pill { position:absolute; display:flex; align-items:center; justify-content:center; text-align:center; border-radius:999px; font-weight:700; }
+  .box { position:absolute; display:flex; align-items:center; border-radius:26px; background:var(--panel); border:4px solid var(--line); }
+  .particle { position:absolute; border-radius:50%; }
+  .shot-wrap { position:absolute; left:260px; top:160px; width:440px; height:440px; }
+  .shot { position:absolute; left:30px; top:30px; width:380px; height:380px; border-radius:50%; overflow:hidden; border:5px solid var(--accent); box-shadow:0 30px 80px rgba(99,102,241,0.4), 0 0 0 10px var(--bg); }
+  .shot img { width:100%; height:100%; object-fit:cover; display:block; }
+  .tag { position:absolute; display:flex; align-items:center; justify-content:center; border-radius:20px; font-family:"JetBrains Mono", monospace; font-weight:700; letter-spacing:6px; }
+</style>
+  </head>
+  <body>
+    <div data-hf-id="hf-coex" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <div data-hf-id="hf-rcr6" id="s1" class="scene clip" data-start="0" data-duration="6.2" data-track-index="0">
+        <div data-hf-id="hf-f5um" class="si" id="s1-in"><div data-hf-id="hf-fssp" class="glow" id="s1-glow"></div><div data-hf-id="hf-oqr1" class="safe" id="s1-safe"></div></div>
+      </div>
+      <div data-hf-id="hf-sn1f" id="s2" class="scene clip" data-start="5.8" data-duration="6.4" data-track-index="1">
+        <div data-hf-id="hf-686n" class="si" id="s2-in"><div data-hf-id="hf-c6p0" class="glow" id="s2-glow"></div><div data-hf-id="hf-y250" class="safe" id="s2-safe"></div></div>
+      </div>
+      <div data-hf-id="hf-t4iw" id="s3" class="scene clip" data-start="11.8" data-duration="6.4" data-track-index="2">
+        <div data-hf-id="hf-4w4k" class="si" id="s3-in"><div data-hf-id="hf-2wxn" class="glow" id="s3-glow"></div><div data-hf-id="hf-b4nv" class="safe" id="s3-safe"></div></div>
+      </div>
+      <div data-hf-id="hf-3nfk" id="s4" class="scene clip" data-start="17.8" data-duration="6.4" data-track-index="3">
+        <div data-hf-id="hf-imz1" class="si" id="s4-in"><div data-hf-id="hf-fgfi" class="glow" id="s4-glow"></div><div data-hf-id="hf-k4oa" class="safe" id="s4-safe"></div></div>
+      </div>
+      <div data-hf-id="hf-ygxv" id="s5" class="scene clip" data-start="23.8" data-duration="6.2" data-track-index="4">
+        <div data-hf-id="hf-ssje" class="si" id="s5-in"><div data-hf-id="hf-ltbp" class="glow" id="s5-glow"></div><div data-hf-id="hf-x682" id="particles"></div><div data-hf-id="hf-dl5d" class="safe" id="s5-safe"></div></div>
+      </div>
+      <audio data-hf-id="hf-iej6" id="bgm" src="technological-progress.mp3" data-start="0" data-duration="30" data-track-index="9" data-volume="0.35" data-fade-in="0.4" data-fade-out="0.6"></audio>
+    </div>
+    <script>
+
+const tl = gsap.timeline({ paused: true });
+const S = [0, 5.8, 11.8, 17.8, 23.8];
+const LEN = [6.2, 6.4, 6.4, 6.4, 6.2];
+const XF = 0.4;
+const E = "power3.out";
+const SVGNS = "http://www.w3.org/2000/svg";
+const rise = (sel, at, y = 40, d = 0.6) => tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: d, ease: E }, at);
+const pop = (sel, at, from = 0.6) => tl.fromTo(sel, { opacity: 0, scale: from }, { opacity: 1, scale: 1, duration: 0.5, ease: E }, at);
+const drawIn = (sel, at, d = 0.6) => tl.to(sel, { strokeDashoffset: 0, duration: d, ease: "power2.out" }, at);
+
+let uid = 0;
+const el = (parent, tag, cls, css = {}, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  n.id = "e" + ++uid;
+  Object.assign(n.style, css);
+  if (text != null) n.textContent = text;
+  parent.appendChild(n);
+  return n;
+};
+const svgEl = (parent, tag, attrs) => {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (!n.id) n.id = "e" + ++uid;
+  parent.appendChild(n);
+  return n;
+};
+const svgBox = (parent, x, y, w, h) => {
+  const s = svgEl(parent, "svg", { viewBox: "0 0 " + w + " " + h, width: w, height: h });
+  Object.assign(s.style, { position: "absolute", left: x + "px", top: y + "px", overflow: "visible" });
+  return s;
+};
+const px = (v) => v + "px";
+const $ = (n) => "#" + n.id;
+const safe = (i) => document.getElementById("s" + i + "-safe");
+
+const eyebrow = (sf, text, t, now) => {
+  const e = el(sf, "div", "eyebrow");
+  el(e, "span", "mono", {}, text);
+  if (!now) rise($(e), t + 0.2, 16, 0.4);
+};
+const headline = (sf, lines, t, css = {}, now) => {
+  const h = el(sf, "div", "headline", css);
+  el(h, "span", "l", {}, lines[0]);
+  el(h, "span", "l a", {}, lines[1]);
+  if (now) tl.fromTo($(h), { scale: 1.06 }, { scale: 1, duration: 1.2, ease: E }, t);
+  else rise($(h), t + 0.3);
+  return h;
+};
+const bodyText = (sf, html, top, t) => {
+  const b = el(sf, "div", "body", { top: px(top) });
+  b.innerHTML = html;
+  rise($(b), t, 20);
+};
+
+for (let i = 1; i < 5; i++) {
+  tl.to("#s" + i + "-in", { opacity: 0, duration: XF, ease: "power2.inOut" }, S[i]);
+  tl.fromTo("#s" + (i + 1) + "-in", { opacity: 0 }, { opacity: 1, duration: XF, ease: "power2.inOut" }, S[i]);
+}
+for (let i = 1; i <= 5; i++) {
+  tl.fromTo("#s" + i + "-glow", { scale: 0.92 }, { scale: 1.08, duration: LEN[i - 1] / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, S[i - 1]);
+}
+
+
+const LOCK = '<svg viewBox="0 0 60 60" width="56" height="56"><rect x="12" y="27" width="36" height="26" rx="6" fill="#6b6b80"/><path d="M 20 27 V 19 a 10 10 0 0 1 20 0 V 27" fill="none" stroke="#6b6b80" stroke-width="6" stroke-linecap="round"/></svg>';
+const PERSON = (cx, cy, s, col) => '<circle cx="' + cx + '" cy="' + (cy - 38 * s) + '" r="' + 22 * s + '" fill="' + col + '"/><path d="M ' + (cx - 38 * s) + ' ' + (cy + 40 * s) + ' Q ' + cx + ' ' + (cy - 20 * s) + ' ' + (cx + 38 * s) + ' ' + (cy + 40 * s) + ' Z" fill="' + col + '"/>';
+
+// ---------------- Scene 1: hook ----------------
+{
+  const t = S[0], sf = safe(1);
+  eyebrow(sf, "THE UNRETIRED EARNER", t, true);
+  headline(sf, ["Still waiting", "to feel ready?"], t, { fontSize: "92px" }, true);
+  const card = el(sf, "div", "box", { left: "60px", top: "420px", width: "840px", height: "250px", flexDirection: "column", alignItems: "stretch", justifyContent: "center", padding: "0 44px", gap: "26px" });
+  const row = el(card, "div", "", { display: "flex", justifyContent: "space-between", alignItems: "baseline" });
+  el(row, "div", "mono", { fontSize: "32px", fontWeight: 700, color: "#a3a3b8", letterSpacing: "3px" }, "READY TO POST");
+  const pct = el(row, "div", "", { fontSize: "64px", fontWeight: 900, fontVariantNumeric: "tabular-nums", color: "#f59e0b" }, "0%");
+  const track = el(card, "div", "", { position: "relative", height: "44px", borderRadius: "22px", background: "#1d1d2c", overflow: "hidden" });
+  const fill = el(track, "div", "", { position: "absolute", left: "0px", top: "0px", width: "100%", height: "100%", borderRadius: "22px", background: "linear-gradient(90deg,#6366f1,#f59e0b)", transformOrigin: "0% 50%" });
+  rise($(card), t + 0.4, 30, 0.5);
+  const c = { v: 0 };
+  tl.fromTo($(fill), { scaleX: 0 }, { scaleX: 0.12, duration: 1.6, ease: "expo.out" }, t + 0.8);
+  tl.to(c, { v: 12, duration: 1.6, ease: "expo.out", onUpdate: () => { pct.textContent = Math.round(c.v) + "%"; } }, t + 0.8);
+  const stuck = el(sf, "div", "pill", { left: "330px", top: "700px", width: "300px", height: "64px", background: "rgba(239,68,68,0.12)", border: "4px solid #ef4444", color: "#ef4444", fontSize: "30px", letterSpacing: "3px" }, "STUCK");
+  pop($(stuck), t + 2.4, 0.6);
+  const btn = el(sf, "div", "pill", { left: "250px", top: "800px", width: "460px", height: "120px", background: "#1a1a26", border: "4px solid #3a3a52", color: "#6b6b80", fontSize: "52px", fontWeight: 900, gap: "18px" });
+  const lk = el(btn, "div", "", { width: "56px", height: "56px" }); lk.innerHTML = LOCK;
+  el(btn, "span", "", {}, "POST");
+  rise($(btn), t + 1.2, 30, 0.5);
+  const cursor = el(sf, "div", "ab", { left: "690px", top: "870px", width: "8px", height: "70px", background: "#ffffff", borderRadius: "4px" });
+  tl.fromTo($(cursor), { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out", yoyo: true, repeat: 7 }, t + 1.6);
+  bodyText(sf, "You won't post until you<br><b>“know what you're doing.”</b>", 990, t + 2.9);
+}
+
+// ---------------- Scene 2: peers don't want polish ----------------
+{
+  const t = S[1], sf = safe(2);
+  eyebrow(sf, "WHAT YOUR PEERS WANT", t);
+  headline(sf, ["They don't want", "a polished expert."], t, { fontSize: "74px" });
+  const mk = (x, label, svg) => {
+    const c = el(sf, "div", "box", { left: px(x), top: "330px", width: "440px", height: "430px", flexDirection: "column", justifyContent: "flex-end", padding: "0 0 34px 0" });
+    const ic = el(c, "div", "", { position: "absolute", left: "70px", top: "40px", width: "300px", height: "260px" });
+    ic.innerHTML = svg;
+    el(c, "div", "", { fontSize: "38px", fontWeight: 800 }, label);
+    return c;
+  };
+  const left = mk(0, "Polished expert", '<svg viewBox="0 0 300 260" width="300" height="260"><rect x="95" y="150" width="110" height="90" rx="8" fill="#26263a"/><rect x="75" y="140" width="150" height="18" rx="6" fill="#3a3a52"/>' + PERSON(150, 85, 1.2, "#6b6b80") + '<path d="M 112 44 L 120 26 L 150 38 L 180 26 L 188 44 Z" fill="#f59e0b"/></svg>');
+  const right = mk(520, "Someone like me", '<svg viewBox="0 0 300 260" width="300" height="260">' + PERSON(90, 150, 1.4, "#6366f1") + PERSON(210, 150, 1.4, "#a5b4fc") + '<path d="M 130 60 Q 150 40 170 60" fill="none" stroke="#22c55e" stroke-width="6" stroke-linecap="round"/></svg>');
+  tl.fromTo($(left), { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 0.7);
+  tl.fromTo($(right), { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.6, ease: E }, t + 1.0);
+  // trust meter
+  el(sf, "div", "mono", { position: "absolute", left: "0px", top: "800px", width: "960px", textAlign: "center", fontSize: "30px", fontWeight: 700, color: "#a3a3b8", letterSpacing: "6px" }, "TRUST");
+  const mt = el(sf, "div", "ab", { left: "40px", top: "856px", width: "880px", height: "28px", borderRadius: "14px", background: "#1d1d2c" });
+  const mf = el(mt, "div", "", { position: "absolute", left: "440px", top: "0px", width: "440px", height: "28px", borderRadius: "14px", background: "#22c55e", transformOrigin: "0% 50%" });
+  const knob = el(mt, "div", "", { position: "absolute", left: "418px", top: "-16px", width: "60px", height: "60px", borderRadius: "50%", background: "#ffffff", boxShadow: "0 0 30px rgba(34,197,94,0.6)" });
+  rise($(mt), t + 1.5, 20, 0.4);
+  tl.fromTo($(mf), { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: E }, t + 2.0);
+  tl.fromTo($(knob), { x: 0 }, { x: 420, duration: 1.1, ease: E }, t + 2.0);
+  tl.to($(right), { borderColor: "#22c55e", boxShadow: "0 0 60px rgba(34,197,94,0.45)", scale: 1.04, duration: 0.5, ease: E }, t + 2.8);
+  tl.to($(left), { opacity: 0.35, duration: 0.5, ease: "power2.out" }, t + 2.8);
+  bodyText(sf, "They want proof <b>someone like them</b><br><b>can figure this out.</b>", 950, t + 3.3);
+}
+
+// ---------------- Scene 3: film your firsts ----------------
+{
+  const t = S[2], sf = safe(3);
+  headline(sf, ["Film", "your firsts."], t, { top: "0px", fontSize: "88px" });
+  const s = svgBox(sf, 0, 0, 960, 1100);
+  const line = svgEl(s, "path", { d: "M 90 290 L 90 960", stroke: "#3a3a52", "stroke-width": 8, pathLength: 1, class: "draw" });
+  drawIn($(line), t + 0.5, 1.2);
+  const items = [
+    { y: 300, label: "First AI prompt" },
+    { y: 540, label: "First sale" },
+    { y: 780, label: "The fumble you fixed" },
+  ];
+  items.forEach((it, i) => {
+    const at = t + 0.9 + i * 0.6;
+    const dot = svgEl(s, "circle", { cx: 90, cy: it.y + 85, r: 26, fill: "#6366f1", stroke: "#0a0a0a", "stroke-width": 8 });
+    tl.fromTo($(dot), { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, transformOrigin: "50% 50%", duration: 0.4, ease: E }, at);
+    const card = el(sf, "div", "box", { left: "170px", top: px(it.y), width: "790px", height: "170px", padding: "0 34px", gap: "34px" });
+    const ic = el(card, "div", "", { width: "150px", height: "120px", position: "relative", flex: "0 0 150px", display: "flex", alignItems: "center", justifyContent: "center" });
+    el(card, "div", "", { fontSize: "44px", fontWeight: 800, lineHeight: 1.1 }, it.label);
+    tl.fromTo($(card), { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, at + 0.05);
+    if (i === 0) {
+      ic.innerHTML = '<svg viewBox="0 0 150 120" width="150" height="120"><path d="M 14 12 H 136 a 10 10 0 0 1 10 10 V 78 a 10 10 0 0 1 -10 10 H 54 L 28 112 V 88 H 14 a 10 10 0 0 1 -10 -10 V 22 a 10 10 0 0 1 10 -10 Z" fill="rgba(99,102,241,0.18)" stroke="#6366f1" stroke-width="5"/></svg>';
+      const cur = el(ic, "div", "", { position: "absolute", left: "40px", top: "34px", width: "6px", height: "36px", background: "#ffffff" });
+      tl.fromTo($(cur), { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 9 }, at + 0.3);
+    } else if (i === 1) {
+      const d = el(ic, "div", "", { fontSize: "70px", fontWeight: 900, color: "#22c55e", fontVariantNumeric: "tabular-nums" }, "$0");
+      const c = { v: 0 };
+      tl.to(c, { v: 20, duration: 1.0, ease: "power3.out", onUpdate: () => { d.textContent = "$" + Math.round(c.v); } }, at + 0.3);
+    } else {
+      ic.innerHTML = '<svg viewBox="0 0 150 120" width="150" height="120"><g id="lnkL"><rect x="10" y="44" width="62" height="32" rx="16" fill="none" stroke="#f59e0b" stroke-width="7"/></g><g id="lnkR"><rect x="78" y="44" width="62" height="32" rx="16" fill="none" stroke="#f59e0b" stroke-width="7"/></g></svg>';
+      tl.fromTo("#lnkL", { x: -16, rotation: -12, svgOrigin: "40 60" }, { x: 14, rotation: 0, svgOrigin: "40 60", duration: 0.6, ease: E }, at + 0.4);
+      tl.fromTo("#lnkR", { x: 16, rotation: 12, svgOrigin: "110 60" }, { x: -14, rotation: 0, svgOrigin: "110 60", duration: 0.6, ease: E }, at + 0.4);
+      const ok = el(ic, "div", "", { position: "absolute", left: "95px", top: "-10px", width: "56px", height: "56px" });
+      ok.innerHTML = '<svg viewBox="0 0 60 60" width="56" height="56"><circle cx="30" cy="30" r="27" fill="#22c55e"/><path d="M 17 31 L 26 40 L 44 21" fill="none" stroke="#0a0a0a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      pop($(ok), at + 1.0, 0.4);
+    }
+  });
+  bodyText(sf, "Not the highlight reel.<br><b>The learning.</b>", 1030, t + 3.4);
+}
+
+// ---------------- Scene 4: learning beats highlights ----------------
+{
+  const t = S[3], sf = safe(4);
+  eyebrow(sf, "WHY IT WORKS", t);
+  headline(sf, ["Learning beats", "the highlight reel."], t, { fontSize: "74px" });
+  const base = 1000;
+  const s = svgBox(sf, 0, 0, 960, 1100);
+  const axis = svgEl(s, "path", { d: "M 60 " + base + " L 900 " + base, stroke: "#3a3a52", "stroke-width": 6, pathLength: 1, class: "draw" });
+  drawIn($(axis), t + 0.6, 0.6);
+  const bar = (x, h, col, top, lbl, sub, at) => {
+    const b = el(sf, "div", "ab", { left: px(x), top: px(base - h), width: "280px", height: px(h), borderRadius: "20px 20px 0 0", background: col, transformOrigin: "50% 100%" });
+    tl.fromTo($(b), { scaleY: 0 }, { scaleY: 1, duration: 0.9, ease: E }, at);
+    const l = el(sf, "div", "ab", { left: px(x - 40), top: px(base - h - 80), width: "360px", textAlign: "center", fontSize: "44px", fontWeight: 900, color: top }, lbl);
+    rise($(l), at + 0.6, 20, 0.4);
+    const u = el(sf, "div", "ab", { left: px(x - 40), top: px(base + 24), width: "360px", textAlign: "center", fontSize: "34px", fontWeight: 600, color: "#a3a3b8" }, sub);
+    rise($(u), at + 0.2, 16, 0.4);
+  };
+  bar(140, 170, "#3a3a52", "#8a8aa0", "Admire", "Highlight reel", t + 1.0);
+  bar(540, 520, "linear-gradient(180deg,#22c55e,#15803d)", "#22c55e", "Trust", "Learning out loud", t + 1.4);
+  bodyText(sf, "Your peers <b>see themselves</b><br>in your journey.", 1110, t + 2.8);
+}
+
+// ---------------- Scene 5: CTA ----------------
+{
+  const t = S[4], sf = safe(5);
+  let seed = 6262;
+  const rnd = () => {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+  const field = document.getElementById("particles");
+  for (let i = 0; i < 12; i++) {
+    const size = 10 + rnd() * 22;
+    const p = el(field, "div", "particle", { width: px(size), height: px(size), left: px(rnd() * 1040), top: px(700 + rnd() * 1300), background: rnd() > 0.5 ? "#6366f1" : "#ffffff" });
+    const o = 0.08 + rnd() * 0.18;
+    tl.fromTo($(p), { y: 0, opacity: 0 }, { y: -(700 + rnd() * 700), opacity: o, duration: LEN[4], ease: "none" }, t);
+  }
+  const wrap = el(sf, "div", "shot-wrap");
+  const ring = svgEl(wrap, "svg", { viewBox: "0 0 440 440", width: 440, height: 440 });
+  Object.assign(ring.style, { position: "absolute", left: "0px", top: "0px" });
+  svgEl(ring, "circle", { cx: 220, cy: 220, r: 212, fill: "none", stroke: "#6366f1", "stroke-width": 4, "stroke-dasharray": "44 18", "stroke-linecap": "round" });
+  const shot = el(wrap, "div", "shot");
+  const img = document.createElement("img");
+  img.src = "ow-headshot-bw.png";
+  img.alt = "";
+  shot.appendChild(img);
+  tl.fromTo($(wrap), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.8, ease: E }, t + 0.3);
+  tl.fromTo($(ring), { rotation: 0, transformOrigin: "50% 50%" }, { rotation: 60, duration: 5.9, ease: "none" }, t + 0.3);
+  headline(sf, ["New at 62?", "That's the content."], t + 0.5, { top: "660px", fontSize: "76px" });
+  bodyText(sf, "Post your first step today.<br>Follow <b>The UnRetired Earner.</b>", 870, t + 1.6);
+}
+
+window.__timelines["main"] = tl;
+tl.seek(0);
+    </script>
+  </body>
+</html>
